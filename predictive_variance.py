@@ -5,7 +5,7 @@ import numpy as np
 def predictive_variance(model, kernel_matrix, kstar=1):
     """Compute the predictive variance of the model for the points in the kernel matrix.
 
-    The kernel matrix is a matrix of kernel evualuations between training
+    The kernel matrix is a matrix of kernel evaluations between training
     points and new points to predict. Every column therefore represents a
     single 'new' point.
 
