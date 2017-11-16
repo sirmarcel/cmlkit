@@ -1,0 +1,50 @@
+from unittest import TestCase
+from indices import *
+
+
+class TestSplitIndices(TestCase):
+
+    def test_element_numbers_sum_up(self):
+        n = 30
+        k_test = 5
+        k_valid = 15
+
+        a, b, c = split_indices(n, k_test, k_valid)
+
+        self.assertEqual(len(a) + len(b) + len(c), n)
+
+    def test_union_is_all(self):
+        n = 100
+        k_test = 25
+        k_valid = 15
+
+        a, b, c = split_indices(n, k_test, k_valid)
+
+        union = np.union1d(a, b)
+        union = np.union1d(union, c)
+
+        self.assertEqual(union.all(), np.array(np.arange(n)).all())
+
+
+class TestGenerateDistinctSets(TestCase):
+
+    def test_element_numbers_sum_up(self):
+        n = 78
+        full = np.arange(n)
+        k = 64
+        a, b = generate_distinct_sets(full, k)
+        self.assertEqual(len(a) + len(b), n)
+
+    def test_union_is_all(self):
+        n = 78
+        full = np.arange(n)
+        k = 3
+        a, b = generate_distinct_sets(full, k)
+        self.assertEqual(np.union1d(a, b).all(), np.array(full).all())
+
+    def test_set_disjunct(self):
+        n = 78
+        full = np.arange(n)
+        k = 3
+        a, b = generate_distinct_sets(full, k)
+        self.assertTrue(np.intersect1d(a, b).size == 0)
