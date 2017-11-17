@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def split_indices(n, k_test, k_validate):
+def split_indices(n, k_validate, k_test):
     """Generate training, validation and training index sets for n items."""
 
     full = np.arange(n)
