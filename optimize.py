@@ -25,7 +25,6 @@ def optimize_bayes(f, params, n_calls=25, acq_func='EI', n_random_starts=5, rand
         'params': {'a': 2.5, 'c': ...} # the optimised params
         'opt_data': {'duration': time taken for opt, 'f': final value of f}
         'opt_params': {'acq_func': ..., } # optimisation parameters
-        'opt_output': {} # full output of optimisation method
 
     """
     param_bounds = list(params.values())
@@ -58,8 +57,7 @@ def optimize_bayes(f, params, n_calls=25, acq_func='EI', n_random_starts=5, rand
         'opt_params': {'acq_func': acq_func,
                        'n_random_starts': n_random_starts,
                        'n_calls': n_calls,
-                       'random_state': random_state},
-        'opt_output': res
+                       'random_state': random_state}
     }
 
     return results
