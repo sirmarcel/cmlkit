@@ -9,7 +9,7 @@ class TestSplitIndices(TestCase):
         k_test = 5
         k_valid = 15
 
-        a, b, c = split_indices(n, k_test, k_valid)
+        a, b, c = threeway_split(n, k_test, k_valid)
 
         self.assertEqual(len(a) + len(b) + len(c), n)
 
@@ -18,7 +18,7 @@ class TestSplitIndices(TestCase):
         k_test = 25
         k_valid = 15
 
-        a, b, c = split_indices(n, k_test, k_valid)
+        a, b, c = threeway_split(n, k_test, k_valid)
 
         union = np.union1d(a, b)
         union = np.union1d(union, c)
