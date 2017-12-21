@@ -18,3 +18,13 @@ def read(file):
 
     d = np.load(file + '.npy').item()
     return d
+
+
+def read_yaml(filename):
+    """Read yaml dictionary from file."""
+
+    stream = open(filename, 'r')
+    d = yaml.load(stream)
+    stream.close()
+
+    return d
