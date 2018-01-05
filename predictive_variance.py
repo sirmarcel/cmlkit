@@ -25,6 +25,9 @@ def predictive_variance(model, kernel_matrix, kstar=1):
 
     # TODO
 
+    Note that if centering is enabled for the regression model, the kernel_matrix
+    needs to be centered as well.
+
     Args:
         model: A qmmlpack.regression.KernelRidgeRegression instance
         kernel_matrix: ndarray with each column representing kernel
@@ -37,7 +40,11 @@ def predictive_variance(model, kernel_matrix, kstar=1):
         pv: 1-d ndarray with the predictive variance for all columns of kernel_matrix
     """
 
-    v = qmml.numerics.forward_substitution(model.cholesky_decomposition.T, kernel_matrix)
+    if model._centering:
+        L = qmml.kernels_centering.center_kernel_matrix(model.kernel_matrix, l=kernel_matrix)
+        v = qmml.numerics.forward_substitution(model.cholesky_decomposition.T, L)
+    else:
+        v = qmml.numerics.forward_substitution(model.cholesky_decomposition.T, kernel_matrix)
 
     pv = kstar - np.diag(v.T @ v)
 
