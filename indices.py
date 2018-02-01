@@ -52,6 +52,28 @@ def threeway_split(n, k_validate, k_test):
     return train, validate, test
 
 
+def twoway_split(n, k):
+    """Generate two distinct index sets, one with n-k and one with k items.
+
+    Items are picked at random and not repeated.
+
+    In this split, the remaining items are returned first.
+
+    Args:
+        n: Total number of indices
+        k: Number of items in the second set
+
+    Returns:
+        train: First set (remaining items)
+        picked: Second set
+    """
+
+    full = np.arange(n)
+    rest, picked = generate_distinct_sets(full, k)
+
+    return rest, picked
+
+
 
 def generate_distinct_sets(full, k):
     """Out of a full set with n items, pick two sub-sets with n-k and k items at random."""

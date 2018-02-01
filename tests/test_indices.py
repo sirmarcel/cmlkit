@@ -53,6 +53,27 @@ class TestThreewaySplit(TestCase):
         self.assertEqual(union.all(), np.array(np.arange(n)).all())
 
 
+class TestTwowaySplit(TestCase):
+
+    def test_element_numbers_sum_up(self):
+        n = 30
+        k = 5
+
+        a, b = twoway_split(n, k)
+
+        self.assertEqual(len(a) + len(b), n)
+
+    def test_union_is_all(self):
+        n = 100
+        k = 25
+
+        a, b = twoway_split(n, k)
+
+        union = np.union1d(a, b)
+
+        self.assertEqual(union.all(), np.array(np.arange(n)).all())
+
+
 class TestGenerateDistinctSets(TestCase):
 
     def test_element_numbers_sum_up(self):
