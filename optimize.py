@@ -45,7 +45,7 @@ def optimize_bayes(f, params, n_calls=25, acq_func='EI', n_random_starts=5, rand
     end = time.time()
     duration = end - start
 
-    logging.info("Finished optimisation after %.1fs." % (duration))
+    logging.info("Finished optimisation after %.1fs with f=%f." % (duration, res['fun']))
 
     optimized_parameters = {}
     for i in range(len(param_names)):
