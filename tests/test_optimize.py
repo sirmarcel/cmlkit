@@ -18,7 +18,7 @@ class TestFindsMinimum(TestCase):
 
         expected = np.array([1.0, 2.0])
 
-        np.testing.assert_allclose(xy, expected, atol=0.01)
+        np.testing.assert_allclose(xy, expected, atol=0.1)
 
 
 
