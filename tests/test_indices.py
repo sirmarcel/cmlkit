@@ -3,75 +3,76 @@ from indices import *
 
 
 class TestFourwaySplit(TestCase):
+    def setUp(self):
+        self.n = 40
+        self.k_train = 7
+        self.k_test = 5
+        self.k_valid = 15
 
-    def test_element_numbers_sum_up(self):
-        n = 40
-        k_test = 5
-        k_valid = 15
-        k_train = 7
+        self.a, self.b, self.c, self.d = fourway_split(self.n, self.k_train, self.k_test, self.k_valid)
 
-        a, b, c, d = fourway_split(n, k_train, k_test, k_valid)
-
-        self.assertEqual(len(a) + len(b) + len(c) + len(d), n)
-
-    def test_union_is_all(self):
-        n = 100
-        k_test = 25
-        k_valid = 15
-        k_train = 36
-
-        a, b, c, d = fourway_split(n, k_train, k_test, k_valid)
-
-        union = np.union1d(a, b)
-        union = np.union1d(union, c)
-        union = np.union1d(union, d)
-
-        self.assertEqual(union.all(), np.array(np.arange(n)).all())
-
-
-class TestThreewaySplit(TestCase):
-
-    def test_element_numbers_sum_up(self):
-        n = 30
-        k_test = 5
-        k_valid = 15
-
-        a, b, c = threeway_split(n, k_test, k_valid)
-
-        self.assertEqual(len(a) + len(b) + len(c), n)
+    def test_sizes(self):
+        self.assertEqual([len(self.a), len(self.b), len(self.c), len(self.d)], [40-5-15-7, 7, 5, 15])
 
     def test_union_is_all(self):
-        n = 100
-        k_test = 25
-        k_valid = 15
+        union = np.union1d(self.a, self.b)
+        union = np.union1d(union, self.c)
+        union = np.union1d(union, self.d)
 
-        a, b, c = threeway_split(n, k_test, k_valid)
+        self.assertEqual(union.all(), np.array(np.arange(self.n)).all())
 
-        union = np.union1d(a, b)
-        union = np.union1d(union, c)
-
-        self.assertEqual(union.all(), np.array(np.arange(n)).all())
 
 
 class TestTwowaySplit(TestCase):
+    def setUp(self):
+        self.n = 40
+        self.k_test = 10
 
-    def test_element_numbers_sum_up(self):
-        n = 30
-        k = 5
+        self.a, self.b = twoway_split(self.n, self.k_test)
 
-        a, b = twoway_split(n, k)
-
-        self.assertEqual(len(a) + len(b), n)
+    def test_sizes(self):
+        self.assertEqual([len(self.a), len(self.b)], [40-10, 10])
 
     def test_union_is_all(self):
-        n = 100
-        k = 25
+        union = np.union1d(self.a, self.b)
 
-        a, b = twoway_split(n, k)
+        self.assertEqual(union.all(), np.array(np.arange(self.n)).all())
 
-        union = np.union1d(a, b)
 
-        self.assertEqual(union.all(), np.array(np.arange(n)).all())
+
+class TestThreewaySplit(TestCase):
+    def setUp(self):
+        self.n = 40
+        self.k_test = 5
+        self.k_valid = 15
+
+        self.a, self.b, self.c = threeway_split(self.n, self.k_test, self.k_valid)
+
+    def test_sizes(self):
+        self.assertEqual([len(self.a), len(self.b), len(self.c)], [40-5-15, 5, 15])
+
+    def test_union_is_all(self):
+        union = np.union1d(self.a, self.b)
+        union = np.union1d(union, self.c)
+
+        self.assertEqual(union.all(), np.array(np.arange(self.n)).all())
+
+
+
+class TestGenerateIndices(TestCase):
+
+    def test_make_range_if_int(self):
+        ind = generate_indices(6, [])
+        self.assertEqual(ind.all(), np.arange(6).all())
+
+    def test_pass_through_index_array(self):
+        ind = generate_indices(np.arange(6), [])
+        self.assertEqual(ind.all(), np.arange(6).all())
+
+    def test_exclude(self):
+        ind = generate_indices(6, [3])
+        self.assertFalse(3 in ind)
+
 
 
 class TestGenerateDistinctSets(TestCase):
