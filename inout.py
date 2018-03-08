@@ -11,13 +11,21 @@ def save(outfile, d):
     np.save(outfile, d)
 
 
-def read(file):
+def read(file, ext=True):
     """Load numpy data stored in file.
 
-    Note that .npy will automatically be appended to the filename.
-    """
+    Args:
+        file: file to open
+        ext: If True, append .npy to filename
 
-    d = np.load(file + '.npy').item()
+    Returns:
+        d: dict with data from file
+    """
+    if ext:
+        d = np.load(file + '.npy').item()
+    else:
+        d = np.load(file).item()
+
     return d
 
 
