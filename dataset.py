@@ -97,7 +97,7 @@ class Subset(Dataset):
 
     """
 
-    def __init__(self, dataset, idx, name=None, desc='', restore_data=None):
+    def __init__(self, dataset, idx, subset=None, desc='', restore_data=None):
 
         if restore_data is None:
             self.idx = idx
@@ -115,13 +115,16 @@ class Subset(Dataset):
 
             self.full_info = dataset.info
             self.full_desc = dataset.desc
+            self.full_name = dataset.name
 
             super(Subset, self).__init__(dataset.name, z, r, b, sub_properties, desc=desc)
 
-            if name is not None:
-                self.subset = name
+            if subset is not None:
+                self.subset = subset
             else:
                 self.subset = 'n' + str(self.n)
+
+            self.name = self.full_name + '-' + self.subset
 
         else:
             super(Subset, self).__init__(restore_data['name'],
@@ -134,6 +137,7 @@ class Subset(Dataset):
 
             self.full_info = restore_data['full_info']
             self.full_desc = restore_data['full_desc']
+            self.full_name = restore_data['full_name']
             self.n = restore_data['n']
             self.subset = restore_data['subset']
             self.idx = restore_data['idx']
@@ -154,12 +158,13 @@ class Subset(Dataset):
             'info': self.info,
             'full_info': self.full_info,
             'full_desc': self.full_desc,
+            'full_name': self.full_name,
             'n': self.n,
             'idx': self.idx
         }
 
         if filename is None:
-            qmtio.save(dirname + self.name + '-' + self.subset + '.dat', tosave)
+            qmtio.save(dirname + self.name + '.dat', tosave)
         else:
             qmtio.save(dirname + filename + '.dat', tosave)
 
