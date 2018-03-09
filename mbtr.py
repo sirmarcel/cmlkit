@@ -1,6 +1,7 @@
 import numpy as np
 import qmmlpack as qmml
 import qmmltools.inout as qmtio
+import qmmltools.dataset as qmtd
 
 
 def make_mbtrs(dataset, spec_mbtrs):
@@ -43,7 +44,7 @@ class MBTR(object):
             self.spec = spec
 
             if name is None:
-                if isinstance(dataset, qmmltools.dataset.View):
+                if isinstance(dataset, qmtd.View):
                     self.name = dataset.name + '_view_n' + str(dataset.n)
                 else:
                     self.name = dataset.name
@@ -61,6 +62,9 @@ class MBTR(object):
             self.dataset_name = restore_data['dataset_name']
             self.spec = restore_data['spec']
             self.mbtr = restore_data['mbtr']
+
+    def __getitem__(self, idx):
+        return self.mbtr[idx]
 
     def save(self, directory='', filename=None):
         tosave = {
