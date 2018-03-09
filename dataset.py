@@ -100,6 +100,7 @@ class Subset(Dataset):
     def __init__(self, dataset, idx, name=None, desc='', restore_data=None):
 
         if restore_data is None:
+            self.idx = idx
             z = dataset.z[idx]
             r = dataset.r[idx]
             if dataset.b is not None:
@@ -135,6 +136,7 @@ class Subset(Dataset):
             self.full_desc = restore_data['full_desc']
             self.n = restore_data['n']
             self.subset = restore_data['subset']
+            self.idx = restore_data['idx']
 
     @classmethod
     def from_dict(cls, d):
@@ -152,7 +154,8 @@ class Subset(Dataset):
             'info': self.info,
             'full_info': self.full_info,
             'full_desc': self.full_desc,
-            'n': self.n
+            'n': self.n,
+            'idx': self.idx
         }
 
         if filename is None:

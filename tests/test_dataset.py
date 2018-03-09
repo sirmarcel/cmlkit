@@ -79,7 +79,8 @@ class TestSubset(TestCase):
             'info': self.sub.info,
             'full_info': self.sub.full_info,
             'full_desc': self.sub.full_desc,
-            'n': 1
+            'n': 1,
+            'idx': [1]
         }
 
         sub2 = Subset.from_dict(d2)
@@ -91,6 +92,7 @@ class TestSubset(TestCase):
         self.assertEqual(sub2.name, d2['name'])
         self.assertEqual(sub2.desc, d2['desc'])
         self.assertEqual(sub2.full_desc, d2['full_desc'])
+        self.assertEqual(sub2.idx, d2['idx'])
 
     def test_from_file(self):
         sub = read(dirname + '/test-sub.dat.npy')
@@ -102,6 +104,7 @@ class TestSubset(TestCase):
         self.assertEqual(sub.name, self.sub.name)
         self.assertEqual(sub.desc, self.sub.desc)
         self.assertEqual(sub.full_desc, self.sub.full_desc)
+        self.assertEqual(sub.idx, self.sub.idx)
 
 
 class TestView(TestCase):
