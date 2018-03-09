@@ -183,6 +183,10 @@ class View(object):
         super(View, self).__init__()
         self.dataset = dataset
         self.idx = idx
+        if isinstance(idx, int):
+            self.n = 1
+        else:
+            self.n = len(idx)
 
     @property
     def z(self):

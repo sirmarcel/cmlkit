@@ -111,7 +111,7 @@ class TestView(TestCase):
 
     def test_works_as_expected(self):
         dataset = Dataset.from_dict(d)
-        v = dataset[1]
+        v = dataset[[1]]
 
         self.assertEqual(v.z.all(), np.array([[[1, 2, 3]]]).all())
         self.assertEqual(v.r.all(), np.array([[[0.0, 0.1, 0.0], [1.0, 0.0, 0.0], [0.0, 1.1, 0.0]]]).all())
