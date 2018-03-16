@@ -216,6 +216,10 @@ class View(object):
     def info(self):
         return self.dataset.info
 
+    @property
+    def name(self):
+        return self.dataset.name
+
 
 class DictView(dict):
     """docstring for DictView"""

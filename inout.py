@@ -22,11 +22,17 @@ def read(file, ext=True):
         d: dict with data from file
     """
     if ext:
-        d = np.load(file + '.npy').item()
-    else:
-        d = np.load(file).item()
+        filename = file + '.npy'
 
-    return d
+    else:
+        filename = file
+
+    d = np.load(filename)
+
+    if d.size == 1:
+        return d.item()
+    else:
+        return d
 
 
 def read_yaml(filename):

@@ -72,7 +72,7 @@ class ModelSpec(object):
         return cls.from_dict(d)
 
 
-    def save(self, folder, filename=None):
+    def save(self, folder='', filename=None):
         to_save = {
             'name': self.name,
             'desc': self.desc,

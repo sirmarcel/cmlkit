@@ -57,7 +57,7 @@ class TestSubset(TestCase):
 
     def setUp(self):
         dataset = Dataset.from_dict(d)
-        self.sub = Subset(dataset, [1], name='sub', desc='test subset')
+        self.sub = Subset(dataset, [1], subset='sub', desc='test subset')
 
     def test_works_as_expected(self):
         self.assertEqual(self.sub.z.all(), np.array([[[1, 2, 3]]]).all())
@@ -65,7 +65,7 @@ class TestSubset(TestCase):
         self.assertEqual(self.sub.p['e'].all(), np.array([1.1]).all())
         self.assertEqual(self.sub.n, 1)
         self.assertEqual(self.sub.subset, 'sub')
-        self.assertEqual(self.sub.name, 'test')
+        self.assertEqual(self.sub.name, 'test-sub')
 
     def test_from_dict(self):
         d2 = {
@@ -111,7 +111,7 @@ class TestView(TestCase):
 
     def test_works_as_expected(self):
         dataset = Dataset.from_dict(d)
-        v = dataset[[1]]
+        v = dataset[np.arange(1)]
 
         self.assertEqual(v.z.all(), np.array([[[1, 2, 3]]]).all())
         self.assertEqual(v.r.all(), np.array([[[0.0, 0.1, 0.0], [1.0, 0.0, 0.0], [0.0, 1.1, 0.0]]]).all())
