@@ -55,7 +55,7 @@ class MBTR(object):
                 self.name = name
 
             self.dataset_name = dataset.name
-            self.mbtr = make_mbtrs(dataset, self.spec.mbtrs)
+            self.mbtr = self._make_mbtr(dataset, self.spec.mbtrs)
 
         else:
             self.name = restore_data['name']
@@ -65,6 +65,9 @@ class MBTR(object):
 
     def __getitem__(self, idx):
         return self.mbtr[idx]
+
+    def _make_mbtr(self, dataset, spec):
+        return make_mbtrs(dataset, spec)
 
     def save(self, directory='', filename=None):
         tosave = {
