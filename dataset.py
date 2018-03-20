@@ -34,6 +34,7 @@ class Dataset(object):
         self.b = b
         self.p = p
         self.desc = desc
+        self.full_name = name
 
         if info is None:
             self.info = dataset_info(z, r, b)
@@ -220,11 +221,16 @@ class View(object):
     def name(self):
         return self.dataset.name
 
+    @property
+    def full_name(self):
+        return self.dataset.full_name
+
 
 class DictView(dict):
     """docstring for DictView"""
 
     def __init__(self, d, idx):
+        super(DictView, self).__init__(**d)
         self.d = d
         self.idx = idx
 
