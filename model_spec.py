@@ -1,4 +1,3 @@
-# LEGACY
 import qmmltools.inout as qmtio
 
 mbtr_defaults = {
