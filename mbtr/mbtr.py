@@ -1,27 +1,8 @@
-# LEGACY
 import numpy as np
 import qmmlpack as qmml
 import qmmltools.inout as qmtio
 import qmmltools.dataset as qmtd
-
-
-def make_mbtrs(dataset, spec_mbtrs):
-
-    return np.concatenate([single_mbtr(dataset.z, dataset.r, dataset.b, args) for k, args in spec_mbtrs.items()], axis=1)
-
-
-def single_mbtr(z, r, b, args):
-
-    kgwdcea = [args['k'], args['geomf'], args['weightf'], (args['distrf'], (args['broadening'],)), args['corrf'], args['eindexf'], args['aindexf']]
-
-    mbtr = qmml.many_body_tensor(z, r, args['d'], kgwdcea, flatten=args['flatten'], elems=args['elems'], basis=b, acc=args['acc'])
-
-    if args['norm'] is not None:
-        for i in range(len(z)):
-            mbtr[i] /= np.sum(mbtr[i])
-        return mbtr * args['norm']
-    else:
-        return mbtr
+from qmmltools.mbtr.funcs import make_mbtrs
 
 
 class MBTR(object):
