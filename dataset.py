@@ -6,7 +6,7 @@ import qmmltools.inout as qmtio
 def read(filename):
     d = qmtio.read(filename, ext=False)
 
-    if 'subset' in d.keys():
+    if 'parent_info' in d.keys():
         return Subset.from_dict(d)
     else:
         return Dataset.from_dict(d)
@@ -15,31 +15,39 @@ def read(filename):
 class Dataset(object):
     """Dataset
 
-    Represents a collection of structures with different properties,
+    Represents a collection of structures/molecules with different properties,
     which can be saved to a file and loaded from it.
 
     Attributes:
-        name: Short, unique name for this dataset
-        z, r, b: As required by qmmlpack
+        name: Short, unique name
+        desc: Short description
+        family: Indicates broad group of data this belongs to (for instance for property conversion)
+        z, r, b: As required by qmmlpack (ragged arrays)
         p: Dict of properties, keys are strings, values are ndarrays
+        id: Canonical name; used internally, equal to name for this class
         info: Dict of properties of this dataset
         n: Number of systems in dataset
     """
 
-    def __init__(self, name, z, r, b=None, p={}, info=None, desc=''):
+    def __init__(self, name, z, r, b=None, p={}, info=None, desc='', family=None):
         super(Dataset, self).__init__()
         self.name = name
+        self.desc = desc
         self.z = z
         self.r = r
         self.b = b
         self.p = p
-        self.desc = desc
-        self.full_name = name
+        self.id = name
 
         if info is None:
             self.info = dataset_info(z, r, b)
         else:
             self.info = info
+
+        if family is None:
+            self.family = name
+        else:
+            self.family = family
 
         self.n = self.info['number_systems']
 
@@ -64,6 +72,8 @@ class Dataset(object):
         tosave = {
             'name': self.name,
             'desc': self.desc,
+            'id': self.id,
+            'family': self.family,
             'z': self.z,
             'r': self.r,
             'b': self.b,
@@ -73,13 +83,13 @@ class Dataset(object):
         }
 
         if filename is None:
-            qmtio.save(dirname + self.name + '.dat', tosave)
+            qmtio.save(dirname + self.id + '.dat', tosave)
         else:
             qmtio.save(dirname + filename + '.dat', tosave)
 
     @classmethod
     def from_dict(cls, d):
-        return cls(d['name'], d['z'], d['r'], d['b'], d['p'], d['info'], d['desc'])
+        return cls(d['name'], d['z'], d['r'], d['b'], d['p'], d['info'], d['desc'], d['family'])
 
 
 class Subset(Dataset):
@@ -90,15 +100,15 @@ class Subset(Dataset):
     some connection to the full dataset.
 
     Attributes:
-        name: Name of parent dataset
-        subset: Short name of this subset
+        name: Name of this subset
+        id: Canonical name of this subset, dataset_name-name
+        family: Broad family of this subset
         z, r, b, p: As in Dataset
-        full_info: Dataset info of full dataset
         info: Dataset info of this subset
-
+        parent_info: Dict of info on parent dataset, namely name and info dict
     """
 
-    def __init__(self, dataset, idx, subset=None, desc='', restore_data=None):
+    def __init__(self, dataset, idx, name=None, desc='', restore_data=None):
 
         if restore_data is None:
             self.idx = idx
@@ -114,18 +124,17 @@ class Subset(Dataset):
             for p, v in dataset.p.items():
                 sub_properties[p] = v[idx]
 
-            self.full_info = dataset.info
-            self.full_desc = dataset.desc
-            self.full_name = dataset.name
+            self.parent_info = {'info': dataset.info, 'desc': dataset.desc, 'name': dataset.name, 'id': dataset.id}
+            
 
-            super(Subset, self).__init__(dataset.name, z, r, b, sub_properties, desc=desc)
-
-            if subset is not None:
-                self.subset = subset
+            if name is not None:
+                self.name = name
             else:
-                self.subset = 'n' + str(self.n)
+                self.name = 'n' + str(self.n)
 
-            self.name = self.full_name + '-' + self.subset
+            super(Subset, self).__init__(self.name, z, r, b, sub_properties, desc=desc, family=dataset.family)
+
+            self.id = self.parent_info['name'] + '-' + self.name
 
         else:
             super(Subset, self).__init__(restore_data['name'],
@@ -134,38 +143,36 @@ class Subset(Dataset):
                                          restore_data['b'],
                                          restore_data['p'],
                                          restore_data['info'],
-                                         restore_data['desc'])
+                                         restore_data['desc'],
+                                         restore_data['family'])
 
-            self.full_info = restore_data['full_info']
-            self.full_desc = restore_data['full_desc']
-            self.full_name = restore_data['full_name']
+            self.parent_info = restore_data['parent_info']
             self.n = restore_data['n']
-            self.subset = restore_data['subset']
+            self.id = restore_data['id']
             self.idx = restore_data['idx']
 
     @classmethod
     def from_dict(cls, d):
-        return cls(None, None, None, restore_data=d)
+        return cls(None, None, restore_data=d)
 
     def save(self, dirname='', filename=None):
         tosave = {
             'name': self.name,
             'desc': self.desc,
-            'subset': self.subset,
+            'id': self.id,
             'z': self.z,
             'r': self.r,
             'b': self.b,
             'p': self.p,
             'info': self.info,
-            'full_info': self.full_info,
-            'full_desc': self.full_desc,
-            'full_name': self.full_name,
+            'parent_info': self.parent_info,
             'n': self.n,
-            'idx': self.idx
+            'idx': self.idx,
+            'family': self.family
         }
 
         if filename is None:
-            qmtio.save(dirname + self.name + '.dat', tosave)
+            qmtio.save(dirname + self.id + '.dat', tosave)
         else:
             qmtio.save(dirname + filename + '.dat', tosave)
 
@@ -222,12 +229,16 @@ class View(object):
         return self.dataset.name
 
     @property
-    def full_name(self):
-        return self.dataset.full_name
+    def id(self):
+        return self.dataset.id
+
+    @property
+    def family(self):
+        return self.dataset.family
 
 
 class DictView(dict):
-    """docstring for DictView"""
+    """View on a dictionary where each value is an ndarray"""
 
     def __init__(self, d, idx):
         super(DictView, self).__init__(**d)
