@@ -3,7 +3,7 @@ desc: 'A 2-body MBTR + KRR model; number 10 in MR notebook'
 version: 't'
 data:
   name: 'kaggle'
-  property: 'fec_log'
+  property: 'fec'
 mbtrs:
   mbtr_1:
     k: 1

@@ -43,7 +43,6 @@ class TestModel(TestCase):
 
         mbtr = modelSpec.mbtrs['mbtr_1']
 
-        self.assertEqual(mbtr_defaults['distrf'], mbtr['distrf'])
         self.assertEqual(mbtr_defaults['corrf'], mbtr['corrf'])
         self.assertEqual(mbtr_defaults['norm'], mbtr['norm'])
         self.assertEqual(mbtr_defaults['flatten'], mbtr['flatten'])

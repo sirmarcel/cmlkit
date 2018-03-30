@@ -68,3 +68,8 @@ class MBTR(object):
     def from_file(cls, file):
         d = qmtio.read(file, ext=False)
         return cls(None, None, restore_data=d)
+
+    @property
+    def raw(self):
+        return self.mbtr
+

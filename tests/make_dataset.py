@@ -14,3 +14,11 @@ d.save()
 
 sub = Subset(d, [1], 'sub', 'test subset')
 sub.save()
+
+from datasets.autoload import load
+k = load('kaggle')
+
+idx = np.arange(20)
+
+sub = Subset(k, idx, 'mini', 'small subset of kaggle')
+sub.save()

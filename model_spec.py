@@ -1,7 +1,6 @@
 import qmmltools.inout as qmtio
 
 mbtr_defaults = {
-    'distrf': 'normal',
     'corrf': 'identity',
     'norm': None,
     'flatten': True,
