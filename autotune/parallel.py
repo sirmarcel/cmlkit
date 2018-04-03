@@ -12,7 +12,7 @@ from qmmltools.mbtr.cached_mbtr import DiskAndMemCachedMBTR
 from qmmltools.regression import loss, train_and_predict
 
 
-def run_parallel(d, db, workdir):
+def run_parallel(d, db):
     template = d['template']
     template['name'] = d['name']
     template['desc'] = 'Model during autotune run'
@@ -27,7 +27,7 @@ def run_parallel(d, db, workdir):
                       'spec': d['template'],
                       'seeds': d['seeds']}
 
-    trials = MongoTrials(db, exp_key=d['name'], workdir=workdir)
+    trials = MongoTrials(db, exp_key=d['name'])
 
     logging.info("Setup done, please start some workers...")
 
