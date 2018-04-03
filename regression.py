@@ -1,7 +1,7 @@
 import numpy as np
 import qmmlpack as qmml
 import qmmltools.stats as qmts
-from property_converter import convert
+from qmmltools.property_converter import convert
 
 
 def kernel(spec, rep, other_rep=None):
