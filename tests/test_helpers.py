@@ -21,3 +21,9 @@ class TestSequenceHandling(TestCase):
         b = convert_sequence(a)
 
         self.assertEqual(b, ('gaussian', (1, 2, 3)))
+
+    def test_handles_mixed(self):
+        a = ['normal', 16.1]
+        b = convert_sequence(a)
+
+        self.assertEqual(b, ('normal', (16.1,)))
