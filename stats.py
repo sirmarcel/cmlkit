@@ -40,7 +40,7 @@ def logrmse(true, pred):
 def logmae(true, pred):
     """Compute log mean absolute error"""
 
-    return mean(np.log(true+1), np.log(pred+1))
+    return mae(np.log(true+1), np.log(pred+1))
 
 
 def logr2(true, pred):
