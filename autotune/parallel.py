@@ -70,7 +70,7 @@ def run_parallel(d, db):
                     rep = DiskAndMemCachedMBTR(parent, spec, name=spec.name)
                     rep.save('out/')
 
-                    l = qmtr.loss(parent, spec, idx_train, idx_test, lossf=post_config['loss'], target_property=d['data']['property'])
+                    l = qmtr.loss(parent, spec, rep, idx_train, idx_test, lossf=post_config['loss'], target_property=d['data']['property'])
 
                     info = "Training %i model on %s and predicting %s gave loss %s" % (i, post_config['data_train']['id'], post_config['data_test']['id'], str(l))
 
