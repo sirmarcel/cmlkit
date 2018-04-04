@@ -59,6 +59,7 @@ def run_parallel(d, db):
         # The following is extremely ugly
         if 'post' in d.keys():
             for post_config in d['post']:
+                logging.info("Post-processing model %i" % (i))
 
                 post_data_train = load(post_config['data_train']['id'])
                 post_data_test = load(post_config['data_test']['id'])
