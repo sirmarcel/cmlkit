@@ -39,7 +39,8 @@ def run_parallel(d, db):
         'db': db,
         'final_loss': trials.best_trial['result']['loss'],
         'final_loss_variance': trials.best_trial['result']['loss_variance'],
-        'duration': duration
+        'duration': duration,
+        'post': None
     }
 
     qmtio.save('out/' + d['name'] + '.run', to_save)
