@@ -29,3 +29,27 @@ def r2(true, pred):
     """Compute Pearson's correlation coefficient"""
 
     return np.corrcoef(true, pred)[0, 1]
+
+
+def logrmse(true, pred):
+    """Compute log root mean squared error"""
+
+    return rmse(np.log(true+1), np.log(pred+1))
+
+
+def logmae(true, pred):
+    """Compute log mean absolute error"""
+
+    return mean(np.log(true+1), np.log(pred+1))
+
+
+def logr2(true, pred):
+    """Compute log Pearson's correlation coefficient"""
+
+    return r2(np.log(true+1), np.log(pred+1))
+
+
+def logloss(true, pred):
+    """Return the triple (rmse, mae and r2)"""
+
+    return (logrmse(true, pred), logmae(true, pred), logr2(true, pred) * 100)
