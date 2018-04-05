@@ -69,7 +69,7 @@ def run_parallel(d, db):
                     idx_train = post_data_train.idx
                     idx_test = post_data_test.idx
 
-                    rep = DiskAndMemCachedMBTR(parent, spec, name=spec.name)
+                    rep = DiskAndMemCachedMBTR(parent, spec)
                     rep.save('out/')
 
                     l = qmtr.loss(parent, spec, rep, idx_train, idx_test, lossf=post_config['loss'], target_property=d['data']['property'])
