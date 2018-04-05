@@ -82,8 +82,8 @@ def run_parallel(d, db):
 
                     to_save['post'][key] = l
 
-
     qmtio.save('out/' + d['name'] + '.run', to_save)
+    logging.info("Done, saved everything, exiting!")
 
 
 def objective_with_loading(args):
