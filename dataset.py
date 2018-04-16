@@ -112,6 +112,8 @@ class Subset(Dataset):
 
         if restore_data is None:
             self.idx = idx
+            n = len(idx)
+
             z = dataset.z[idx]
             r = dataset.r[idx]
             if dataset.b is not None:
@@ -130,11 +132,12 @@ class Subset(Dataset):
             if name is not None:
                 self.name = name
             else:
-                self.name = 'n' + str(self.n)
+                self.name = 'n' + str(n)
 
             super(Subset, self).__init__(self.name, z, r, b, sub_properties, desc=desc, family=dataset.family)
 
             self.id = self.parent_info['name'] + '-' + self.name
+            self.n = n
 
         else:
             super(Subset, self).__init__(restore_data['name'],
