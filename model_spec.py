@@ -1,4 +1,5 @@
 import qmmltools.inout as qmtio
+import pprint
 
 mbtr_defaults = {
     'corrf': 'identity',
@@ -47,7 +48,6 @@ class ModelSpec(object):
         self.krr = krr
         self.version = version  # version of format
 
-
     @classmethod
     def from_dict(cls, d):
         defaults = {
@@ -58,18 +58,15 @@ class ModelSpec(object):
 
         return cls(d['name'], d['desc'], d['data'], d['mbtrs'], d['krr'], d['version'])
 
-
     @classmethod
     def from_yaml(cls, filename):
         d = qmtio.read_yaml(filename)
         return cls.from_dict(d)
 
-
     @classmethod
     def from_file(cls, filename):
         d = qmtio.read(filename, ext=False)
         return cls.from_dict(d)
-
 
     def save(self, folder='', filename=None):
         to_save = {
@@ -85,3 +82,10 @@ class ModelSpec(object):
             qmtio.save(folder + self.name + '.spec', to_save)
         else:
             qmtio.save(folder + filename + '.spec', to_save)
+
+    @property
+    def info(self):
+        general = '###### {} ######\n'.format(self.name) + self.desc + '\n\n'
+        krr = '### KRR ###\n' + pprint.pformat(self.krr) + '\n\n'
+        mbtrs = '### MBTR ###\n' + pprint.pformat(self.mbtrs)
+        return general + krr + mbtrs + '\n'
