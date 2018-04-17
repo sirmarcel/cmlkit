@@ -46,7 +46,7 @@ class MBTR(object):
             self.mbtr = restore_data['mbtr']
 
     def __getitem__(self, idx):
-        return self.mbtr[idx]
+        return MBTRView(self, idx)
 
     def _make_mbtr(self, dataset, spec):
         return make_mbtrs(dataset, spec)
@@ -73,3 +73,27 @@ class MBTR(object):
     def raw(self):
         return self.mbtr
 
+
+class MBTRView(object):
+    """View onto an MBTR
+
+    This class is intended to be used when only parts of
+    an MBTR need to be accessed
+    """
+
+    def __init__(self, mbtr, idx):
+        super(MBTRView, self).__init__()
+        self.parent_mbtr = mbtr
+        self.idx = idx
+        
+    @property
+    def raw(self):
+        return self.parent_mbtr.raw[self.idx]
+
+    @property
+    def name(self):
+        return 'view_' + self.parent_mbtr.name
+
+    @property
+    def dataset_name(self):
+        return self.parent_mbtr.dataset_name
