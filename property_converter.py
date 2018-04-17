@@ -19,7 +19,14 @@ def convert(data, prop, origin, target):
                     raise Exception("Can't convert %s to %s" % (origin, target))
             elif target == 'fecreal':
                 if origin == 'fec':
+                    assert 'n_atoms' in data.p
+                    assert 'n_sub' in data.p
                     return prop * data.p['n_sub'] / data.p['n_atoms']
+
+            elif target == 'fepa':
+                if origin == 'fecreal':
+                    assert 'n_atoms' in data.p
+                    return prop / data.p['n_atoms']
 
             elif target == 'fsb':
                 return prop
