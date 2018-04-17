@@ -86,6 +86,7 @@ class ModelSpec(object):
     @property
     def info(self):
         general = '###### {} ######\n'.format(self.name) + self.desc + '\n\n'
+        data = '### DATA ###\n' + pprint.pformat(self.data) + '\n\n'
         krr = '### KRR ###\n' + pprint.pformat(self.krr) + '\n\n'
         mbtrs = '### MBTR ###\n' + pprint.pformat(self.mbtrs)
-        return general + krr + mbtrs + '\n'
+        return general + data + krr + mbtrs + '\n'
