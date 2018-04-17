@@ -4,7 +4,7 @@ import numpy as np
 def pretty_loss(loss):
     """Return a string with a pretty-printed loss."""
 
-    return "RMSE=%.3f  MAE=%.3f R2=%.3f" % loss
+    return "RMSE=%.5f  MAE=%.5f R2=%.5f" % loss
 
 
 def loss(true, pred):
