@@ -27,9 +27,9 @@ class MBTR(object):
 
             if name is None:
                 if isinstance(dataset, qmtd.View):
-                    self.name = dataset.name + '_view_n' + str(dataset.n)
+                    self.name = dataset.id + '_view_n' + str(dataset.n)
                 else:
-                    self.name = dataset.name
+                    self.name = dataset.id
 
                 self.name += '_'
                 self.name += spec.name
