@@ -1,3 +1,4 @@
+import numpy as np
 
 def convert(data, prop, origin, target):
     if origin == target:
@@ -8,6 +9,9 @@ def convert(data, prop, origin, target):
                 if origin == 'fec':
                     assert 'n_atoms' in data.p
                     return prop / data.p['n_atoms']
+                if origin == 'feclog':
+                    assert 'n_atoms' in data.p
+                    return (np.exp(prop) - 1.0) / data.p['n_atoms']
                 if origin == 'fecreal':
                     assert 'n_sub' in data.p
                     return prop / data.p['n_sub']
