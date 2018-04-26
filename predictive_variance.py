@@ -23,7 +23,19 @@ def predictive_variance(model, kernel_matrix, kstar=1):
     Cholesky decomposition, using a formula given in 'Gaussian Processes' by
     Rasmussen & Williams:
 
-    # TODO
+    Let L be the lower triangular Cholesky decomposition. Then the inverse of the
+    augmented kernel matrix is
+
+    (K + 1*nl)^-1 = L^-1,T L^-1
+
+    Which we can multiply with the k*, and then the inversion of L becomes solving
+    the problem
+
+    L v = k,
+
+    which can be done by forward substitution. (L is triangular.) Then the PV is just
+
+    PV = v^T.v ! Easy.
 
     Note that if centering is enabled for the regression model, the kernel_matrix
     needs to be centered as well.
