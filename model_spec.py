@@ -58,6 +58,8 @@ class ModelSpec(object):
 
     @classmethod
     def from_dict(cls, d):
+        """Instantiate ModelSpec from dict"""
+
         d = convert_from_SON(d)
         convert_to_tuple(d)
 
@@ -109,6 +111,9 @@ class ModelSpec(object):
 
 
 def convert_to_tuple(d):
+    # Recursively replace lists with tuples in a dict
+    # Note: In-place
+
     for k, v in d.items():
         if isinstance(v, dict):
             convert_to_tuple(v)
@@ -118,6 +123,11 @@ def convert_to_tuple(d):
 
 
 def convert_from_SON(d):
+    # Try to get rid of SON, the type that gets
+    # passed around by hyperopt but is ugly
+    # Note: Not always in place, but cannot be
+    # assumed to NOT change the dict
+
     if isinstance(d, SON):
         d = d.to_dict()
         # to_dict is automatically recursive
