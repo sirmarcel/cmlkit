@@ -1,4 +1,5 @@
 import qmmltools.inout as qmtio
+from bson.son import SON
 import pprint
 
 version = 0.1
@@ -103,3 +104,30 @@ class ModelSpec(object):
         """Print information about this ModelSpec."""
 
         print(self.info)
+
+
+def convert_to_tuple(d):
+    for k, v in d.items():
+        if isinstance(v, dict):
+            iteratively_convert_to_tuple(v)
+
+        elif isinstance(v, list):
+            d[k] = tuple(v)
+
+
+def convert_from_SON(d):
+    if isinstance(d, SON):
+        d = d.to_dict()
+        # to_dict is automatically recursive
+
+    else:
+        for k, v in d.items():
+
+            # This has to be first; SON pretends to be a dict
+            if isinstance(v, SON):
+                d[k] = v.to_dict()
+
+            elif isinstance(v, dict):
+                iteratively_convert_from_SON(v)
+
+    return d
