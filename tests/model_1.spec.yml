@@ -1,6 +1,5 @@
 name: 'model_1'
 desc: 'A 2-body MBTR + KRR model; number 10 in MR notebook'
-version: 't'
 data:
   name: 'kaggle'
   property: 'fec'

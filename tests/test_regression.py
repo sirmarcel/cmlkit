@@ -8,7 +8,7 @@ import os
 dirname = os.path.dirname(os.path.abspath(__file__))
 
 data = read(dirname + '/kaggle-mini.dat.npy')
-spec = ModelSpec.from_yaml(dirname + '/model_mini.yaml')
+spec = ModelSpec.from_yaml(dirname + '/model_mini.spec.yml')
 rep = MBTR(data, spec)
 train = np.arange(10)
 predict = np.arange(11, 20)

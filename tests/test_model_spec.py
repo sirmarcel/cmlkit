@@ -10,7 +10,7 @@ dirname = os.path.dirname(os.path.abspath(__file__))
 class TestModel(TestCase):
     def setUp(self):
         # load test data
-        self.data = qmtio.read_yaml(dirname + '/model_1.yaml')
+        self.data = qmtio.read_yaml(dirname + '/model_1.spec.yml')
 
 
     def test_init_from_dict(self):
@@ -26,20 +26,13 @@ class TestModel(TestCase):
     def test_init_from_yaml(self):
         ModelSpec.from_dict = MagicMock()
 
-        modelSpec = ModelSpec.from_yaml(dirname + '/model_1.yaml')
+        modelSpec = ModelSpec.from_yaml(dirname + '/model_1.spec.yml')
 
         ModelSpec.from_dict.assert_called_with(self.data)
 
-
-    def test_init_from_file(self):
-        ModelSpec.from_dict = MagicMock()
-
-        modelSpec = ModelSpec.from_file(dirname + '/model_1.spec.npy')
-
-        ModelSpec.from_dict.assert_called_with(self.data)
 
     def test_defaults_for_mbtr(self):
-        modelSpec = ModelSpec.from_yaml(dirname + '/model_mini.yaml')
+        modelSpec = ModelSpec.from_yaml(dirname + '/model_mini.spec.yml')
 
         mbtr = modelSpec.mbtrs['mbtr_1']
 
@@ -48,4 +41,3 @@ class TestModel(TestCase):
         self.assertEqual(mbtr_defaults['flatten'], mbtr['flatten'])
         self.assertEqual(mbtr_defaults['elems'], mbtr['elems'])
         self.assertEqual(mbtr_defaults['acc'], mbtr['acc'])
-        self.assertEqual(modelSpec.version, 0.1)
