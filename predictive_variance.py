@@ -61,3 +61,48 @@ def predictive_variance(model, kernel_matrix, kstar=1):
     pv = kstar - np.diag(v.T @ v)
 
     return pv
+
+
+def loo_predictive_variance(model):
+    """Compute the log leave-one-out predictive variance.
+
+    As defined in eq. 5.10 of Rasmussen and Williams:
+
+    \log PV = - \frac{1}{2} \log \sigma_i^2 
+              - \frac{(y - \mu_i)^2}{2 \sigma_i^2} - \frac{1}{2} \log{2\pi}
+
+    \sigma_i^2 = 1/K^{-1}_{ii} \\
+    \mu_i = y_i - (K^{-1} y)/(K^{-1}_{ii})
+
+    (K is the augmented kernel matrix)
+
+    This is the log of the predictive variance, for a model
+    that was trained on all data, but without that particular point.
+
+    It is therefore a retrospective measure!
+
+    Args:
+        model: qmmlpack.regression.KernelRidgeRegression instance
+
+    Returns:
+        pv: 1-d ndarray with the log leave-one-out predictive variance for all training points
+        y: Labels centred to their mean
+        mu: Predictive mean (leaving out the ith training point)
+
+    """
+
+    u = model.cholesky_decomposition
+    y = model.labels
+
+    if model.centering is False:
+        y -= np.mean(y)
+
+    uinv = np.linalg.inv(u)
+    kinv = uinv @ np.transpose(uinv)
+
+    sigma = 1 / np.diag(kinv)
+    mu = y - (kinv @ y)/np.diag(kinv)
+
+    pv = -0.5*np.log(sigma) - (y - mu)**2/(2*sigma) - 0.5*np.log(2*np.pi)
+
+    return pv, y, mu
