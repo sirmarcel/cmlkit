@@ -3,6 +3,10 @@ import qmmlpack as qmml
 import qmmltools.inout as qmtio
 import qmmltools.dataset as qmtd
 from qmmltools.mbtr.funcs import make_mbtrs
+from qmmltools.utils.hashing import hash_spec_dict
+import logging
+
+version = 0.1  # currently not in use
 
 
 class MBTR(object):
@@ -13,17 +17,24 @@ class MBTR(object):
     regard as composed of a Dataset and a ModelSpec.
 
     Attributes:
-        spec: ModelSpec (note that the krr key is not required)
         name: String; Name of this representation
-        dataset_name: String; Name of original dataset
         mbtr: Ndarray; Computed MBTRs
+        spec: Dict, the mbtrs part of a ModelSpec
+        spec_hash: Hash of the MBTR spec
+        spec_name: String with name of ModelSpec used to generate this
+        dataset_id: String; ID of original dataset
+        version: Version of MBTR file, not in use
 
     """
+
     def __init__(self, dataset, spec, name=None, restore_data=None):
         super(MBTR, self).__init__()
 
+        self._spec_hash = None
+        self.version = version
+
         if restore_data is None:
-            self.spec = spec
+            self.spec = spec.mbtrs
 
             if name is None:
                 if isinstance(dataset, qmtd.View):
@@ -36,12 +47,28 @@ class MBTR(object):
             else:
                 self.name = name
 
-            self.dataset_name = dataset.name
-            self.mbtr = self._make_mbtr(dataset, self.spec.mbtrs)
+            self.dataset_id = dataset.id
+            self.spec_name = spec.name
+            self.mbtr = self._make_mbtr(dataset, self.spec)
 
         else:
             self.name = restore_data['name']
-            self.dataset_name = restore_data['dataset_name']
+
+            # Backwards compatibility
+            if 'dataset_id' not in restore_data and 'dataset_name' in restore_data:
+                logging.warn('Encountered deprecated MBTR file {}: missing dataset_id.'.format(self.name))
+                self.dataset_id = 'NOTID_' + restore_data['dataset_name']
+
+            else:
+                self.dataset_id = restore_data['dataset_id']
+
+            if 'spec_name' not in restore_data:
+                logging.warn('Encountered deprecated MBTR file {}: missing spec_name.'.format(self.name))
+                self.spec_name = 'NOTSPECNAME_' + self.name.split('_', 1)[1]
+
+            else:
+                self.spec_name = restore_data['spec_name']
+
             self.spec = restore_data['spec']
             self.mbtr = restore_data['mbtr']
 
@@ -54,9 +81,11 @@ class MBTR(object):
     def save(self, directory='', filename=None):
         tosave = {
             'name': self.name,
-            'dataset_name': self.dataset_name,
+            'dataset_id': self.dataset_id,
             'spec': self.spec,
-            'mbtr': self.mbtr
+            'spec_name': self.spec_name,
+            'mbtr': self.mbtr,
+            'version': self.version
         }
 
         if filename is None:
@@ -73,6 +102,13 @@ class MBTR(object):
     def raw(self):
         return self.mbtr
 
+    @property
+    def spec_hash(self):
+        if self._spec_hash is not None:
+            return self._spec_hash
+        else:
+            self._spec_hash = hash_spec_dict(self.spec)
+
 
 class MBTRView(object):
     """View onto an MBTR
@@ -85,7 +121,7 @@ class MBTRView(object):
         super(MBTRView, self).__init__()
         self.parent_mbtr = mbtr
         self.idx = idx
-        
+
     @property
     def raw(self):
         return self.parent_mbtr.raw[self.idx]
@@ -95,5 +131,9 @@ class MBTRView(object):
         return 'view_' + self.parent_mbtr.name
 
     @property
-    def dataset_name(self):
-        return self.parent_mbtr.dataset_name
+    def dataset_id(self):
+        return self.parent_mbtr.dataset_id
+
+    @property
+    def spec_hash(self):
+        return self.parent_mbtr.spec_hash
