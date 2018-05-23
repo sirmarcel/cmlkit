@@ -67,6 +67,8 @@ class Dataset(object):
             i['max_elements_per_system'], i['max_same_element_per_system'], i['max_atoms_per_system']))
         print('min dist: {:3.2f};  max dist: {:3.2f};  1/min dist: {:3.2f};  1/max dist: {:3.2f}'.format(
             i['min_distance'], i['max_distance'], 1. / i['min_distance'], 1. / i['max_distance']))
+        print('min dist^2: {:3.2f};  max dist^2: {:3.2f};  1/min dist^2: {:3.2f};  1/max dist^2: {:3.2f}'.format(
+            i['min_distance']**2, i['max_distance']**2, 1. / i['min_distance']**2, 1. / i['max_distance']**2))
 
     def save(self, dirname='', filename=None):
         tosave = {
