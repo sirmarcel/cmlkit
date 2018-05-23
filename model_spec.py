@@ -58,6 +58,8 @@ class ModelSpec(object):
 
     @classmethod
     def from_dict(cls, d):
+        d = convert_from_SON(d)
+        convert_to_tuple(d)
 
         return cls(d['name'], d['desc'], d['data'], d['mbtrs'], d['krr'])
 
@@ -109,7 +111,7 @@ class ModelSpec(object):
 def convert_to_tuple(d):
     for k, v in d.items():
         if isinstance(v, dict):
-            iteratively_convert_to_tuple(v)
+            convert_to_tuple(v)
 
         elif isinstance(v, list):
             d[k] = tuple(v)
@@ -128,6 +130,6 @@ def convert_from_SON(d):
                 d[k] = v.to_dict()
 
             elif isinstance(v, dict):
-                iteratively_convert_from_SON(v)
+                convert_from_SON(v)
 
     return d
