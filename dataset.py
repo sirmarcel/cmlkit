@@ -60,6 +60,25 @@ class Dataset(object):
     def __str__(self):
         return self.report
 
+    def save(self, dirname='', filename=None):
+        tosave = {
+            'name': self.name,
+            'desc': self.desc,
+            'id': self.id,
+            'family': self.family,
+            'z': self.z,
+            'r': self.r,
+            'b': self.b,
+            'p': self.p,
+            'info': self.info,
+            'n': self.n
+        }
+
+        if filename is None:
+            qmtio.save(dirname + self.id + '.dat', tosave)
+        else:
+            qmtio.save(dirname + filename + '.dat', tosave)
+
     @property
     def report(self):
 
@@ -89,25 +108,6 @@ class Dataset(object):
             self._report = general + count + prop + elems + dist + '\n'
 
         return self._report
-
-    def save(self, dirname='', filename=None):
-        tosave = {
-            'name': self.name,
-            'desc': self.desc,
-            'id': self.id,
-            'family': self.family,
-            'z': self.z,
-            'r': self.r,
-            'b': self.b,
-            'p': self.p,
-            'info': self.info,
-            'n': self.n
-        }
-
-        if filename is None:
-            qmtio.save(dirname + self.id + '.dat', tosave)
-        else:
-            qmtio.save(dirname + filename + '.dat', tosave)
 
     @classmethod
     def from_dict(cls, d):
@@ -175,10 +175,6 @@ class Subset(Dataset):
             self.id = restore_data['id']
             self.idx = restore_data['idx']
 
-    @classmethod
-    def from_dict(cls, d):
-        return cls(None, None, restore_data=d)
-
     def save(self, dirname='', filename=None):
         tosave = {
             'name': self.name,
@@ -199,6 +195,10 @@ class Subset(Dataset):
             qmtio.save(dirname + self.id + '.dat', tosave)
         else:
             qmtio.save(dirname + filename + '.dat', tosave)
+
+    @classmethod
+    def from_dict(cls, d):
+        return cls(None, None, restore_data=d)
 
 
 class View(object):
