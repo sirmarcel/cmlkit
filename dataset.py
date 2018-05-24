@@ -39,6 +39,9 @@ class Dataset(object):
         self.p = p
         self.id = name
 
+        self._type = 'Dataset'
+        self._report = None
+
         if info is None:
             self.info = dataset_info(z, r, b)
         else:
@@ -54,21 +57,38 @@ class Dataset(object):
     def __getitem__(self, idx):
         return View(self, idx)
 
-    def print_info(self):
-        i = self.info
+    def __str__(self):
+        return self.report
 
-        if self.b is None:
-            print('{} finite systems (molecules)'.format(i['number_systems']))
-        else:
-            print('{} periodic systems (materials)'.format(i['number_systems']))
-        print('elements: {} ({})'.format(' '.join([qmml.element_data(el, 'abbreviation')
-                                                   for el in i['elements']]), len(i['elements'])))
-        print('max #els/system: {};  max #el/system: {};  max #atoms/system: {}'.format(
-            i['max_elements_per_system'], i['max_same_element_per_system'], i['max_atoms_per_system']))
-        print('min dist: {:3.2f};  max dist: {:3.2f};  1/min dist: {:3.2f};  1/max dist: {:3.2f}'.format(
-            i['min_distance'], i['max_distance'], 1. / i['min_distance'], 1. / i['max_distance']))
-        print('min dist^2: {:3.2f};  max dist^2: {:3.2f};  1/min dist^2: {:3.2f};  1/max dist^2: {:3.2f}'.format(
-            i['min_distance']**2, i['max_distance']**2, 1. / i['min_distance']**2, 1. / i['max_distance']**2))
+    @property
+    def report(self):
+
+        if self._report is None:
+            i = self.info
+            general = '###### {}: {} ######\n'.format(self._type, self.name) + self.desc + '\n\n'
+
+            if self.b is None:
+                count = '{} finite systems (molecules)'.format(i['number_systems']) + '\n'
+            else:
+                count = '{} periodic systems (materials)'.format(i['number_systems']) + '\n'
+
+            keys = [str(k) for k in self.p.keys()]
+            prop = '{} different properties: {}\n'.format(len(self.p.keys()), keys)
+
+            elems = 'elements: {} ({})'.format(' '.join([qmml.element_data(el, 'abbreviation')
+                                                         for el in i['elements']]), len(i['elements'])) + '\n'
+
+            elems += 'max #els/system: {};  max same #el/system: {};  max #atoms/system: {}'.format(
+                i['max_elements_per_system'], i['max_same_element_per_system'], i['max_atoms_per_system']) + '\n'
+
+            dist = 'min dist: {:3.2f};  max dist: {:3.2f};  1/min dist: {:3.2f};  1/max dist: {:3.2f}'.format(
+                i['min_distance'], i['max_distance'], 1. / i['min_distance'], 1. / i['max_distance']) + '\n'
+            dist += 'min dist^2: {:3.2f};  max dist^2: {:3.2f};  1/min dist^2: {:3.2f};  1/max dist^2: {:3.2f}'.format(
+                i['min_distance']**2, i['max_distance']**2, 1. / i['min_distance']**2, 1. / i['max_distance']**2)
+
+            self._report = general + count + prop + elems + dist + '\n'
+
+        return self._report
 
     def save(self, dirname='', filename=None):
         tosave = {
@@ -129,7 +149,6 @@ class Subset(Dataset):
                 sub_properties[p] = v[idx]
 
             self.parent_info = {'info': dataset.info, 'desc': dataset.desc, 'name': dataset.name, 'id': dataset.id}
-            
 
             if name is not None:
                 self.name = name
