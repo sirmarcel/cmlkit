@@ -52,7 +52,7 @@ class Dataset(object):
         self._report = None
 
         if info is None:
-            self.info = compute_dataset_info(z, r, b)
+            self.info = compute_dataset_info(z, r, p)
         else:
             self.info = info
 
@@ -101,7 +101,7 @@ class Dataset(object):
                 count = '{} periodic systems (materials)'.format(i['number_systems']) + '\n'
 
             keys = [str(k) for k in self.p.keys()]
-            prop = '{} different properties: {}\n'.format(len(self.p.keys()), keys)
+            pinfo = '{} different properties: {}\n'.format(len(self.p.keys()), keys)
 
             elems = 'elements: {} ({})'.format(' '.join([qmml.element_data(el, 'abbreviation')
                                                          for el in i['elements']]), len(i['elements'])) + '\n'
@@ -112,13 +112,19 @@ class Dataset(object):
             dist = 'min dist: {:3.2f};  max dist: {:3.2f}'.format(i['min_distance'], i['max_distance']) + '\n'
 
             g = i['geometry']
-            geom = '\n### Geometry info ###\nThese are the ranges for various distance functions:\n'
+            geom = '\n### Geometry ###\nThese are the ranges for various distance functions:\n'
             geom += 'dist    : {:4.4f} to {:4.4f} ({:4.2f}, {:4.2f})'.format(g['min_dist'], g['max_dist'], -0.05*g['max_dist'], 1.05*g['max_dist']) + '\n'
             geom += '1/dist  : {:4.4f} to {:4.4f} ({:4.2f}, {:4.2f})'.format(g['min_1/dist'], g['max_1/dist'], -0.05*g['max_1/dist'], 1.05*g['max_1/dist']) + '\n'
             geom += '1/dist^2: {:4.4f} to {:4.4f} ({:4.2f}, {:4.2f})'.format(g['min_1/dist^2'], g['max_1/dist^2'], -0.05*g['max_1/dist^2'], 1.05*g['max_1/dist^2']) + '\n'
             geom += 'We recommend using the intervals (-0.05*max, 1.05*max) for the parametrisation of the MBTR, i.e. a 5% padding. This is reflected in the quantities in () above.\n'
 
-            self._report = general + count + prop + elems + dist + geom + '\n'
+            p = i['properties']
+            prop = '\n### Properties ###\n'
+            prop += 'Mean and standard deviation of properties:\n'
+            for k, v in p.items():
+                prop += '{}: {:4.4f} ({:4.4f})\n'.format(k, v[0], v[1])
+
+            self._report = general + count + pinfo + elems + dist + geom + prop + '\n'
 
         return self._report
 
@@ -289,7 +295,7 @@ class DictView(dict):
         return self.d[key][self.idx]
 
 
-def compute_dataset_info(z, r, b=None):
+def compute_dataset_info(z, r, p):
     """Information about a dataset.
 
     Returns a dictionary containing information about a dataset.
@@ -297,7 +303,7 @@ def compute_dataset_info(z, r, b=None):
     Args:
       z: atomic numbers
       r: atom coordinates, in Angstrom
-      b: basis vectors for periodic systems (None if molecule)
+      p: dict with properties in the dataset (things to predict)
 
     Returns:
       i: Dict with the following keys:
@@ -328,6 +334,7 @@ def compute_dataset_info(z, r, b=None):
     i['min_distance'] = min([min(d) for d in dists if len(d) > 0])
     i['max_distance'] = max([max(d) for d in dists if len(d) > 0])
 
+    # geometry info
     geom = {}
     geom['max_dist'] = i['max_distance']
     geom['min_dist'] = i['min_distance']
@@ -339,5 +346,12 @@ def compute_dataset_info(z, r, b=None):
     geom['min_1/dist^2'] = 1 / geom['max_dist']**2
 
     i['geometry'] = geom
+
+    # property info
+    prop = {}
+    for k, v in p.items():
+        prop[k] = (np.mean(v), np.std(v))
+
+    i['properties'] = prop
 
     return i

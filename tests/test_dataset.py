@@ -12,7 +12,7 @@ b = None
 name = 'test'
 desc = 'just a test'
 p = {'e': np.array([1.0, 1.1])}
-info = compute_dataset_info(z, r, b)
+info = compute_dataset_info(z, r, p)
 
 d = {
     'name': name,
