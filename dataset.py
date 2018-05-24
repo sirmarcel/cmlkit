@@ -40,6 +40,7 @@ class Dataset(object):
         self.id = name
 
         self._type = 'Dataset'
+        self._general = ''  # Information about this object, overwritten by Subset
         self._report = None
 
         if info is None:
@@ -84,7 +85,7 @@ class Dataset(object):
 
         if self._report is None:
             i = self.info
-            general = '###### {}: {} ######\n'.format(self._type, self.name) + self.desc + '\n\n'
+            general = '###### {}: {} ######\n'.format(self._type, self.id) + self.desc + self._general + '\n\n'
 
             if self.b is None:
                 count = '{} finite systems (molecules)'.format(i['number_systems']) + '\n'
@@ -174,6 +175,9 @@ class Subset(Dataset):
             self.n = restore_data['n']
             self.id = restore_data['id']
             self.idx = restore_data['idx']
+
+        self._type = 'Subset'
+        self._general = "\nThis is a subset of the dataset '{}'.".format(self.parent_info['id'])
 
     def save(self, dirname='', filename=None):
         tosave = {
