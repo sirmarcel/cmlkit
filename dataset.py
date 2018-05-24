@@ -31,6 +31,12 @@ class Dataset(object):
 
     def __init__(self, name, z, r, b=None, p={}, info=None, desc='', family=None):
         super(Dataset, self).__init__()
+
+        assert len(z) == len(r), \
+            'Attempted to create dataset, but z and r are not of the same size ({} vs {})!'.format(len(z), len(r))
+        assert b is None or len(b) == len(z), \
+            'Attempted to create dataset, but z and b are not of the same size ({} vs {})!'.format(len(z), len(b))
+
         self.name = name
         self.desc = desc
         self.z = z
@@ -44,7 +50,7 @@ class Dataset(object):
         self._report = None
 
         if info is None:
-            self.info = dataset_info(z, r, b)
+            self.info = compute_dataset_info(z, r, b)
         else:
             self.info = info
 
@@ -277,27 +283,26 @@ class DictView(dict):
         return self.d[key][self.idx]
 
 
-def dataset_info(z, r, b=None):
+def compute_dataset_info(z, r, b=None):
     """Information about a dataset.
 
     Returns a dictionary containing information about a dataset.
 
-    Parameters:
-      z - atomic numbers
-      r - atom coordinates, in Angstrom
-      b - basis vectors for periodic systems
-      verbose - if True, also prints the information
+    Args:
+      z: atomic numbers
+      r: atom coordinates, in Angstrom
+      b: basis vectors for periodic systems (None if molecule)
 
-    Information:
-      elements - elements occurring in dataset
-      max_elements_per_system - largest number of different elements in a system
-      max_same_element_per_system - largest number of same-element atoms in a system
-      max_atoms_per_system - largest number of atoms in a system
-      min_distance - minimum distance between atoms in a system
-      max_distance - maximum distance between atoms in a system
+    Returns:
+      i: Dict with the following keys:
+          elements: elements occurring in dataset
+          max_elements_per_system: largest number of different elements in a system
+          max_same_element_per_system: largest number of same-element atoms in a system
+          max_atoms_per_system: largest number of atoms in a system
+          min_distance: minimum distance between atoms in a system
+          max_distance: maximum distance between atoms in a system
+          geometry: additional detailed info about geometries (see below)
     """
-    assert len(z) == len(r)
-    assert b is None or len(b) == len(z)
 
     i = {}
 

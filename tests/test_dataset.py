@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import MagicMock
 import os
-from qmmltools.dataset import Dataset, Subset, View, dataset_info, read
+from qmmltools.dataset import *
 import numpy as np
 
 dirname = os.path.dirname(os.path.abspath(__file__))
@@ -12,7 +12,7 @@ b = None
 name = 'test'
 desc = 'just a test'
 p = {'e': np.array([1.0, 1.1])}
-info = dataset_info(z, r, b)
+info = compute_dataset_info(z, r, b)
 
 d = {
     'name': name,
@@ -45,6 +45,19 @@ class TestDataset(TestCase):
         self.assertEqual(dataset.info, self.d['info'])
         self.assertEqual(dataset.id, self.d['id'])
         self.assertEqual(dataset.family, self.d['family'])
+
+
+    def test_fails_if_different_size(self):
+
+        d2 = self.d.copy()
+        d2['z'] = d['z'][1]
+
+        self.assertRaises(Exception, Dataset.from_dict, d2)
+
+        d2 = self.d.copy()
+        d2['b'] = d['z'][1]
+
+        self.assertRaises(Exception, Dataset.from_dict, d2)
 
 
     def test_from_file(self):
