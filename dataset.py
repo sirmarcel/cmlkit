@@ -32,10 +32,12 @@ class Dataset(object):
     def __init__(self, name, z, r, b=None, p={}, info=None, desc='', family=None):
         super(Dataset, self).__init__()
 
+        # Sanity checks
         assert len(z) == len(r), \
             'Attempted to create dataset, but z and r are not of the same size ({} vs {})!'.format(len(z), len(r))
         assert b is None or len(b) == len(z), \
             'Attempted to create dataset, but z and b are not of the same size ({} vs {})!'.format(len(z), len(b))
+        assert len(r) > 0, 'Attempted to create dataset, r has 0 length!'
 
         self.name = name
         self.desc = desc
@@ -318,7 +320,6 @@ def compute_dataset_info(z, r, b=None):
     i['systems_per_element'] = np.asarray([np.sum([1 for m in z if el in m]) for el in range(118)], dtype=np.int)
 
     # distances
-    assert len(r) > 0
     dists = [qmml.lower_triangular_part(qmml.distance_euclidean(rr), -1) for rr in r]
     i['min_distance'] = min([min(d) for d in dists if len(d) > 0])
     i['max_distance'] = max([max(d) for d in dists if len(d) > 0])

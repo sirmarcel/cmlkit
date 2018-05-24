@@ -59,6 +59,11 @@ class TestDataset(TestCase):
 
         self.assertRaises(Exception, Dataset.from_dict, d2)
 
+        d2 = self.d.copy()
+        d2['r'] = []
+
+        self.assertRaises(Exception, Dataset.from_dict, d2)
+
 
     def test_from_file(self):
         d2 = read(dirname + '/test.dat.npy')
