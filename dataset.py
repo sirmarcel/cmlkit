@@ -109,12 +109,16 @@ class Dataset(object):
             elems += 'max #els/system: {};  max same #el/system: {};  max #atoms/system: {}'.format(
                 i['max_elements_per_system'], i['max_same_element_per_system'], i['max_atoms_per_system']) + '\n'
 
-            dist = 'min dist: {:3.2f};  max dist: {:3.2f};  1/min dist: {:3.2f};  1/max dist: {:3.2f}'.format(
-                i['min_distance'], i['max_distance'], 1. / i['min_distance'], 1. / i['max_distance']) + '\n'
-            dist += 'min dist^2: {:3.2f};  max dist^2: {:3.2f};  1/min dist^2: {:3.2f};  1/max dist^2: {:3.2f}'.format(
-                i['min_distance']**2, i['max_distance']**2, 1. / i['min_distance']**2, 1. / i['max_distance']**2)
+            dist = 'min dist: {:3.2f};  max dist: {:3.2f}'.format(i['min_distance'], i['max_distance']) + '\n'
 
-            self._report = general + count + prop + elems + dist + '\n'
+            g = i['geometry']
+            geom = '\n### Geometry info ###\nThese are the ranges for various distance functions:\n'
+            geom += 'dist    : {:4.4f} to {:4.4f} ({:4.2f}, {:4.2f})'.format(g['min_dist'], g['max_dist'], -0.05*g['max_dist'], 1.05*g['max_dist']) + '\n'
+            geom += '1/dist  : {:4.4f} to {:4.4f} ({:4.2f}, {:4.2f})'.format(g['min_1/dist'], g['max_1/dist'], -0.05*g['max_1/dist'], 1.05*g['max_1/dist']) + '\n'
+            geom += '1/dist^2: {:4.4f} to {:4.4f} ({:4.2f}, {:4.2f})'.format(g['min_1/dist^2'], g['max_1/dist^2'], -0.05*g['max_1/dist^2'], 1.05*g['max_1/dist^2']) + '\n'
+            geom += 'We recommend using the intervals (-0.05*max, 1.05*max) for the parametrisation of the MBTR, i.e. a 5% padding. This is reflected in the quantities in () above.\n'
+
+            self._report = general + count + prop + elems + dist + geom + '\n'
 
         return self._report
 
@@ -323,5 +327,17 @@ def compute_dataset_info(z, r, b=None):
     dists = [qmml.lower_triangular_part(qmml.distance_euclidean(rr), -1) for rr in r]
     i['min_distance'] = min([min(d) for d in dists if len(d) > 0])
     i['max_distance'] = max([max(d) for d in dists if len(d) > 0])
+
+    geom = {}
+    geom['max_dist'] = i['max_distance']
+    geom['min_dist'] = i['min_distance']
+
+    geom['max_1/dist'] = 1 / geom['min_dist']
+    geom['max_1/dist^2'] = 1 / geom['min_dist']**2
+
+    geom['min_1/dist'] = 1 / geom['max_dist']
+    geom['min_1/dist^2'] = 1 / geom['max_dist']**2
+
+    i['geometry'] = geom
 
     return i
