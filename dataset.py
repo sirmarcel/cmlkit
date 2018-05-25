@@ -119,9 +119,12 @@ class Dataset(object):
             geom += '#### Recommendations for d ####\n'
             geom += 'We recommend using the intervals (-0.05*max, 1.05*max) for the parametrisation of the MBTR, i.e. a 5% padding. '
             geom += 'In the following, n is the number of bins.\n'
+            geom += 'k=1 MBTR:\n'
+            geom += 'count: ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*g['max_count'], 1.1*g['max_count']) + '\n'
             geom += 'k=2 MBTR:\n'
             geom += '1/dist  : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*g['max_1/dist'], 1.1*g['max_1/dist']) + '\n'
             geom += '1/dist^2: ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*g['max_1/dist^2'], 1.1*g['max_1/dist^2']) + '\n'
+            geom += 'It is still prudent to experiment with these settings!\n'
 
             p = i['properties']
             prop = '\n### Properties ###\n'
@@ -349,6 +352,8 @@ def compute_dataset_info(z, r, p):
 
     geom['min_1/dist'] = 1 / geom['max_dist']
     geom['min_1/dist^2'] = 1 / geom['max_dist']**2
+
+    geom['max_count'] = i['max_same_element_per_system']
 
     i['geometry'] = geom
 
