@@ -112,12 +112,16 @@ class Dataset(object):
             dist = 'min dist: {:3.2f};  max dist: {:3.2f}'.format(i['min_distance'], i['max_distance']) + '\n'
 
             g = i['geometry']
-            geom = '\n### Geometry ###\nThese are the ranges for various distance functions,\n'
-            geom += 'There are also recommended settings for d in the k=2 MBTR.\n'
-            geom += 'dist    : {:4.4f} to {:4.4f} d=({:4.2f}, {:4.2f}/n, n)'.format(g['min_dist'], g['max_dist'], -0.05*g['max_dist'], 1.1*g['max_dist']) + '\n'
-            geom += '1/dist  : {:4.4f} to {:4.4f} d=({:4.2f}, {:4.2f}/n, n)'.format(g['min_1/dist'], g['max_1/dist'], -0.05*g['max_1/dist'], 1.1*g['max_1/dist']) + '\n'
-            geom += '1/dist^2: {:4.4f} to {:4.4f} d=({:4.2f}, {:4.2f}/n, n)'.format(g['min_1/dist^2'], g['max_1/dist^2'], -0.05*g['max_1/dist^2'], 1.1*g['max_1/dist^2']) + '\n'
-            geom += 'We recommend using the intervals (-0.05*max, 1.05*max) for the parametrisation of the MBTR, i.e. a 5% padding. This is reflected in the quantities in () above.\n'
+            geom = '\n### Geometry ###\nThese are the ranges for various distance functions.\n'
+            geom += 'dist    : {:4.4f} to {:4.4f}'.format(g['min_dist'], g['max_dist']) + '\n'
+            geom += '1/dist  : {:4.4f} to {:4.4f}'.format(g['min_1/dist'], g['max_1/dist']) + '\n'
+            geom += '1/dist^2: {:4.4f} to {:4.4f}'.format(g['min_1/dist^2'], g['max_1/dist^2']) + '\n'
+            geom += '#### Recommendations for d ####\n'
+            geom += 'We recommend using the intervals (-0.05*max, 1.05*max) for the parametrisation of the MBTR, i.e. a 5% padding. '
+            geom += 'In the following, n is the number of bins.\n'
+            geom += 'k=2 MBTR:\n'
+            geom += '1/dist  : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*g['max_1/dist'], 1.1*g['max_1/dist']) + '\n'
+            geom += '1/dist^2: ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*g['max_1/dist^2'], 1.1*g['max_1/dist^2']) + '\n'
 
             p = i['properties']
             prop = '\n### Properties ###\n'
@@ -125,7 +129,7 @@ class Dataset(object):
             for k, v in p.items():
                 prop += '{}: {:4.4f} ({:4.4f})\n'.format(k, v[0], v[1])
 
-            self._report = general + count + pinfo + elems + dist + geom + prop + '\n'
+            self._report = general + count + pinfo + elems + dist + geom + prop
 
         return self._report
 
