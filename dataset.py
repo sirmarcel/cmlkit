@@ -93,46 +93,48 @@ class Dataset(object):
 
         if self._report is None:
             i = self.info
-            general = '###### {}: {} ######\n'.format(self._type, self.id) + self.desc + self._general + '\n\n'
+            general = '# {}: {} #\n\n'.format(self._type, self.id) + self.desc + self._general + '\n\n'
 
+
+            
+            over = '\n## Overview ##\n'
             if self.b is None:
-                count = '{} finite systems (molecules)'.format(i['number_systems']) + '\n'
+                over += ' {} finite systems (molecules)'.format(i['number_systems']) + '\n'
             else:
-                count = '{} periodic systems (materials)'.format(i['number_systems']) + '\n'
-
+                over += ' {} periodic systems (materials)'.format(i['number_systems']) + '\n'
             keys = [str(k) for k in self.p.keys()]
-            pinfo = '{} different properties: {}\n'.format(len(self.p.keys()), keys)
+            over += ' {} different properties: {}\n'.format(len(self.p.keys()), keys)
 
-            elems = 'elements: {} ({})'.format(' '.join([qmml.element_data(el, 'abbreviation')
-                                                         for el in i['elements']]), len(i['elements'])) + '\n'
+            elems = ' elements: {} ({})'.format(' '.join([qmml.element_data(el, 'abbreviation') for el in i['elements']]), len(i['elements'])) + '\n'
+            elems += ' max #els/system: {};  max same #el/system: {};  max #atoms/system: {}'.format(i['max_elements_per_system'], i['max_same_element_per_system'], i['max_atoms_per_system']) + '\n'
 
-            elems += 'max #els/system: {};  max same #el/system: {};  max #atoms/system: {}'.format(
-                i['max_elements_per_system'], i['max_same_element_per_system'], i['max_atoms_per_system']) + '\n'
-
-            dist = 'min dist: {:3.2f};  max dist: {:3.2f}'.format(i['min_distance'], i['max_distance']) + '\n'
+            dist = ' min dist: {:3.2f};  max dist: {:3.2f}'.format(i['min_distance'], i['max_distance']) + '\n'
 
             g = i['geometry']
-            geom = '\n### Geometry ###\nThese are the ranges for various distance functions.\n'
-            geom += 'dist    : {:4.4f} to {:4.4f}'.format(g['min_dist'], g['max_dist']) + '\n'
-            geom += '1/dist  : {:4.4f} to {:4.4f}'.format(g['min_1/dist'], g['max_1/dist']) + '\n'
-            geom += '1/dist^2: {:4.4f} to {:4.4f}'.format(g['min_1/dist^2'], g['max_1/dist^2']) + '\n'
-            geom += '#### Recommendations for d ####\n'
-            geom += 'We recommend using the intervals (-0.05*max, 1.05*max) for the parametrisation of the MBTR, i.e. a 5% padding. '
-            geom += 'In the following, n is the number of bins.\n'
-            geom += 'k=1 MBTR:\n'
-            geom += 'count: ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*g['max_count'], 1.1*g['max_count']) + '\n'
-            geom += 'k=2 MBTR:\n'
-            geom += '1/dist  : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*g['max_1/dist'], 1.1*g['max_1/dist']) + '\n'
-            geom += '1/dist^2: ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*g['max_1/dist^2'], 1.1*g['max_1/dist^2']) + '\n'
-            geom += 'It is still prudent to experiment with these settings!\n'
+            geom = '\n## Geometry ##'
+            geom += '\n### Ranges ###\n'
+            geom += ' These are the ranges for various geometry functions.\n'
+            geom += ' count   : {} to {}'.format(g['min_count'], g['max_count']) + '\n'
+            geom += ' dist    : {:4.4f} to {:4.4f}'.format(g['min_dist'], g['max_dist']) + '\n'
+            geom += ' 1/dist  : {:4.4f} to {:4.4f}'.format(g['min_1/dist'], g['max_1/dist']) + '\n'
+            geom += ' 1/dist^2: {:4.4f} to {:4.4f}'.format(g['min_1/dist^2'], g['max_1/dist^2']) + '\n'
+            geom += '\n### Recommendations for d ###\n'
+            geom += ' We recommend using the intervals (-0.05*max, 1.05*max) for the parametrisation of the MBTR, i.e. a 5% padding. '
+            geom += ' In the following, n is the number of bins.\n'
+            geom += ' k=1 MBTR:\n'
+            geom += ' count   : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*g['max_count'], 1.1*g['max_count']) + '\n'
+            geom += ' k=2 MBTR:\n'
+            geom += ' 1/dist  : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*g['max_1/dist'], 1.1*g['max_1/dist']) + '\n'
+            geom += ' 1/dist^2: ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*g['max_1/dist^2'], 1.1*g['max_1/dist^2']) + '\n'
+            geom += ' It is still prudent to experiment with these settings!\n'
 
             p = i['properties']
-            prop = '\n### Properties ###\n'
-            prop += 'Mean and standard deviation of properties:\n'
+            prop = '\n## Properties ##\n'
+            prop += ' Mean and standard deviation of properties:\n'
             for k, v in p.items():
-                prop += '{}: {:4.4f} ({:4.4f})\n'.format(k, v[0], v[1])
+                prop += ' {}: {:4.4f} ({:4.4f})\n'.format(k, v[0], v[1])
 
-            self._report = general + count + pinfo + elems + dist + geom + prop
+            self._report = general + over + elems + dist + geom + prop
 
         return self._report
 
@@ -332,6 +334,7 @@ def compute_dataset_info(z, r, p):
     i['elements'] = np.unique(np.asarray([a for s in z for a in s], dtype=np.int))
     i['max_elements_per_system'] = max([np.nonzero(np.bincount(s))[0].size for s in z])
     i['max_same_element_per_system'] = max([max(np.bincount(s)) for s in z])
+    i['min_same_element_per_system'] = min([min(np.bincount(s)) for s in z])
 
     # systems
     i['max_atoms_per_system'] = max([len(s) for s in z])
@@ -354,6 +357,7 @@ def compute_dataset_info(z, r, p):
     geom['min_1/dist^2'] = 1 / geom['max_dist']**2
 
     geom['max_count'] = i['max_same_element_per_system']
+    geom['min_count'] = i['min_same_element_per_system']
 
     i['geometry'] = geom
 
