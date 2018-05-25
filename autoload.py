@@ -16,7 +16,7 @@ def dataset(name, subset=''):
     where all datasets are stored as environment variable QMML_DATASET_PATH,
     formatted like the normal PATH variable, i.e. /my/first/path:/my/second/path.
 
-    As last resort, no path will be tried, which should default to the local directory.
+    As last resort, an empty path will be tried, which should default to the local directory.
 
     """
     for p in storage_path:
