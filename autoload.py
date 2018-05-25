@@ -8,7 +8,7 @@ else:
     storage_path = ['']
 
 
-def dataset(name, subset=''):
+def dataset(name):
     """Load a dataset with given name
 
     Attempts to automatically load a dataset with the given
@@ -18,11 +18,14 @@ def dataset(name, subset=''):
 
     As last resort, an empty path will be tried, which should default to the local directory.
 
-    """
-    for p in storage_path:
-        if subset is not '':
-            file = os.path.join(p, name + '-' + subset + '.dat.npy')
-        else:
-            file = os.path.join(p, name + '.dat.npy')
+    Args:
+        name: Filename of dataset
 
+    Returns:
+        Instance of Dataset or Subset
+
+    """
+    # This implicitly loads the first dataset found
+    for p in storage_path:
+        file = os.path.join(p, name + '.dat.npy')
         return read(file)
