@@ -87,10 +87,8 @@ class ModelSpec(object):
         d = qmtio.read(filename, ext=False)
         return cls.from_dict(d)
 
-    def save(self, folder='', filename=None):
-        """Save this ModelSpec to YAML."""
-
-        to_save = {
+    def to_dict(self):
+        return {
             'name': self.name,
             'desc': self.desc,
             'version': self.version,
@@ -99,10 +97,13 @@ class ModelSpec(object):
             'krr': self.krr
         }
 
+    def save(self, folder='', filename=None):
+        """Save this ModelSpec to YAML."""
+
         if filename is None:
             filename = self.name
 
-        qmtio.save_yaml(os.path.join(folder, filename + '.spec'), to_save)
+        qmtio.save_yaml(os.path.join(folder, filename + '.spec'), self.to_dict())
 
     @property
     def info(self):
