@@ -93,10 +93,8 @@ class Dataset(object):
 
         if self._report is None:
             i = self.info
-            general = '# {}: {} #\n\n'.format(self._type, self.id) + self.desc + self._general + '\n\n'
+            general = '# {}: {} #\n\n'.format(self._type, self.id) + self.desc + self._general + '\n'
 
-
-            
             over = '\n## Overview ##\n'
             if self.b is None:
                 over += ' {} finite systems (molecules)'.format(i['number_systems']) + '\n'
@@ -108,7 +106,7 @@ class Dataset(object):
             elems = ' elements: {} ({})'.format(' '.join([qmml.element_data(el, 'abbreviation') for el in i['elements']]), len(i['elements'])) + '\n'
             elems += ' max #els/system: {};  max same #el/system: {};  max #atoms/system: {}'.format(i['max_elements_per_system'], i['max_same_element_per_system'], i['max_atoms_per_system']) + '\n'
 
-            dist = ' min dist: {:3.2f};  max dist: {:3.2f}'.format(i['min_distance'], i['max_distance'])
+            dist = ' min dist: {:3.2f};  max dist: {:3.2f}'.format(i['min_distance'], i['max_distance']) + '\n'
 
             g = i['geometry']
             geom = '\n## Geometry ##'
