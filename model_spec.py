@@ -1,3 +1,4 @@
+import os
 import qmmltools.inout as qmtio
 from qmmltools.utils.hashing import hash_sortable_dict
 from bson.son import SON
@@ -99,9 +100,9 @@ class ModelSpec(object):
         }
 
         if filename is None:
-            qmtio.save_yaml(folder + self.name + '.spec', to_save)
-        else:
-            qmtio.save_yaml(folder + filename + '.spec', to_save)
+            filename = self.name
+
+        qmtio.save_yaml(os.path.join(folder, filename + '.spec'), to_save)
 
     @property
     def info(self):
