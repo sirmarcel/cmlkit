@@ -1,4 +1,5 @@
 import qmmltools.inout as qmtio
+from qmmltools.utils.hashing import hash_sortable_dict
 from bson.son import SON
 import pprint
 
@@ -36,6 +37,8 @@ class ModelSpec(object):
         krr: Dict of arguments for KRR; check the (TODO) docs for details
         version: Version of format; can be safely ignored at present, but
                  will be used for backwards compatibility in the future
+        hashes: Dict with various hashes of different sub-specs,
+                will be used for sanity checks
 
     """
 
@@ -55,6 +58,10 @@ class ModelSpec(object):
         self.krr = krr
 
         self.version = version
+
+        self.hashes = {'mbtrs': hash_sortable_dict(mbtrs),
+                       'krr': hash_sortable_dict(krr),
+                       'data': hash_sortable_dict(data)}
 
     @classmethod
     def from_dict(cls, d):

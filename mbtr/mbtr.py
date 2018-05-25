@@ -3,7 +3,7 @@ import qmmlpack as qmml
 import qmmltools.inout as qmtio
 import qmmltools.dataset as qmtd
 from qmmltools.mbtr.funcs import make_mbtrs
-from qmmltools.utils.hashing import hash_spec_dict
+from qmmltools.utils.hashing import hash_sortable_dict, hash_arrays
 import logging
 
 version = 0.1  # currently not in use
@@ -24,13 +24,14 @@ class MBTR(object):
         spec_name: String with name of ModelSpec used to generate this
         dataset_id: String; ID of original dataset
         version: Version of MBTR file, not in use
+        hashes: Dict with various hashes that will be used for sanity-checking
 
     """
 
     def __init__(self, dataset, spec, name=None, restore_data=None):
         super(MBTR, self).__init__()
 
-        self._spec_hash = None
+
         self.version = version
 
         if restore_data is None:
@@ -51,8 +52,13 @@ class MBTR(object):
             self.spec_name = spec.name
             self.mbtr = self._make_mbtr(dataset, self.spec)
 
+            self.hashes = {'spec': spec.hashes['mbtrs'],    # hash of the 'recipe' for the MBTR
+                           'geom': dataset.hashes['geom'],  # hash of the data used to compute it
+                           'mbtr': hash_arrays(self.mbtr)}  # hash of the result
+
         else:
             self.name = restore_data['name']
+            self.hashes = restore_data['hashes']
 
             # Backwards compatibility
             if 'dataset_id' not in restore_data and 'dataset_name' in restore_data:
@@ -85,7 +91,8 @@ class MBTR(object):
             'spec': self.spec,
             'spec_name': self.spec_name,
             'mbtr': self.mbtr,
-            'version': self.version
+            'version': self.version,
+            'hashes': self.hashes
         }
 
         if filename is None:
@@ -107,7 +114,7 @@ class MBTR(object):
         if self._spec_hash is not None:
             return self._spec_hash
         else:
-            self._spec_hash = hash_spec_dict(self.spec)
+            self._spec_hash = hash_sortable_dict(self.spec)
 
 
 class MBTRView(object):

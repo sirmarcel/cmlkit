@@ -1,6 +1,7 @@
 import numpy as np
 import qmmlpack as qmml
 import qmmltools.inout as qmtio
+from qmmltools.utils.hashing import hash_sortable_dict, hash_arrays
 
 
 def read(filename):
@@ -27,6 +28,8 @@ class Dataset(object):
         id: Canonical name; used internally, equal to name for this class
         info: Dict of properties of this dataset
         n: Number of systems in dataset
+        hashes: Dict with hashes, will be used for sanity checking
+
     """
 
     def __init__(self, name, z, r, b=None, p={}, info=None, desc='', family=None):
@@ -46,6 +49,9 @@ class Dataset(object):
         self.b = b
         self.p = p
         self.id = name
+
+        self.hashes = {'p': hash_sortable_dict(self.p),              # hash of properties
+                       'geom': hash_arrays(self.z, self.r, self.b)}  # hash of structure description
 
         self._type = 'Dataset'
         self._general = ''  # Information about this object, overwritten by Subset
