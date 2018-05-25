@@ -9,7 +9,6 @@ desc = 'just a test'
 p = {'e': np.array([1.0, 1.1])}
 
 d = Dataset(name, z, r, b, p, desc=desc)
-d.print_info()
 d.save()
 
 sub = Subset(d, [1], 'sub', 'test subset')

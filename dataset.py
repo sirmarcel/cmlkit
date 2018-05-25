@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import qmmlpack as qmml
 import qmmltools.inout as qmtio
@@ -75,8 +76,8 @@ class Dataset(object):
     def __str__(self):
         return self.report
 
-    def save(self, dirname='', filename=None):
-        tosave = {
+    def to_dict(self):
+        d = {
             'name': self.name,
             'desc': self.desc,
             'id': self.id,
@@ -89,10 +90,14 @@ class Dataset(object):
             'n': self.n
         }
 
+        return d
+
+    def save(self, dirname='', filename=None):
+
         if filename is None:
-            qmtio.save(dirname + self.id + '.dat', tosave)
-        else:
-            qmtio.save(dirname + filename + '.dat', tosave)
+            filename = self.id
+
+        qmtio.save(os.path.join(dirname, filename + '.dat'), self.to_dict())
 
     @property
     def report(self):
@@ -126,14 +131,14 @@ class Dataset(object):
             geom += ' We recommend using the intervals (-0.05*max, 1.05*max) for the parametrisation of the MBTR, i.e. a 5% padding. '
             geom += ' In the following, n is the number of bins.\n'
             geom += ' k=1 MBTR:\n'
-            geom += ' count     : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*g['max_count'], 1.1*g['max_count']) + '\n'
+            geom += ' count     : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05 * g['max_count'], 1.1 * g['max_count']) + '\n'
             geom += ' k=2 MBTR:\n'
-            geom += ' 1/dist    : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*g['max_1/dist'], 1.1*g['max_1/dist']) + '\n'
-            geom += ' 1/dist^2  : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*g['max_1/dist^2'], 1.1*g['max_1/dist^2']) + '\n'
+            geom += ' 1/dist    : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05 * g['max_1/dist'], 1.1 * g['max_1/dist']) + '\n'
+            geom += ' 1/dist^2  : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05 * g['max_1/dist^2'], 1.1 * g['max_1/dist^2']) + '\n'
             geom += ' k=3 MBTR (experimental):\n'
-            geom += ' angle     : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*np.pi, 1.1*np.pi) + '\n'
-            geom += ' cos_angle : ({:4.2f}, {:4.2f}/n, n)'.format(-1.05*1, 2.1) + '\n'
-            geom += ' dot/dotdot: ({:4.2f}, {:4.2f}/n, n)'.format(-0.05*g['max_1/dist^2'], 1.1*g['max_1/dist^2']) + '\n'
+            geom += ' angle     : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05 * np.pi, 1.1 * np.pi) + '\n'
+            geom += ' cos_angle : ({:4.2f}, {:4.2f}/n, n)'.format(-1.05 * 1, 2.1) + '\n'
+            geom += ' dot/dotdot: ({:4.2f}, {:4.2f}/n, n)'.format(-0.05 * g['max_1/dist^2'], 1.1 * g['max_1/dist^2']) + '\n'
             geom += ' It is still prudent to experiment with these settings!\n'
 
             p = i['properties']
@@ -215,8 +220,8 @@ class Subset(Dataset):
         self._type = 'Subset'
         self._general = "\nThis is a subset of the dataset '{}'.".format(self.parent_info['id'])
 
-    def save(self, dirname='', filename=None):
-        tosave = {
+    def to_dict(self):
+        d = {
             'name': self.name,
             'desc': self.desc,
             'id': self.id,
@@ -231,10 +236,7 @@ class Subset(Dataset):
             'family': self.family
         }
 
-        if filename is None:
-            qmtio.save(dirname + self.id + '.dat', tosave)
-        else:
-            qmtio.save(dirname + filename + '.dat', tosave)
+        return d
 
     @classmethod
     def from_dict(cls, d):
