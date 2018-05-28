@@ -6,6 +6,8 @@ import qmmltools.stats as qmts
 
 
 class TestHyperoptConversions(TestCase):
+    # have to make sure the mocks get removed after the test,
+    # otherwise they bleed over into other tests
     def setUp(self):
         self.og_choice = hp.choice
 
@@ -23,7 +25,8 @@ class TestHyperoptConversions(TestCase):
 
 
 class TestParsing(TestCase):
-
+    # have to make sure the mocks get removed after the test,
+    # otherwise they bleed over into other tests
     def setUp(self):
         self.og_choice = hp.choice
         self.og_rmse = qmts.rmse
