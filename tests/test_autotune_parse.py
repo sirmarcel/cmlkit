@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import MagicMock
 import hyperopt as hp
-from qmmltools.autotune.settings import *
+from qmmltools.autotune.parse import *
 import qmmltools.stats as qmts
 
 
@@ -47,7 +47,7 @@ class TestParsing(TestCase):
         hp.choice = MagicMock()
         qmts.rmse = 'hey_it_worked'
 
-        parse_settings(d)
+        parse(d)
 
         hp.choice.assert_called_with('mbtr_1', [1, 2, 3])
         self.assertEqual(d['one']['loss'], 'hey_it_worked')

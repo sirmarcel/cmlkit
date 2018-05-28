@@ -1,14 +1,21 @@
+import copy
+from hyperopt import hp
 import qmmltools.inout as qmtio
 import qmmltools.helpers as qmth
 import qmmltools.stats as qmts
-from hyperopt import hp
 
 
-def parse_settings(d):
-    """Parse a settings dict file into autotune
+def parse(d):
+    """Convert a dict conveniently writeable settings into the 'real' ones.
+
+    Syntax:
+        'loss': 'str' -> 'loss': qmts.str
+        ('grid_log2', min, max, n) -> np.logspace(...)
+        ('hp_func', 'id', arg) -> hp.func('id', arg)
 
     In particular, the following operations are performed:
         - Convert losses into functions (from strings)
+        - Generate grids in-place
         - Find hyperopt functions and create them
 
     """
@@ -27,6 +34,22 @@ def string_to_loss(s):
     return f
 
 
+def is_hyperopt(x):
+    """Check whether a given object is a hyperopt argument
+
+    The format expected is ('hp_NAME_OF_FUNCTION', 'name for hyperopt', remaining, arguments)
+
+    """
+
+    if isinstance(x, (tuple, list)):
+        if isinstance(x[0], str):
+            s = x[0].split('_', 1)
+            if s[0] == 'hp':
+                return True
+
+    return False
+
+
 def to_hyperopt(x):
     """Convert a sequence to a hyperopt function
 
@@ -43,19 +66,3 @@ def to_hyperopt(x):
 
     f = f(*x[1:])
     return f
-
-
-def is_hyperopt(x):
-    """Check whether a given object is a hyperopt argument
-
-    The format expected is ('hp_NAME_OF_FUNCTION', 'name for hyperopt', remaining, arguments)
-
-    """
-
-    if isinstance(x, (tuple, list)):
-        if isinstance(x[0], str):
-            s = x[0].split('_', 1)
-            if s[0] == 'hp':
-                return True
-
-    return False
