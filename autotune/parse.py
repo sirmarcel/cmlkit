@@ -6,6 +6,25 @@ import qmmltools.helpers as qmth
 import qmmltools.stats as qmts
 
 
+def preprocess(d):
+    og = copy.deepcopy(d)
+
+    # Setup the spec template for later
+    d['spec']['name'] = d['name']
+    d['spec']['desc'] = 'Model during autotune run; ' + d['desc']
+
+    # Defaults
+    defaults_config = {'parallel': False, 'loss': 'rmse'}
+    d['config'] = {**defaults_config, **d['config']}
+
+    parse(d)
+
+    d['internal'] = {}
+    d['internal']['original_task'] = og
+
+
+
+
 def parse(d):
     """Convert a dict conveniently writeable settings into the 'real' ones.
 
