@@ -67,9 +67,15 @@ def save_yaml(filename, d):
     def sequence_representer(dumper, data):
         return dumper.represent_sequence(u'tag:yaml.org,2002:seq', data, flow_style=True)
 
-    # Register the above representer for tuples and lists
+    # Define representer for numpy floats
+    def float_representer(dumper, data):
+        return dumper.represent_float(data)
+
+
+    # Register the above representers
     yaml.add_representer(tuple, sequence_representer)
     yaml.add_representer(list, sequence_representer)
+    yaml.add_representer(np.float64, float_representer)
 
     with open(filename + '.yml', 'w') as outfile:
         yaml.dump(d, outfile, default_flow_style=False)
