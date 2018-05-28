@@ -77,3 +77,13 @@ class TestFindPatternApplyF(TestCase):
 
         find_pattern_apply_f(d, pattern, lambda x: x[1]**2)
         self.assertEqual(d, {'arg1': 3, 'arg2': {'k': 4}})
+
+    def test_finds_in_seqeuence(self):
+        d = {'arg1': 3,
+             'arg2': ['k', ('t', 2)]}
+
+        def pattern(x):
+            return isinstance(x, (tuple, list)) and x[0] == 't'
+
+        find_pattern_apply_f(d, pattern, lambda x: x[1]**2)
+        self.assertEqual(d, {'arg1': 3, 'arg2': ['k', 4]})
