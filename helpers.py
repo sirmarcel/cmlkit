@@ -75,7 +75,6 @@ def find_pattern_apply_f(d, pattern, f):
 
             elif isinstance(v, (list, tuple)):
                 for i in range(len(v)):
-                    print(i)
                     if pattern(v[i]) is True:
                         v[i] = f(v[i])
                     else:
