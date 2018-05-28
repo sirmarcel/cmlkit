@@ -65,7 +65,6 @@ def find_pattern_apply_f(d, pattern, f):
     """
 
     if isinstance(d, dict):
-
         for k, v in d.items():
             if pattern(v) is True:
                 d[k] = f(v)
@@ -79,3 +78,10 @@ def find_pattern_apply_f(d, pattern, f):
                         v[i] = f(v[i])
                     else:
                         find_pattern_apply_f(v[i], pattern, f)
+
+    if isinstance(d, (list, tuple)):
+        for i in range(len(d)):
+            if pattern(d[i]) is True:
+                d[i] = f(d[i])
+            else:
+                find_pattern_apply_f(d[i], pattern, f)
