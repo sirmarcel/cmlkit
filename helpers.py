@@ -36,16 +36,17 @@ def find_key_apply_f(d, key, f):
 
     """
 
-    for k, v in d.items():
-        if k == key:
-            d[k] = f(v)
+    if isinstance(d, dict):
+        for k, v in d.items():
+            if k == key:
+                d[k] = f(v)
 
-        if isinstance(v, dict):
-            find_key_apply_f(v, key, f)
+            if isinstance(v, dict):
+                find_key_apply_f(v, key, f)
 
-        if isinstance(v, (list, tuple)):
-            for i in v:
-                find_key_apply_f(i, key, f)
+            if isinstance(v, (list, tuple)):
+                for i in v:
+                    find_key_apply_f(i, key, f)
 
 
 def find_pattern_apply_f(d, pattern, f):
@@ -63,13 +64,15 @@ def find_pattern_apply_f(d, pattern, f):
 
     """
 
-    for k, v in d.items():
-        if pattern(v) is True:
-            d[k] = f(v)
+    if isinstance(d, dict):
+        print(d)
+        for k, v in d.items():
+            if pattern(v) is True:
+                d[k] = f(v)
 
-        elif isinstance(v, dict):
-            find_pattern_apply_f(v, pattern, f)
+            elif isinstance(v, dict):
+                find_pattern_apply_f(v, pattern, f)
 
-        elif isinstance(v, (list, tuple)):
-            for i in v:
-                find_pattern_apply_f(i, pattern, f)
+            elif isinstance(v, (list, tuple)):
+                for i in v:
+                    find_pattern_apply_f(i, pattern, f)
