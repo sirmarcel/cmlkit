@@ -26,6 +26,14 @@ def find_key_apply_f(d, key, f):
 
     Note that this replacement happens inline.
 
+    Args:
+        d: Dict to process
+        key: Key to match
+        f: Function to apply
+
+    Returns:
+        None; replacement is done in-place
+
     """
 
     for k, v in d.items():
@@ -35,6 +43,33 @@ def find_key_apply_f(d, key, f):
         if isinstance(v, dict):
             find_key_apply_f(v, key, f)
 
-        if isinstance(v, list):
+        if isinstance(v, (list, tuple)):
             for i in v:
                 find_key_apply_f(i, key, f)
+
+
+def find_pattern_apply_f(d, pattern, f):
+    """Find values in a dict matching a given pattern, apply f to them
+
+    Pattern in this context is a function returning True or False.
+
+    Args:
+        d: Dict to process
+        pattern: Boolean function, if true, f is applied to the WHOLE key
+        f: Function
+
+    Returns:
+        None; replacement is done in-place
+
+    """
+
+    for k, v in d.items():
+        if pattern(v) is True:
+            d[k] = f(v)
+
+        elif isinstance(v, dict):
+            find_pattern_apply_f(v, pattern, f)
+
+        elif isinstance(v, (list, tuple)):
+            for i in v:
+                find_pattern_apply_f(i, pattern, f)
