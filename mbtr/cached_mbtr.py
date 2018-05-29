@@ -18,7 +18,7 @@ if 'QMML_CACHE_LOC' in os.environ:
     cache_loc = str(os.environ['QMML_CACHE_LOC'])
 else:
     # default to current running path of the script
-    cache_loc = os.environ['PWD'] + '/cache/'
+    cache_loc = os.environ['PWD'] + '/cache'
 
 makedir(cache_loc)
 

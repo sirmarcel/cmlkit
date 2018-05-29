@@ -1,4 +1,5 @@
 import sys
+import os
 import hashlib
 import numpy as np
 import qmmltools.inout as qmtio
@@ -101,7 +102,7 @@ class _diskcached:
     def __init__(self, f, cache_location, name=''):
         """Wraps f in a caching wrapper."""
         self.f = f  # cached function
-        self.cache_location = cache_location  # location of cache on disk
+        self.cache_location = os.path.normpath(cache_location) + '/'  # location of cache on disk
         self.name = name  # unique name of function to be cached, is hashed w/ args
         self.hashf = None  # hashing function, initialized by __call__
         self.hits, self.misses = 0, 0  # number of times function values were retrieved from cache/had to be computed
