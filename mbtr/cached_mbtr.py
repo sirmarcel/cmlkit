@@ -1,9 +1,11 @@
+import os
+import sys
 from qmmltools.mbtr.mbtr import MBTR
 import qmmltools.mbtr.funcs as uncached
 from qmmltools.utils.caching import _diskcached, memcached
-from qmmltools.helpers import convert_sequence
-import os
-import sys
+from qmmltools.inout import makedir
+import logging
+
 
 # In-memory cache size
 if 'QMML_CACHE_SIZE' in os.environ:
@@ -17,12 +19,15 @@ if 'QMML_CACHE_LOC' in os.environ:
     cache_loc = str(os.environ['QMML_CACHE_LOC'])
 else:
     # default to current running path of the script
-    cache_loc = os.path.dirname(os.path.realpath(sys.argv[0])) + '/'
+    cache_loc = os.path.dirname(os.path.realpath(sys.argv[0])) + '/cache/'
+    logging.debug('Cache dir not found in env, using {}'.format(cache_loc))
+    makedir(cache_loc)
 
 
 @memcached(max_entries=cache_size)
 def explicit_single_mbtr_with_norm(*args):
     return uncached.explicit_single_mbtr_with_norm(*args, mbtr_gen=explicit_single_mbtr)
+
 
 explicit_single_mbtr = _diskcached(uncached.explicit_single_mbtr, cache_location=cache_loc, name='explicit_single_mbtr')
 
