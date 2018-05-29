@@ -45,6 +45,8 @@ def postprocess(task, trials, duration):
         spec.name += '-' + 'best' + str(i)
         spec.save('out/')
 
+    logging.info('Saved result ModelSpecs, moving on to additional tasks.')
+
 
 def run_hyperopt(task, trials):
 
