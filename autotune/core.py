@@ -1,6 +1,7 @@
 import numpy as np
-import logging
 import time
+import logging
+from qmmltools import logger
 import qmmltools.inout as qmtio
 import qmmltools.autoload as qmta
 from hyperopt import fmin, tpe, Trials
@@ -35,13 +36,13 @@ def run_autotune(r):
 
     preprocess(r)
     setup_local(r)
-    logging.info('Setup finished. Welcome to AutoTune.')
+    logger.info('Setup finished. Welcome to AutoTune.')
     trials = trials_setup(r)
 
     result, duration = run_hyperopt(r, trials)
 
-    logging.info("Finished optimisation in %is, lowest achieved loss was %.4f ± %.4f" %
-                 (duration, result.best_trial['result']['loss'], result.best_trial['result']['loss_variance']))
+    logger.info("Finished optimisation in %is, lowest achieved loss was %.4f ± %.4f" %
+                (duration, result.best_trial['result']['loss'], result.best_trial['result']['loss_variance']))
 
     postprocess(r, result, duration)
 
@@ -52,30 +53,32 @@ def setup_local(r):
     qmtio.makedir('cache')
     qmtio.makedir('out')
 
-    # Logging
-    logging.basicConfig(filename=("{}.log".format('logs/' + r['name'])), level=r['config']['loglevel'])
-    app_log = logging.getLogger()
-    app_log.addHandler(logging.StreamHandler())
+    # logger
+    logger.setLevel(r['config']['loglevel'])
+
+    file_logger = logging.FileHandler("{}.log".format('logs/' + r['name']))
+    file_logger.setLevel(r['config']['loglevel'])
+    logger.addHandler(file_logger)
 
     # Info
-    logging.info('Cache location is {}'.format(cache_loc))
-    logging.debug('Looking for datasets in {}'.format(storage_path))
+    logger.info('Cache location is {}'.format(cache_loc))
+    logger.debug('Looking for datasets in {}'.format(storage_path))
 
 
 def trials_setup(r):
     # Trials object for hyperopt
     if r['config']['parallel'] is True:
-        logging.info('Performing parallel run with db_name {}. Remember to start the db and the workers.'.format(r['config']['db_name']))
+        logger.info('Performing parallel run with db_name {}. Remember to start the db and the workers.'.format(r['config']['db_name']))
         trials = MongoTrials('{}/{}/jobs'.format(r['config']['db_url'], r['config']['db_name']), exp_key=r['name'])
     else:
         trials = Trials()
-        logging.info('Performing serial run.')
+        logger.info('Performing serial run.')
 
     return trials
 
 
 def run_hyperopt(r, trials):
-    logging.info('Starting optimisation.')
+    logger.info('Starting optimisation.')
     start = time.time()
     best = fmin(objective,
                 space=r,
@@ -98,7 +101,7 @@ def postprocess(r, result, duration):
     }
 
     qmtio.save('out/' + r['name'] + '.run', to_save)
-    logging.info('Saved run results.')
+    logger.info('Saved run results.')
 
     top = (np.array(result.losses())).argsort()[:r['config']['n_cands']]
 
@@ -107,4 +110,4 @@ def postprocess(r, result, duration):
         spec.name += '-' + 'best' + str(i)
         spec.save('out/')
 
-    logging.info('Saved result top {} models; exiting. Have a good day!'.format(r['config']['n_cands']))
+    logger.info('Saved result top {} models; exiting. Have a good day!'.format(r['config']['n_cands']))

@@ -4,7 +4,7 @@ import qmmltools.inout as qmtio
 import qmmltools.dataset as qmtd
 from qmmltools.mbtr.funcs import make_mbtrs
 from qmmltools.utils.hashing import hash_sortable_dict, hash_arrays
-import logging
+from qmmltools import logger
 
 version = 0.1  # currently not in use
 
@@ -62,14 +62,14 @@ class MBTR(object):
 
             # Backwards compatibility
             if 'dataset_id' not in restore_data and 'dataset_name' in restore_data:
-                logging.warn('Encountered deprecated MBTR file {}: missing dataset_id.'.format(self.name))
+                logger.warn('Encountered deprecated MBTR file {}: missing dataset_id.'.format(self.name))
                 self.dataset_id = 'NOTID_' + restore_data['dataset_name']
 
             else:
                 self.dataset_id = restore_data['dataset_id']
 
             if 'spec_name' not in restore_data:
-                logging.warn('Encountered deprecated MBTR file {}: missing spec_name.'.format(self.name))
+                logger.warn('Encountered deprecated MBTR file {}: missing spec_name.'.format(self.name))
                 self.spec_name = 'NOTSPECNAME_' + self.name.split('_', 1)[1]
 
             else:

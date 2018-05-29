@@ -1,6 +1,6 @@
 import numpy as np
-import logging
 from hyperopt import STATUS_OK
+from qmmltools import logger
 from qmmltools.model_spec import ModelSpec
 from qmmltools.autoload import load_dataset
 from qmmltools.mbtr.cached_mbtr import DiskAndMemCachedMBTR
@@ -15,13 +15,13 @@ def objective(d):
     internal = d['internal']
 
     spec = ModelSpec.from_dict(spec)
-    logging.debug('Model MBTR settings' + str(spec.mbtrs))
-    logging.debug('Model KRR settings' + str(spec.krr))
+    logger.debug('Model MBTR settings' + str(spec.mbtrs))
+    logger.debug('Model KRR settings' + str(spec.krr))
 
     dataset = load_dataset(data['id'])
 
     rep = DiskAndMemCachedMBTR(dataset, spec)
-    logging.debug('Successfully computed the MBTR!')
+    logger.debug('Successfully computed the MBTR!')
 
     splits = generate_cv_idx(config['cv'], dataset.n)
 
@@ -35,7 +35,7 @@ def objective(d):
     mean_loss = np.mean(lossvec)
     var_loss = np.var(lossvec)
 
-    logging.debug("Evaluated objective, loss was %.8f ± %.8f" % (mean_loss, var_loss))
+    logger.debug("Evaluated objective, loss was %.8f ± %.8f" % (mean_loss, var_loss))
 
     return {
         'loss': mean_loss,
