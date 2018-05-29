@@ -43,7 +43,7 @@ class TestDiskCached(TestCase):
         f2 = _diskcached(f, '')
         f2(1)
 
-        mock_save.assert_called_once_with('c4ca4238a0b923820dcc509a6f75849b.cache', {'val': 2, 'name': ''})
+        mock_save.assert_called_once_with('./c4ca4238a0b923820dcc509a6f75849b.cache', {'val': 2, 'name': ''})
 
 
 class TestHashStability(TestCase):
