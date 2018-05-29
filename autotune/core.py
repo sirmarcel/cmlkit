@@ -10,25 +10,25 @@ from qmmltools.autotune.parse import preprocess
 from qmmltools.model_spec import ModelSpec
 
 
-def run(task):
-    if isinstance(task, str):
-        task = qmtio.read_yaml(task)
+def run(r):
+    if isinstance(r, str):
+        r = qmtio.read_yaml(r)
 
-    preprocess(task)
+    preprocess(r)
 
-    if task['config']['parallel'] is True:
-        trials = MongoTrials(task['config']['db'], exp_key=task['name'])
+    if r['config']['parallel'] is True:
+        trials = MongoTrials(r['config']['db'], exp_key=r['name'])
         logging.info('Performing parallel run. Remember to start workers!')
     else:
         trials = Trials()
         logging.info('Performing serial run.')
 
-    trials, duration = run_hyperopt(task, trials)
+    trials, duration = run_hyperopt(r, trials)
 
-    postprocess(task, trials, duration)
+    postprocess(r, trials, duration)
 
 
-def postprocess(task, trials, duration):
+def postprocess(r, trials, duration):
     to_save = {
         'final_loss': trials.best_trial['result']['loss'],
         'final_loss_variance': trials.best_trial['result']['loss_variance'],
@@ -36,11 +36,11 @@ def postprocess(task, trials, duration):
         'post': {}
     }
 
-    qmtio.save('out/' + task['name'] + '.run', to_save)
+    qmtio.save('out/' + r['name'] + '.run', to_save)
 
-    top = (np.array(trials.losses())).argsort()[:task['config']['n_cands']]
+    top = (np.array(trials.losses())).argsort()[:r['config']['n_cands']]
 
-    for i in range(task['config']['n_cands']):
+    for i in range(r['config']['n_cands']):
         spec = ModelSpec.from_dict(trials.trials[top[i]]['result']['spec_dict'])
         spec.name += '-' + 'best' + str(i)
         spec.save('out/')
@@ -48,14 +48,14 @@ def postprocess(task, trials, duration):
     logging.info('Saved result ModelSpecs, moving on to additional tasks.')
 
 
-def run_hyperopt(task, trials):
+def run_hyperopt(r, trials):
 
     logging.info('Starting optimisation.')
     start = time.time()
     best = fmin(objective,
-                space=task,
+                space=r,
                 algo=tpe.suggest,
-                max_evals=task['config']['n_calls'],
+                max_evals=r['config']['n_calls'],
                 trials=trials,
                 verbose=1)
     end = time.time()
