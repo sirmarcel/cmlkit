@@ -2,7 +2,7 @@ import numpy as np
 import logging
 from hyperopt import STATUS_OK
 from qmmltools.model_spec import ModelSpec
-import qmmltools.autoload
+from qmmltools.autoload import load_dataset
 from qmmltools.mbtr.cached_mbtr import DiskAndMemCachedMBTR
 import qmmltools.regression as qmtr
 import qmmltools.indices as qmti
@@ -18,7 +18,7 @@ def objective(d):
     logging.debug('Model MBTR settings' + str(spec.mbtrs))
     logging.debug('Model KRR settings' + str(spec.krr))
 
-    dataset = qmmltools.autoload.dataset(data['id'])
+    dataset = load_dataset(data['id'])
 
     rep = DiskAndMemCachedMBTR(dataset, spec)
     logging.debug('Successfully computed the MBTR!')

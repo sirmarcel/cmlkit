@@ -8,7 +8,7 @@ else:
     storage_path = ['']
 
 
-def dataset(name):
+def load_dataset(name):
     """Load a dataset with given name
 
     Attempts to automatically load a dataset with the given
