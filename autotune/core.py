@@ -50,7 +50,6 @@ def run_autotune(r):
 def setup_local(r):
     # Folders
     qmtio.makedir('logs')
-    qmtio.makedir('cache')
     qmtio.makedir('out')
 
     # logger

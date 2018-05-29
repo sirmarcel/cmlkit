@@ -4,7 +4,6 @@ from qmmltools.mbtr.mbtr import MBTR
 import qmmltools.mbtr.funcs as uncached
 from qmmltools.utils.caching import _diskcached, memcached
 from qmmltools.inout import makedir
-from qmmltools import logger
 
 
 # In-memory cache size
@@ -19,9 +18,9 @@ if 'QMML_CACHE_LOC' in os.environ:
     cache_loc = str(os.environ['QMML_CACHE_LOC'])
 else:
     # default to current running path of the script
-    cache_loc = os.path.dirname(os.path.realpath(sys.argv[0])) + '/cache/'
-    logger.debug('Cache dir not found in env, using {}'.format(cache_loc))
-    makedir(cache_loc)
+    cache_loc = os.environ['PWD'] + '/cache/'
+
+makedir(cache_loc)
 
 
 @memcached(max_entries=cache_size)
