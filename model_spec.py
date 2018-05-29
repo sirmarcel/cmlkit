@@ -91,7 +91,6 @@ class ModelSpec(object):
         return {
             'name': self.name,
             'desc': self.desc,
-            'version': self.version,
             'data': self.data,
             'mbtrs': self.mbtrs,
             'krr': self.krr
