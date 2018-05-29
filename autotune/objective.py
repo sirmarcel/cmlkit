@@ -47,10 +47,10 @@ def objective(d):
 
 def generate_cv_idx(cv_config, n):
 
-    if cv_config['type'] == 'random':
+    if cv_config[0] == 'random':
         splits = [qmti.threeway_split(n,
-                                      cv_config['n_train'],
-                                      cv_config['n_valid']) for i in range(cv_config['n_cv'])]
+                                      cv_config[2],
+                                      cv_config[3]) for i in range(cv_config[1])]
 
     else:
         raise NotImplementedError("Currently only random CV is supported.")
