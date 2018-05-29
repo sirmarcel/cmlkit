@@ -33,7 +33,7 @@ def postprocess(r, trials, duration):
         'final_loss': trials.best_trial['result']['loss'],
         'final_loss_variance': trials.best_trial['result']['loss_variance'],
         'duration': duration,
-        'post': {}
+        'losses': trials.losses()
     }
 
     qmtio.save('out/' + r['name'] + '.run', to_save)
@@ -45,7 +45,7 @@ def postprocess(r, trials, duration):
         spec.name += '-' + 'best' + str(i)
         spec.save('out/')
 
-    logging.info('Saved result ModelSpecs, moving on to additional tasks.')
+    logging.info('Saved result ModelSpecs; exiting. Have a good day!')
 
 
 def run_hyperopt(r, trials):
