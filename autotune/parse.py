@@ -1,4 +1,5 @@
 import copy
+import logging
 from hyperopt import hp
 import qmmltools.autotune.grid as gr
 import qmmltools.inout as qmtio
@@ -14,7 +15,7 @@ def preprocess(d):
     d['spec']['desc'] = 'Model during autotune run; ' + d['desc']
 
     # Defaults
-    defaults_config = {'parallel': False, 'loss': 'rmse', 'n_cands': 2}
+    defaults_config = {'parallel': False, 'loss': 'rmse', 'n_cands': 2, 'loglevel': 'INFO'}
     d['config'] = {**defaults_config, **d['config']}
 
     parse(d)
@@ -41,6 +42,7 @@ def parse(d):
     """
 
     qmth.find_key_apply_f(d, 'loss', string_to_loss)
+    qmth.find_key_apply_f(d, 'loglevel', string_to_loglevel)
     qmth.find_pattern_apply_f(d, is_grid, to_grid)
     qmth.find_pattern_apply_f(d, is_hyperopt, to_hyperopt)
 
@@ -51,6 +53,16 @@ def string_to_loss(s):
         f = getattr(qmts, s)
     except AttributeError:
         raise NotImplementedError("Loss named {} is not implemented.".format(s))
+
+    return f
+
+
+def string_to_loglevel(s):
+
+    try:
+        f = getattr(logging, s)
+    except AttributeError:
+        raise NotImplementedError("Loglevel named {} cannot be found implemented (should be DEBUG, INFO, ERROR or WARNING).".format(s))
 
     return f
 
