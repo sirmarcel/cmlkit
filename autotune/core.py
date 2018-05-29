@@ -9,6 +9,7 @@ from qmmltools.autotune.objective import objective
 from qmmltools.autotune.parse import preprocess
 from qmmltools.model_spec import ModelSpec
 from qmmltools.mbtr.cached_mbtr import cache_loc
+from qmmltools.autoload import storage_path
 
 
 def run_autotune(r):
@@ -58,6 +59,7 @@ def setup_local(r):
 
     # Info
     logging.info('Cache location is {}'.format(cache_loc))
+    logging.debug('Looking for datasets in {}'.format(storage_path))
 
 
 def trials_setup(r):
