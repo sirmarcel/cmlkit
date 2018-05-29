@@ -1,5 +1,6 @@
 import numpy as np
 import yaml
+import os
 
 
 def save(outfile, d):
@@ -79,3 +80,10 @@ def save_yaml(filename, d):
 
     with open(filename + '.yml', 'w') as outfile:
         yaml.dump(d, outfile, default_flow_style=False)
+
+
+def makedir(directory):
+    """Make a directory if it doesn't already exist"""
+
+    if not os.path.exists(directory):
+        os.makedirs(directory)
