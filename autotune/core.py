@@ -11,7 +11,7 @@ from qmmltools.model_spec import ModelSpec
 from qmmltools.mbtr.cached_mbtr import cache_loc
 
 
-def run(r):
+def run_autotune(r):
     """Perform an autotune run.
 
     This is the main runner of autotune. It assumes a lot of things,
