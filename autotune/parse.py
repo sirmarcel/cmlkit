@@ -14,7 +14,7 @@ def preprocess(d):
     d['spec']['desc'] = 'Model during autotune run; ' + d['desc']
 
     # Defaults
-    defaults_config = {'parallel': False, 'loss': 'rmse'}
+    defaults_config = {'parallel': False, 'loss': 'rmse', 'n_cands': 2}
     d['config'] = {**defaults_config, **d['config']}
 
     parse(d)

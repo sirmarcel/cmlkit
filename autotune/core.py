@@ -38,10 +38,10 @@ def postprocess(task, trials, duration):
 
     qmtio.save('out/' + task['name'] + '.run', to_save)
 
-    top_2 = (np.array(trials.losses())).argsort()[:2]
+    top = (np.array(trials.losses())).argsort()[:task['config']['n_cands']]
 
-    for i in range(2):
-        spec = ModelSpec.from_dict(trials.trials[top_2[i]]['result']['spec_dict'])
+    for i in range(task['config']['n_cands']):
+        spec = ModelSpec.from_dict(trials.trials[top[i]]['result']['spec_dict'])
         spec.name += '-' + 'best' + str(i)
         spec.save('out/')
 
