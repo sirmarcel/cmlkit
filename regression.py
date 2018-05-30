@@ -1,6 +1,8 @@
 import numpy as np
 import qmmlpack as qmml
 import qmmltools.stats as qmts
+from qmmltools import logger
+from qmmltools.mbtr.mbtr import MBTR
 from qmmltools.property_converter import convert
 
 
@@ -34,19 +36,34 @@ def compute_kernel(spec, rep, other_rep=None):
         raise NotImplementedError('Unknown kernel specification {}!'.format(spec['kernelf']))
 
 
-def train_model(data, spec, kernel_matrix):
+def train_model(data, spec, kernel_matrix=None, rep=None):
     """Train a kernel ridge regression model
+
+    If a kernel_matrix is not given, attempt to compute it,
+    computing the representation on the fly if necessary.
+
+    Note that it is significantly faster to compute the rep
+    (and possibly the kernel matrix) once, instead of doing
+    it on the fly.
 
     Args:
         spec: ModelSpec
         data: Dataset or subclass
-        kernel_matrix: ndarray
+        kernel_matrix: optional, ndarray with the kernel matrix
+        rep: optional, only used if no kernel matrix is given
 
     Returns:
         model: qmmlpack.KernelRidgeRegression instance
     """
 
     labels = data.p[spec.data['property']]
+
+    if kernel_matrix is None and rep is not None:
+        kernel_matrix = compute_kernel(spec.krr, rep.raw)
+    elif kernel_matrix is None and rep is None:
+        logger.debug('Training model without pre-computed rep and kernel_matrix, this is slow.')
+        kernel_matrix = compute_kernel(spec.krr, MBTR(data, spec).raw)
+
     return qmml.KernelRidgeRegression(kernel_matrix, labels, theta=(spec.krr['nl'],))
 
 

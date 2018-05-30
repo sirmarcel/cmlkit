@@ -25,10 +25,19 @@ class TestKernel(TestCase):
 
 class TestTrainModel(TestCase):
 
-    def test_works(self):
+    def test_works_with_given_kernelm(self):
         kernel_matrix = compute_kernel(spec.krr, rep.raw)
         train_model(data, spec, kernel_matrix)
         # will produce an error if something is broken
+
+    def test_works_without_given_kernelm_but_with_rep(self):
+        train_model(data, spec, rep=rep)
+        # will produce an error if something is broken
+
+    def test_works_without_given_kernelm(self):
+        train_model(data, spec)
+        # will produce an error if something is broken
+
 
 class TestTrainAndPredict(TestCase):
 
