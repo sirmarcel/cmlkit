@@ -109,13 +109,6 @@ class MBTR(object):
     def raw(self):
         return self.mbtr
 
-    @property
-    def spec_hash(self):
-        if self._spec_hash is not None:
-            return self._spec_hash
-        else:
-            self._spec_hash = hash_sortable_dict(self.spec)
-
 
 class MBTRView(object):
     """View onto an MBTR
@@ -140,7 +133,3 @@ class MBTRView(object):
     @property
     def dataset_id(self):
         return self.parent_mbtr.dataset_id
-
-    @property
-    def spec_hash(self):
-        return self.parent_mbtr.spec_hash
