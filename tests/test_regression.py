@@ -45,6 +45,10 @@ class TestIDXTrainAndPredict(TestCase):
         idx_train_and_predict(data, spec, train, predict, rep=rep)
         # will throw error if something is broken
 
+    def test_works_with_same_property_and_missing_rep(self):
+        idx_train_and_predict(data, spec, train, predict)
+        # will throw error if something is broken
+
     def test_works_with_different_property(self):
         idx_train_and_predict(data, spec, train, predict, target_property='fe', rep=rep)
         # will throw error if something is broken

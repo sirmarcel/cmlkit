@@ -61,7 +61,7 @@ def train_model(data, spec, kernel_matrix=None, rep=None):
     if kernel_matrix is None and rep is not None:
         kernel_matrix = compute_kernel(spec.krr, rep.raw)
     elif kernel_matrix is None and rep is None:
-        logger.debug('Training model without pre-computed rep and kernel_matrix, this is slow.')
+        logger.debug('Training model without pre-computed rep and kernel_matrix, this might be slow.')
         kernel_matrix = compute_kernel(spec.krr, MBTR(data, spec).raw)
 
     return qmml.KernelRidgeRegression(kernel_matrix, labels, theta=(spec.krr['nl'],))
@@ -69,7 +69,7 @@ def train_model(data, spec, kernel_matrix=None, rep=None):
 
 def train_and_predict(data_train, data_predict,
                       spec,
-                      rep_train=None, rep_pred=None,
+                      rep_train=None, rep_predict=None,
                       target_property=None,
                       return_intermediate=False):
     """Train a KRR model and predict some property
@@ -84,45 +84,44 @@ def train_and_predict(data_train, data_predict,
         data_predict: Dataset for prediction
         spec: ModelSpec
         rep_train: Optional, Representation of data_train
-        rep_pred: Optional, Representation of data_test
+        rep_predict: Optional, Representation of data_test
         target_property: Optional, if set, predictions are converted to this property
         return_intermediate: Optional, if True, all intermediate data is returned as dict
 
     Returns:
         predictions: ndarray with predictions
-        intermdiate: dict with intermediate info (if requested)
+        intermediate: dict with intermediate info (if requested)
 
     """
     if rep_train is None:
         logger.debug('Computing representation on the fly for {}.'.format(data_train.id))
         rep_train = MBTR(data_train, spec)
 
-    if rep_pred is None:
+    if rep_predict is None:
         logger.debug('Computing representation on the fly for {}.'.format(data_predict.id))
-        rep_pred = MBTR(data_predict, spec)
+        rep_predict = MBTR(data_predict, spec)
 
     kernel_train = compute_kernel(spec.krr, rep_train.raw)
-    kernel_pred = compute_kernel(spec.krr, rep_train.raw, rep_pred.raw)
+    kernel_predict = compute_kernel(spec.krr, rep_train.raw, rep_predict.raw)
 
     model = train_model(data_train, spec, kernel_matrix=kernel_train)
 
-    if target_property is None:
-        pred = model(kernel_pred)
-    else:
-        pred = model(kernel_pred)
+    pred = model(kernel_predict)
+
+    if target_property is not None:
         pred = convert(data_predict, pred, spec.data['property'], target_property)
 
     if return_intermediate is False:
         return pred
     else:
-        intermediate = {'kernel_train': kernel_train, 'kernel_pred': kernel_pred, 'model': model,
-                        'rep_train': rep_train, 'rep_pred': rep_pred, 'pred': pred}
+        intermediate = {'kernel_train': kernel_train, 'kernel_predict': kernel_predict, 'model': model,
+                        'rep_train': rep_train, 'rep_predict': rep_predict, 'pred': pred}
         return pred, intermediate
 
 
 def compute_loss(data_train, data_predict,
                  spec,
-                 rep_train=None, rep_pred=None,
+                 rep_train=None, rep_predict=None,
                  target_property=None,
                  return_intermediate=False,
                  lossf=qmts.rmse):
@@ -137,7 +136,7 @@ def compute_loss(data_train, data_predict,
         data_predict: Dataset for prediction
         spec: ModelSpec
         rep_train: Optional, Representation of data_train
-        rep_pred: Optional, Representation of data_test
+        rep_predict: Optional, Representation of data_test
         target_property: Optional, if set, predictions are converted to this property
         return_intermediate: Optional, if True, all intermediate data is returned as dict
         lossf: If present, compute this loss (otherwise the rmse is computed)
@@ -150,7 +149,7 @@ def compute_loss(data_train, data_predict,
 
     pred, intermdiate = train_and_predict(data_train, data_predict,
                                           spec,
-                                          rep_train, rep_pred,
+                                          rep_train, rep_predict,
                                           target_property,
                                           return_intermediate=True)
 
@@ -169,7 +168,7 @@ def compute_loss(data_train, data_predict,
         return loss, intermediate
 
 
-def idx_train_and_predict(data, spec, idx_train, idx_pred, rep=None,
+def idx_train_and_predict(data, spec, idx_train, idx_predict, rep=None,
                           target_property=None, return_intermediate=False):
     """Train a KRR model and predict some property using indices
 
@@ -181,7 +180,7 @@ def idx_train_and_predict(data, spec, idx_train, idx_pred, rep=None,
         spec: ModelSpec
         data: Dataset or subclass
         idx_train: Index array for training
-        idx_pred: Index array for prediction
+        idx_predict: Index array for prediction
         rep: Optional, Representation of data
         target_property: Optional, if set, predictions are converted to this property
         return_intermediate: Optional, if True, all intermediate data is returned as dict
@@ -195,13 +194,13 @@ def idx_train_and_predict(data, spec, idx_train, idx_pred, rep=None,
         logger.debug('Computing representation on the fly for {}.'.format(data.id))
         rep = MBTR(data, spec)
 
-    return train_and_predict(data[idx_train], data[idx_pred],
+    return train_and_predict(data[idx_train], data[idx_predict],
                              spec,
-                             rep_train=rep[idx_train], rep_pred=rep[idx_pred],
+                             rep_train=rep[idx_train], rep_predict=rep[idx_predict],
                              target_property=target_property, return_intermediate=return_intermediate)
 
 
-def idx_compute_loss(data, spec, idx_train, idx_pred, rep=None,
+def idx_compute_loss(data, spec, idx_train, idx_predict, rep=None,
                      target_property=None, return_intermediate=False,
                      lossf=qmts.rmse):
     """Compute loss using indices
@@ -214,7 +213,7 @@ def idx_compute_loss(data, spec, idx_train, idx_pred, rep=None,
         data: Dataset
         spec: ModelSpec
         idx_train: Index array for training
-        idx_pred: Index array for prediction
+        idx_predict: Index array for prediction
         rep: Optional, representation of Dataset
         lossf: If present, compute this loss (otherwise the rmse is computed)
         target_property: If present, predict this property
@@ -231,7 +230,7 @@ def idx_compute_loss(data, spec, idx_train, idx_pred, rep=None,
         logger.debug('Computing representation on the fly for {}.'.format(data.id))
         rep = MBTR(data, spec)
 
-    return compute_loss(data[idx_train], data[idx_pred],
+    return compute_loss(data[idx_train], data[idx_predict],
                         spec, lossf=lossf,
-                        rep_train=rep[idx_train], rep_pred=rep[idx_pred],
+                        rep_train=rep[idx_train], rep_predict=rep[idx_predict],
                         target_property=target_property, return_intermediate=return_intermediate)
