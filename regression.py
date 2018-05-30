@@ -1,7 +1,9 @@
 import numpy as np
+import warnings
 import qmmlpack as qmml
 import qmmltools.stats as qmts
 from qmmltools import logger
+from qmmltools.dataset import Dataset, Subset
 from qmmltools.mbtr.mbtr import MBTR
 from qmmltools.property_converter import convert
 
@@ -96,10 +98,14 @@ def train_and_predict(data_train, data_predict,
     if rep_train is None:
         logger.debug('Computing representation on the fly for {}.'.format(data_train.id))
         rep_train = MBTR(data_train, spec)
+    else:
+        sanity_check(data_train, spec, rep_train)
 
     if rep_predict is None:
         logger.debug('Computing representation on the fly for {}.'.format(data_predict.id))
         rep_predict = MBTR(data_predict, spec)
+    else:
+        sanity_check(data_predict, spec, rep_predict)
 
     kernel_train = compute_kernel(spec.krr, rep_train.raw)
     kernel_predict = compute_kernel(spec.krr, rep_train.raw, rep_predict.raw)
@@ -193,6 +199,8 @@ def idx_train_and_predict(data, spec, idx_train, idx_predict, rep=None,
     if rep is None:
         logger.debug('Computing representation on the fly for {}.'.format(data.id))
         rep = MBTR(data, spec)
+    else:
+        sanity_check(data, spec, rep)
 
     return train_and_predict(data[idx_train], data[idx_predict],
                              spec,
@@ -234,3 +242,12 @@ def idx_compute_loss(data, spec, idx_train, idx_predict, rep=None,
                         spec, lossf=lossf,
                         rep_train=rep[idx_train], rep_predict=rep[idx_predict],
                         target_property=target_property, return_intermediate=return_intermediate)
+
+
+def sanity_check(data, spec, rep):
+    if isinstance(data, (Dataset, Subset)) and isinstance(rep, MBTR):
+        if spec.hashes['mbtrs'] != rep.hashes['spec']:
+            warnings.warn('The hash for the spec {} and the MBTR {} do not match!'.format(spec.name, rep.name))
+
+        if data.hashes['geom'] != rep.hashes['geom']:
+            warnings.warn('The hash for the geometries in dataset {} and the MBTR {} do not match!'.format(dataset.id, rep.name))
