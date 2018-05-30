@@ -4,11 +4,19 @@ import qmmltools.stats as qmts
 from qmmltools.property_converter import convert
 
 
-def kernel(spec, rep, other_rep=None):
+def compute_kernel(spec, rep, other_rep=None):
     """Compute the kernel matrix
 
+    Supported kernels:
+        - linear (no arguments)
+        - gaussian (1 argument)
+        - laplacian (1 argument)
+
     Args:
-        spec: ModelSpec
+        spec: Dict specifying krr settings; format:
+              {'kernelf': ('kernel_name', parameter)}
+              or in the case of linear
+              {'kernelf': 'linear'}
         rep: Raw representation (i.e. ndarray)
         other_rep: If not None, compute the kernel between rep and other_rep
 
@@ -16,11 +24,14 @@ def kernel(spec, rep, other_rep=None):
         kernel matrix, a ndarray
     """
 
-    krr = spec.krr
-    if krr['kernelf'][0] == 'gaussian':
-        return qmml.kernel_gaussian(rep, other_rep, theta=(krr['kernelf'][1],))
+    if spec['kernelf'] == 'linear':
+        return qmml.kernel_linear(rep, other_rep)
+    elif spec['kernelf'][0] == 'gaussian':
+        return qmml.kernel_gaussian(rep, other_rep, theta=(spec['kernelf'][1],))
+    elif spec['kernelf'][0] == 'laplacian':
+        return qmml.kernel_laplacian(rep, other_rep, theta=(spec['kernelf'][1],))
     else:
-        raise NotImplementedError('Unknown or no kernel found')
+        raise NotImplementedError('Unknown kernel specification {}!'.format(spec['kernelf']))
 
 
 def train_model(data, spec, kernel_matrix):
@@ -57,10 +68,10 @@ def train_and_predict(data, spec, rep, train, predict, target_property=None):
 
     """
 
-    kernel_matrix = kernel(spec, rep.raw[train])
+    kernel_matrix = compute_kernel(spec.krr, rep.raw[train])
     model = train_model(data[train], spec, kernel_matrix)
 
-    kernel_valid = kernel(spec, rep.raw[train], rep.raw[predict])
+    kernel_valid = compute_kernel(spec.krr, rep.raw[train], rep.raw[predict])
 
     if target_property is None:
         return model(kernel_valid)
@@ -121,10 +132,10 @@ def train_and_predict_with_datasets_and_reps(data_train, data_predict,
 
     """
 
-    kernel_matrix = kernel(spec, rep_train.raw)
+    kernel_matrix = compute_kernel(spec.krr, rep_train.raw)
     model = train_model(data_train, spec, kernel_matrix)
 
-    kernel_valid = kernel(spec, rep_train.raw, rep_predict.raw)
+    kernel_valid = compute_kernel(spec.krr, rep_train.raw, rep_predict.raw)
 
     if target_property is None:
         return model(kernel_valid)

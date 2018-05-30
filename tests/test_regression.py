@@ -16,15 +16,17 @@ predict = np.arange(11, 20)
 
 class TestKernel(TestCase):
 
-    def test_works(self):
-        kernel(spec, rep.raw)
+    def test_works_for_all_kernels(self):
+        compute_kernel({'kernelf': ('gaussian', 1.0)}, rep.raw)
+        compute_kernel({'kernelf': ('laplacian', 1.0)}, rep.raw)
+        compute_kernel({'kernelf': ('linear')}, rep.raw)
         # let's just make sure this doesn't break
 
 
 class TestTrainModel(TestCase):
 
     def test_works(self):
-        kernel_matrix = kernel(spec, rep.raw)
+        kernel_matrix = compute_kernel(spec.krr, rep.raw)
         train_model(data, spec, kernel_matrix)
         # will produce an error if something is broken
 
