@@ -67,135 +67,171 @@ def train_model(data, spec, kernel_matrix=None, rep=None):
     return qmml.KernelRidgeRegression(kernel_matrix, labels, theta=(spec.krr['nl'],))
 
 
-def train_and_predict(data, spec, rep, train, predict, target_property=None):
+def train_and_predict(data_train, data_predict,
+                      spec,
+                      rep_train=None, rep_pred=None,
+                      target_property=None,
+                      return_intermediate=False):
     """Train a KRR model and predict some property
 
-    This function is intended for use when the split of one dataset are investigated.
-
-    Args:
-        spec: ModelSpec
-        data: Dataset or subclass
-        rep: Representation of data
-        train: Index array for training
-        predict: Index array for prediction
-        target_property: Optional, if set, predictions are converted to this property
-
-    Returns:
-        predictions: ndarray with predictions
-
-    """
-
-    kernel_matrix = compute_kernel(spec.krr, rep.raw[train])
-    model = train_model(data[train], spec, kernel_matrix)
-
-    kernel_valid = compute_kernel(spec.krr, rep.raw[train], rep.raw[predict])
-
-    if target_property is None:
-        return model(kernel_valid)
-    else:
-        pred = model(kernel_valid)
-        return convert(data[predict], pred, spec.data['property'], target_property)
-
-
-def loss(data, spec, rep, train, predict, lossf=qmts.loss, target_property=None):
-    """Compute loss for given ModelSpec and representation, using indices
-
-    This function is intended for use when the split of one dataset are investigated,
-    as opposed to the one below, where different datasets/reps are used for training
-    and prediction.
-
-    Args:
-        data: Dataset
-        spec: ModelSpec
-        rep: Representation of Dataset
-        train: Training indices
-        predict: Prediction indices
-        lossf: If present, compute this loss
-        target_property: If present, predict this property 
-                         (otherwise default to the one specified by spec)
-
-    Returns:
-        loss: Float or list, depending on lossf
-
-    """
-
-    prediction = train_and_predict(data, spec, rep, train, predict, target_property=target_property)
-
-    if target_property is None:
-        true = data[predict].p[spec.data['property']]
-    else:
-        true = data[predict].p[target_property]
-
-    return lossf(true, prediction)
-
-
-
-def train_and_predict_with_datasets_and_reps(data_train, data_predict,
-                                             spec,
-                                             rep_train, rep_predict,
-                                             target_property=None):
-    """Train a KRR model and predict some property, not using indices
+    This method expects different datasets for training and prediction,
+    optionally with representations already computed. If a single dataset/
+    representation is to be used with indices, use the idx_train_and_predict
+    function instead.
 
     Args:
         data_train: Dataset for training
         data_predict: Dataset for prediction
         spec: ModelSpec
-        rep_train: Representation of data_train
-        rep_predict: Representation of data_test
+        rep_train: Optional, Representation of data_train
+        rep_pred: Optional, Representation of data_test
         target_property: Optional, if set, predictions are converted to this property
+        return_intermediate: Optional, if True, all intermediate data is returned as dict
 
     Returns:
         predictions: ndarray with predictions
+        intermdiate: dict with intermediate info (if requested)
 
     """
+    if rep_train is None:
+        logger.debug('Computing representation on the fly for {}.'.format(data_train.id))
+        rep_train = MBTR(data_train, spec)
 
-    kernel_matrix = compute_kernel(spec.krr, rep_train.raw)
-    model = train_model(data_train, spec, kernel_matrix)
+    if rep_pred is None:
+        logger.debug('Computing representation on the fly for {}.'.format(data_predict.id))
+        rep_pred = MBTR(data_predict, spec)
 
-    kernel_valid = compute_kernel(spec.krr, rep_train.raw, rep_predict.raw)
+    kernel_train = compute_kernel(spec.krr, rep_train.raw)
+    kernel_pred = compute_kernel(spec.krr, rep_train.raw, rep_pred.raw)
+
+    model = train_model(data_train, spec, kernel_matrix=kernel_train)
 
     if target_property is None:
-        return model(kernel_valid)
+        pred = model(kernel_pred)
     else:
-        pred = model(kernel_valid)
-        return convert(data_predict, pred, spec.data['property'], target_property)
+        pred = model(kernel_pred)
+        pred = convert(data_predict, pred, spec.data['property'], target_property)
+
+    if return_intermediate is False:
+        return pred
+    else:
+        intermediate = {'kernel_train': kernel_train, 'kernel_pred': kernel_pred, 'model': model,
+                        'rep_train': rep_train, 'rep_pred': rep_pred, 'pred': pred}
+        return pred, intermediate
 
 
-def loss_with_datasets_and_reps(data_train, data_predict,
-                                spec,
-                                rep_train, rep_predict,
-                                target_property=None, lossf=qmts.loss):
-
+def compute_loss(data_train, data_predict,
+                 spec,
+                 rep_train=None, rep_pred=None,
+                 target_property=None,
+                 return_intermediate=False,
+                 lossf=qmts.rmse):
     """Compute loss using explicit datasets and reps
 
     This function is intended for use with different instances of Dataset
     and representations, for instance for keeping training and test data
-    separated.
+    separated. Use idx_compute_loss for the equivalent index-based function.
 
     Args:
         data_train: Dataset for training
         data_predict: Dataset for prediction
         spec: ModelSpec
-        rep_train: Representation of data_train
-        rep_predict: Representation of data_test
-        lossf: If present, compute this loss
-        target_property: If present, predict this property 
-                         (otherwise default to the one specified by spec)
+        rep_train: Optional, Representation of data_train
+        rep_pred: Optional, Representation of data_test
+        target_property: Optional, if set, predictions are converted to this property
+        return_intermediate: Optional, if True, all intermediate data is returned as dict
+        lossf: If present, compute this loss (otherwise the rmse is computed)
 
     Returns:
-        loss: Float or list, depending on lossf
+        loss: Result of loss function, varying types
+        intermdiate: dict with intermediate info (if requested)
 
     """
 
-    prediction = train_and_predict_with_datasets_and_reps(data_train, data_predict,
-                                                          spec,
-                                                          rep_train, rep_predict,
-                                                          target_property=target_property)
+    pred, intermdiate = train_and_predict(data_train, data_predict,
+                                          spec,
+                                          rep_train, rep_pred,
+                                          target_property,
+                                          return_intermediate=True)
 
     if target_property is None:
         true = data_predict.p[spec.data['property']]
     else:
         true = data_predict.p[target_property]
 
-    return lossf(true, prediction)
+    loss = lossf(true, pred)
 
+    intermdiate['true'] = true
+
+    if return_intermediate is False:
+        return loss
+    else:
+        return loss, intermediate
+
+
+def idx_train_and_predict(data, spec, idx_train, idx_pred, rep=None,
+                          target_property=None, return_intermediate=False):
+    """Train a KRR model and predict some property using indices
+
+    This function is intended for use when the split of one dataset is investigated,
+    i.e. there is a shared dataset (with optional rep) and indices specify what is the
+    training and prediction set.
+
+    Args:
+        spec: ModelSpec
+        data: Dataset or subclass
+        idx_train: Index array for training
+        idx_pred: Index array for prediction
+        rep: Optional, Representation of data
+        target_property: Optional, if set, predictions are converted to this property
+        return_intermediate: Optional, if True, all intermediate data is returned as dict
+
+    Returns:
+        predictions: ndarray with predictions
+        intermdiate: dict with intermediate info (if requested)
+
+    """
+    if rep is None:
+        logger.debug('Computing representation on the fly for {}.'.format(data.id))
+        rep = MBTR(data, spec)
+
+    return train_and_predict(data[idx_train], data[idx_pred],
+                             spec,
+                             rep_train=rep[idx_train], rep_pred=rep[idx_pred],
+                             target_property=target_property, return_intermediate=return_intermediate)
+
+
+def idx_compute_loss(data, spec, idx_train, idx_pred, rep=None,
+                     target_property=None, return_intermediate=False,
+                     lossf=qmts.rmse):
+    """Compute loss using indices
+
+    This function is intended for use when the split of one dataset is investigated,
+    i.e. there is a shared dataset (with optional rep) and indices specify what is the
+    training and prediction set.
+
+    Args:
+        data: Dataset
+        spec: ModelSpec
+        idx_train: Index array for training
+        idx_pred: Index array for prediction
+        rep: Optional, representation of Dataset
+        lossf: If present, compute this loss (otherwise the rmse is computed)
+        target_property: If present, predict this property
+                         (otherwise default to the one specified by spec)
+        return_intermediate: Optional, if True, all intermediate data is returned as dict
+
+    Returns:
+        loss: Float or list, depending on lossf
+        intermdiate: dict with intermediate info (if requested)
+
+    """
+
+    if rep is None:
+        logger.debug('Computing representation on the fly for {}.'.format(data.id))
+        rep = MBTR(data, spec)
+
+    return compute_loss(data[idx_train], data[idx_pred],
+                        spec, lossf=lossf,
+                        rep_train=rep[idx_train], rep_pred=rep[idx_pred],
+                        target_property=target_property, return_intermediate=return_intermediate)

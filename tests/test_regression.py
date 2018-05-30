@@ -39,22 +39,23 @@ class TestTrainModel(TestCase):
         # will produce an error if something is broken
 
 
-class TestTrainAndPredict(TestCase):
+class TestIDXTrainAndPredict(TestCase):
 
     def test_works_with_same_property(self):
-        train_and_predict(data, spec, rep, train, predict)
+        idx_train_and_predict(data, spec, train, predict, rep=rep)
         # will throw error if something is broken
 
     def test_works_with_different_property(self):
-        train_and_predict(data, spec, rep, train, predict, target_property='fe')
+        idx_train_and_predict(data, spec, train, predict, target_property='fe', rep=rep)
         # will throw error if something is broken
 
-class TestLoss(TestCase):
+
+class TestIDXLoss(TestCase):
 
     def test_works_with_same_property(self):
-        loss(data, spec, rep, train, predict)
-            # will throw error if something is broken
+        idx_compute_loss(data, spec, train, predict, rep=rep)
+        # will throw error if something is broken
 
     def test_works_with_different_property(self):
-        loss(data, spec, rep, train, predict, target_property='fe')
+        idx_compute_loss(data, spec, train, predict, target_property='fe', rep=rep)
         # will throw error if something is broken
