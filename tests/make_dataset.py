@@ -1,4 +1,4 @@
-from qmmltools.dataset import Dataset, Subset
+from cmlkit.dataset import Dataset, Subset
 import numpy as np
 
 z = np.array([[1, 2, 3], [1, 2, 3]])

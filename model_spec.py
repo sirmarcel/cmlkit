@@ -1,6 +1,6 @@
 import os
-import qmmltools.inout as qmtio
-from qmmltools.utils.hashing import hash_sortable_dict
+import cmlkit.inout as cmlio
+from cmlkit.utils.hashing import hash_sortable_dict
 from bson.son import SON
 import pprint
 
@@ -77,14 +77,14 @@ class ModelSpec(object):
     def from_yaml(cls, filename):
         """Read ModelSpec from .spec.yaml file."""
 
-        d = qmtio.read_yaml(filename)
+        d = cmlio.read_yaml(filename)
         return cls.from_dict(d)
 
     @classmethod
     def from_file(cls, filename):
         """Read ModelSpec from (legacy) .spec.npy file."""
 
-        d = qmtio.read(filename, ext=False)
+        d = cmlio.read(filename, ext=False)
         return cls.from_dict(d)
 
     def to_dict(self):
@@ -102,7 +102,7 @@ class ModelSpec(object):
         if filename is None:
             filename = self.name
 
-        qmtio.save_yaml(os.path.join(folder, filename + '.spec'), self.to_dict())
+        cmlio.save_yaml(os.path.join(folder, filename + '.spec'), self.to_dict())
 
     @property
     def info(self):

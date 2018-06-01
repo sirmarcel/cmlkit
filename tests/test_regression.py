@@ -1,9 +1,9 @@
 from unittest import TestCase
 import numpy as np
-from qmmltools.regression import *
-from qmmltools.dataset import read
-from qmmltools.model_spec import ModelSpec
-from qmmltools.mbtr.mbtr import MBTR
+from cmlkit.regression import *
+from cmlkit.dataset import read
+from cmlkit.model_spec import ModelSpec
+from cmlkit.mbtr.mbtr import MBTR
 import os
 dirname = os.path.dirname(os.path.abspath(__file__))
 

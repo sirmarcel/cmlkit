@@ -1,10 +1,10 @@
 import copy
 import logging
 from hyperopt import hp
-import qmmltools.autotune.grid as gr
-import qmmltools.inout as qmtio
-import qmmltools.helpers as qmth
-import qmmltools.stats as qmts
+import cmlkit.autotune.grid as gr
+import cmlkit.inout as cmlio
+import cmlkit.helpers as cmlh
+import cmlkit.stats as cmls
 
 
 def preprocess(d):
@@ -30,7 +30,7 @@ def parse(d):
     """Convert a dict conveniently writeable settings into the 'real' ones.
 
     Syntax:
-        'loss': 'str' -> 'loss': qmts.str
+        'loss': 'str' -> 'loss': cmls.str
         ('gr_log2', min, max, n) -> np.logspace(...)
         ('hp_func', 'id', arg) -> hp.func('id', arg)
 
@@ -41,16 +41,16 @@ def parse(d):
 
     """
 
-    qmth.find_key_apply_f(d, 'loss', string_to_loss)
-    qmth.find_key_apply_f(d, 'loglevel', string_to_loglevel)
-    qmth.find_pattern_apply_f(d, is_grid, to_grid)
-    qmth.find_pattern_apply_f(d, is_hyperopt, to_hyperopt)
+    cmlh.find_key_apply_f(d, 'loss', string_to_loss)
+    cmlh.find_key_apply_f(d, 'loglevel', string_to_loglevel)
+    cmlh.find_pattern_apply_f(d, is_grid, to_grid)
+    cmlh.find_pattern_apply_f(d, is_hyperopt, to_hyperopt)
 
 
 def string_to_loss(s):
 
     try:
-        f = getattr(qmts, s)
+        f = getattr(cmls, s)
     except AttributeError:
         raise NotImplementedError("Loss named {} is not implemented.".format(s))
 

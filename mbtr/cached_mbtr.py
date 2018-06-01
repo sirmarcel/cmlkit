@@ -1,21 +1,21 @@
 import os
 import sys
-from qmmltools.mbtr.mbtr import MBTR
-import qmmltools.mbtr.funcs as uncached
-from qmmltools.utils.caching import _diskcached, memcached
-from qmmltools.inout import makedir
+from cmlkit.mbtr.mbtr import MBTR
+import cmlkit.mbtr.funcs as uncached
+from cmlkit.utils.caching import _diskcached, memcached
+from cmlkit.inout import makedir
 
 
 # In-memory cache size
-if 'QMML_CACHE_SIZE' in os.environ:
-    cache_size = int(os.environ['QMML_CACHE_SIZE'])
+if 'CML_CACHE_SIZE' in os.environ:
+    cache_size = int(os.environ['CML_CACHE_SIZE'])
 else:
     cache_size = 500
 
 # Location for disk-backed cache
 # Note that this will not be automatically cleared
-if 'QMML_CACHE_LOC' in os.environ:
-    cache_loc = str(os.environ['QMML_CACHE_LOC'])
+if 'CML_CACHE_LOC' in os.environ:
+    cache_loc = str(os.environ['CML_CACHE_LOC'])
 else:
     # default to current running path of the script
     cache_loc = os.environ['PWD'] + '/cache'
@@ -43,9 +43,9 @@ class DiskAndMemCachedMBTR(MBTR):
     """Cached version of MBTR, caching to disk and in memory
 
     The generation of MBTRs is cached twice: Single MBTRs without the norm are
-    saved to disk in the folder specified by $QMML_CACHE_LOC. MBTRs with norm
+    saved to disk in the folder specified by $CML_CACHE_LOC. MBTRs with norm
     are also saved in memory, with the cache size specified by
-    $QMML_CACHE_SIZE.
+    $CML_CACHE_SIZE.
 
     """
 

@@ -2,8 +2,8 @@ import numpy as np
 import os
 from unittest import TestCase
 from unittest.mock import MagicMock
-import qmmltools.inout as qmtio
-from qmmltools.mbtr.mbtr import MBTR
+import cmlkit.inout as cmlio
+from cmlkit.mbtr.mbtr import MBTR
 
 
 dirname = os.path.dirname(os.path.abspath(__file__))
@@ -12,7 +12,7 @@ dirname = os.path.dirname(os.path.abspath(__file__))
 class TestMBTR(TestCase):
     def setUp(self):
         # load test data
-        self.data = qmtio.read(dirname + '/test_model_mini.mbtr')
+        self.data = cmlio.read(dirname + '/test_model_mini.mbtr')
 
     def test_from_file(self):
         mbtr = MBTR.from_file(dirname + '/test_model_mini.mbtr.npy')

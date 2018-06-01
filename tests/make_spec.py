@@ -1,5 +1,5 @@
-from qmmltools.model import ModelSpec
-from qmmltools.dataset import Dataset, Subset
+from cmlkit.model import ModelSpec
+from cmlkit.dataset import Dataset, Subset
 import numpy as np
 
 m = ModelSpec.from_yaml('model_1.yaml')

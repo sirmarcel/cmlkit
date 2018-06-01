@@ -1,11 +1,11 @@
 import numpy as np
 from hyperopt import STATUS_OK
-from qmmltools import logger
-from qmmltools.model_spec import ModelSpec
-from qmmltools.autoload import load_dataset
-from qmmltools.mbtr.cached_mbtr import DiskAndMemCachedMBTR
-import qmmltools.regression as qmtr
-import qmmltools.indices as qmti
+from cmlkit import logger
+from cmlkit.model_spec import ModelSpec
+from cmlkit.autoload import load_dataset
+from cmlkit.mbtr.cached_mbtr import DiskAndMemCachedMBTR
+import cmlkit.regression as cmlr
+import cmlkit.indices as cmli
 
 
 def objective(d):
@@ -27,7 +27,7 @@ def objective(d):
 
     lossvec = []
     for rest, train, test in splits:
-        loss = qmtr.loss(dataset, spec, rep, train, test, config['loss'],
+        loss = cmlr.loss(dataset, spec, rep, train, test, config['loss'],
                          target_property=data['property'])
 
         lossvec.append(loss)
@@ -48,7 +48,7 @@ def objective(d):
 def generate_cv_idx(cv_config, n):
 
     if cv_config[0] == 'random':
-        splits = [qmti.threeway_split(n,
+        splits = [cmli.threeway_split(n,
                                       cv_config[2],
                                       cv_config[3]) for i in range(cv_config[1])]
 

@@ -1,16 +1,16 @@
 import numpy as np
 import time
 import logging
-from qmmltools import logger
-import qmmltools.inout as qmtio
-import qmmltools.autoload as qmta
+from cmlkit import logger
+import cmlkit.inout as cmlio
+import cmlkit.autoload as cmla
 from hyperopt import fmin, tpe, Trials
 from hyperopt.mongoexp import MongoTrials
-from qmmltools.autotune.objective import objective
-from qmmltools.autotune.parse import preprocess
-from qmmltools.model_spec import ModelSpec
-from qmmltools.mbtr.cached_mbtr import cache_loc
-from qmmltools.autoload import storage_path
+from cmlkit.autotune.objective import objective
+from cmlkit.autotune.parse import preprocess
+from cmlkit.model_spec import ModelSpec
+from cmlkit.mbtr.cached_mbtr import cache_loc
+from cmlkit.autoload import storage_path
 
 
 def run_autotune(r):
@@ -32,7 +32,7 @@ def run_autotune(r):
     """
 
     if isinstance(r, str):
-        r = qmtio.read_yaml(r)
+        r = cmlio.read_yaml(r)
 
     preprocess(r)
     setup_local(r)
@@ -49,8 +49,8 @@ def run_autotune(r):
 
 def setup_local(r):
     # Folders
-    qmtio.makedir('logs')
-    qmtio.makedir('out')
+    cmlio.makedir('logs')
+    cmlio.makedir('out')
 
     # logger
     logger.setLevel(r['config']['loglevel'])
@@ -99,7 +99,7 @@ def postprocess(r, result, duration):
         'run_config': r['internal']['original_task']
     }
 
-    qmtio.save('out/' + r['name'] + '.run', to_save)
+    cmlio.save('out/' + r['name'] + '.run', to_save)
     logger.info('Saved run results.')
 
     top = (np.array(result.losses())).argsort()[:r['config']['n_cands']]

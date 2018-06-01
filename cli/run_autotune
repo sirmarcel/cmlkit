@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import argparse
-from qmmltools.autotune.core import run_autotune
-import qmmltools.inout as qmtio
+from cmlkit.autotune.core import run_autotune
+import cmlkit.inout as cmlio
 
 parser = argparse.ArgumentParser(description='Start an autotune run.')
 parser.add_argument('infile', metavar='infile', type=str,
@@ -10,6 +10,6 @@ parser.add_argument('infile', metavar='infile', type=str,
 
 args = parser.parse_args()
 
-r = qmtio.read_yaml(args.infile)
+r = cmlio.read_yaml(args.infile)
 
 run_autotune(r)

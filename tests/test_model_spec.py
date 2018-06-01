@@ -1,8 +1,8 @@
 from unittest import TestCase
 from unittest.mock import MagicMock
-import qmmltools.inout as qmtio
+import cmlkit.inout as cmlio
 import os
-from qmmltools.model_spec import *
+from cmlkit.model_spec import *
 from bson.son import SON
 
 dirname = os.path.dirname(os.path.abspath(__file__))
@@ -11,7 +11,7 @@ dirname = os.path.dirname(os.path.abspath(__file__))
 class TestModel(TestCase):
     def setUp(self):
         # load test data
-        self.data = qmtio.read_yaml(dirname + '/model_1.spec.yml')
+        self.data = cmlio.read_yaml(dirname + '/model_1.spec.yml')
 
     def test_init_from_dict(self):
         modelSpec = ModelSpec.from_dict(self.data)

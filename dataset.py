@@ -1,12 +1,12 @@
 import os
 import numpy as np
 import qmmlpack as qmml
-import qmmltools.inout as qmtio
-from qmmltools.utils.hashing import hash_sortable_dict, hash_arrays
+import cmlkit.inout as cmlio
+from cmlkit.utils.hashing import hash_sortable_dict, hash_arrays
 
 
 def read(filename):
-    d = qmtio.read(filename, ext=False)
+    d = cmlio.read(filename, ext=False)
 
     if 'parent_info' in d.keys():
         return Subset.from_dict(d)
@@ -97,7 +97,7 @@ class Dataset(object):
         if filename is None:
             filename = self.id
 
-        qmtio.save(os.path.join(dirname, filename + '.dat'), self.to_dict())
+        cmlio.save(os.path.join(dirname, filename + '.dat'), self.to_dict())
 
     @property
     def report(self):

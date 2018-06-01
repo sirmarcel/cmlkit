@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import MagicMock
 import os
-from qmmltools.dataset import *
+from cmlkit.dataset import *
 import numpy as np
 
 dirname = os.path.dirname(os.path.abspath(__file__))

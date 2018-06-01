@@ -1,6 +1,6 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
-from qmmltools.utils.caching import _memcached, _diskcached, stable_hash
+from cmlkit.utils.caching import _memcached, _diskcached, stable_hash
 import hashlib
 import numpy as np
 b = np.array(['a', 'b'], dtype=object)
@@ -19,8 +19,8 @@ class TestMemCached(TestCase):
 
 class TestDiskCached(TestCase):
 
-    @patch('qmmltools.inout.save')
-    @patch('qmmltools.inout.read')
+    @patch('cmlkit.inout.save')
+    @patch('cmlkit.inout.read')
     def test_uses_cache(self, mock_read, mock_save):
         mock_read.return_value = {'val': 2}
 
@@ -33,7 +33,7 @@ class TestDiskCached(TestCase):
             f.assert_not_called()
 
 
-    @patch('qmmltools.inout.save')
+    @patch('cmlkit.inout.save')
     def test_calls_save(self, mock_save):
         # mock_read.return_value = {'val': 2, 'args': [1]}
 

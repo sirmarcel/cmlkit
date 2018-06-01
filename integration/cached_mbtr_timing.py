@@ -1,8 +1,8 @@
 from datasets.autoload import load
 import numpy as np
-from qmmltools.model import ModelSpec
-from qmmltools.mbtr.cached_mbtr import DiskAndMemCachedMBTR
-from qmmltools.utils.timing import timerfunc
+from cmlkit.model import ModelSpec
+from cmlkit.mbtr.cached_mbtr import DiskAndMemCachedMBTR
+from cmlkit.utils.timing import timerfunc
 
 d = load('kaggle')
 

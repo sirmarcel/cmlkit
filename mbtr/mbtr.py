@@ -1,10 +1,10 @@
 import numpy as np
 import qmmlpack as qmml
-import qmmltools.inout as qmtio
-import qmmltools.dataset as qmtd
-from qmmltools.mbtr.funcs import make_mbtrs
-from qmmltools.utils.hashing import hash_sortable_dict, hash_arrays
-from qmmltools import logger
+import cmlkit.inout as cmlio
+import cmlkit.dataset as cmld
+from cmlkit.mbtr.funcs import make_mbtrs
+from cmlkit.utils.hashing import hash_sortable_dict, hash_arrays
+from cmlkit import logger
 
 version = 0.1  # currently not in use
 
@@ -38,7 +38,7 @@ class MBTR(object):
             self.spec = spec.mbtrs
 
             if name is None:
-                if isinstance(dataset, qmtd.View):
+                if isinstance(dataset, cmld.View):
                     self.name = dataset.id + '_view_n' + str(dataset.n)
                 else:
                     self.name = dataset.id
@@ -96,13 +96,13 @@ class MBTR(object):
         }
 
         if filename is None:
-            qmtio.save(directory + self.name + '.mbtr', tosave)
+            cmlio.save(directory + self.name + '.mbtr', tosave)
         else:
-            qmtio.save(directory + filename + '.mbtr', tosave)
+            cmlio.save(directory + filename + '.mbtr', tosave)
 
     @classmethod
     def from_file(cls, file):
-        d = qmtio.read(file, ext=False)
+        d = cmlio.read(file, ext=False)
         return cls(None, None, restore_data=d)
 
     @property

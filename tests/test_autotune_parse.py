@@ -2,8 +2,8 @@ import numpy as np
 from unittest import TestCase
 from unittest.mock import MagicMock
 from hyperopt import hp
-from qmmltools.autotune.parse import *
-import qmmltools.stats as qmts
+from cmlkit.autotune.parse import *
+import cmlkit.stats as cmls
 
 
 class TestHyperoptConversions(TestCase):
@@ -41,11 +41,11 @@ class TestParsing(TestCase):
     # otherwise they bleed over into other tests
     def setUp(self):
         self.og_choice = hp.choice
-        self.og_rmse = qmts.rmse
+        self.og_rmse = cmls.rmse
 
     def tearDown(self):
         hp.choice = self.og_choice
-        qmts.rmse = self.og_rmse
+        cmls.rmse = self.og_rmse
 
     def test_basic(self):
         d = {
@@ -57,7 +57,7 @@ class TestParsing(TestCase):
         }
 
         hp.choice = MagicMock()
-        qmts.rmse = 'hey_it_worked'
+        cmls.rmse = 'hey_it_worked'
 
         parse(d)
 

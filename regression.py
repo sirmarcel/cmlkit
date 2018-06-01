@@ -1,11 +1,11 @@
 import numpy as np
 import warnings
 import qmmlpack as qmml
-import qmmltools.stats as qmts
-from qmmltools import logger
-from qmmltools.dataset import Dataset, Subset
-from qmmltools.mbtr.mbtr import MBTR
-from qmmltools.property_converter import convert
+import cmlkit.stats as cmls
+from cmlkit import logger
+from cmlkit.dataset import Dataset, Subset
+from cmlkit.mbtr.mbtr import MBTR
+from cmlkit.property_converter import convert
 
 
 def compute_kernel(spec, rep, other_rep=None):
@@ -130,7 +130,7 @@ def compute_loss(data_train, data_predict,
                  rep_train=None, rep_predict=None,
                  target_property=None,
                  return_intermediate=False,
-                 lossf=qmts.rmse):
+                 lossf=cmls.rmse):
     """Compute loss using explicit datasets and reps
 
     This function is intended for use with different instances of Dataset
@@ -210,7 +210,7 @@ def idx_train_and_predict(data, spec, idx_train, idx_predict, rep=None,
 
 def idx_compute_loss(data, spec, idx_train, idx_predict, rep=None,
                      target_property=None, return_intermediate=False,
-                     lossf=qmts.rmse):
+                     lossf=cmls.rmse):
     """Compute loss using indices
 
     This function is intended for use when the split of one dataset is investigated,

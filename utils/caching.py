@@ -2,7 +2,7 @@ import sys
 import os
 import hashlib
 import numpy as np
-import qmmltools.inout as qmtio
+import cmlkit.inout as cmlio
 
 
 def memcached(max_entries=500):
@@ -145,13 +145,13 @@ class _diskcached:
 
         # return stored or computed value
         try:
-            data = qmtio.read(self.cache_location + key + '.cache')
+            data = cmlio.read(self.cache_location + key + '.cache')
             self.hits += 1
             return data['val']
         except FileNotFoundError:
             val = self.f(*args, **kwargs)
             tosave = {'val': val, 'name': self.name}
-            qmtio.save(self.cache_location + key + '.cache', tosave)
+            cmlio.save(self.cache_location + key + '.cache', tosave)
             self.misses += 1
             return val
         else:

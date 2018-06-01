@@ -1,6 +1,6 @@
 import numpy as np
 import qmmlpack as qmml
-from qmmltools.helpers import convert_sequence
+from cmlkit.helpers import convert_sequence
 
 
 def explicit_single_mbtr(z, r, b, d, k, geomf, weightf, distrf, corrf, eindexf, aindexf, flatten, elems, acc):
