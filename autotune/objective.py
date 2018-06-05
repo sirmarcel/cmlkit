@@ -3,7 +3,7 @@ from hyperopt import STATUS_OK
 from cmlkit import logger
 from cmlkit.model_spec import ModelSpec
 from cmlkit.autoload import load_dataset
-from cmlkit.mbtr.cached_mbtr import DiskAndMemCachedMBTR
+from cmlkit.reps.cached_mbtr import DiskAndMemCachedMBTR
 import cmlkit.regression as cmlr
 import cmlkit.indices as cmli
 

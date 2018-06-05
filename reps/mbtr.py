@@ -2,7 +2,7 @@ import numpy as np
 import qmmlpack as qmml
 import cmlkit.inout as cmlio
 import cmlkit.dataset as cmld
-from cmlkit.mbtr.funcs import make_mbtrs
+from cmlkit.reps.funcs import make_mbtrs
 from cmlkit.utils.hashing import hash_sortable_dict, hash_arrays
 from cmlkit import logger
 

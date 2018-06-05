@@ -1,7 +1,7 @@
 from datasets.autoload import load
 import numpy as np
 from cmlkit.model import ModelSpec
-from cmlkit.mbtr.cached_mbtr import DiskAndMemCachedMBTR
+from cmlkit.reps.cached_mbtr import DiskAndMemCachedMBTR
 
 d = load('kaggle')
 

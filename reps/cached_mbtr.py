@@ -1,7 +1,7 @@
 import os
 import sys
-from cmlkit.mbtr.mbtr import MBTR
-import cmlkit.mbtr.funcs as uncached
+from cmlkit.reps.mbtr import MBTR
+import cmlkit.reps.funcs as uncached
 from cmlkit.utils.caching import _diskcached, memcached
 from cmlkit.inout import makedir
 

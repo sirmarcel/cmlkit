@@ -9,7 +9,7 @@ from hyperopt.mongoexp import MongoTrials
 from cmlkit.autotune.objective import objective
 from cmlkit.autotune.parse import preprocess
 from cmlkit.model_spec import ModelSpec
-from cmlkit.mbtr.cached_mbtr import cache_loc
+from cmlkit.reps.cached_mbtr import cache_loc
 from cmlkit.autoload import storage_path
 
 

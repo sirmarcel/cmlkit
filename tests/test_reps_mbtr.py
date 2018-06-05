@@ -3,7 +3,7 @@ import os
 from unittest import TestCase
 from unittest.mock import MagicMock
 import cmlkit.inout as cmlio
-from cmlkit.mbtr.mbtr import MBTR
+from cmlkit.reps.mbtr import MBTR
 
 
 dirname = os.path.dirname(os.path.abspath(__file__))

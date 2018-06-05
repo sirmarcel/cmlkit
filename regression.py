@@ -4,7 +4,7 @@ import qmmlpack as qmml
 import cmlkit.stats as cmls
 from cmlkit import logger
 from cmlkit.dataset import Dataset, Subset
-from cmlkit.mbtr.mbtr import MBTR
+from cmlkit.reps.mbtr import MBTR
 from cmlkit.property_converter import convert
 
 

@@ -3,7 +3,7 @@ import numpy as np
 from cmlkit.regression import *
 from cmlkit.dataset import read
 from cmlkit.model_spec import ModelSpec
-from cmlkit.mbtr.mbtr import MBTR
+from cmlkit.reps.mbtr import MBTR
 import os
 dirname = os.path.dirname(os.path.abspath(__file__))
 
