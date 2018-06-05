@@ -21,12 +21,13 @@ class Dataset(object):
     which can be saved to a file and loaded from it.
 
     Attributes:
+        id: Canonical name; used internally, equal to name for this class
         name: Short, unique name
         desc: Short description
         family: Indicates broad group of data this belongs to (for instance for property conversion)
         z, r, b: As required by qmmlpack (ragged arrays)
         p: Dict of properties, keys are strings, values are ndarrays
-        id: Canonical name; used internally, equal to name for this class
+        report: String giving lots of information about this dataset
         info: Dict of properties of this dataset
         n: Number of systems in dataset
         hashes: Dict with hashes, will be used for sanity checking
@@ -77,6 +78,8 @@ class Dataset(object):
         return self.report
 
     def to_dict(self):
+        """Return a dictionary representation"""
+
         d = {
             'name': self.name,
             'desc': self.desc,
@@ -93,6 +96,7 @@ class Dataset(object):
         return d
 
     def save(self, dirname='', filename=None):
+        """Save to disk"""
 
         if filename is None:
             filename = self.id
@@ -164,12 +168,13 @@ class Subset(Dataset):
     some connection to the full dataset.
 
     Attributes:
-        name: Name of this subset
         id: Canonical name of this subset, dataset_name-name
+        name: Name of this subset
         family: Broad family of this subset
-        z, r, b, p: As in Dataset
-        info: Dataset info of this subset
+        desc: Description of this subset
+        z, r, b, p, report, info: As in Dataset
         parent_info: Dict of info on parent dataset, namely name and info dict
+
     """
 
     def __init__(self, dataset, idx, name=None, desc='', restore_data=None):
@@ -221,6 +226,8 @@ class Subset(Dataset):
         self._general = "\nThis is a subset of the dataset '{}'.".format(self.parent_info['id'])
 
     def to_dict(self):
+        """Return a dictionary representation"""
+
         d = {
             'name': self.name,
             'desc': self.desc,
