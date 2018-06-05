@@ -22,7 +22,6 @@ It is *highly* recommended to use Anaconda to manage and install these dependenc
 For development, the following are required as well:
 
 * ``sphinx``
-* ``recommonmark``
 
 Actual Installation
 ===================

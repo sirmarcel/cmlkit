@@ -42,13 +42,7 @@ templates_path = ['_templates']
 # You can specify multiple suffix as a list of string:
 #
 
-from recommonmark.parser import CommonMarkParser
-
-source_parsers = {
-    '.md': CommonMarkParser,
-}
-
-source_suffix = ['.rst', '.md']
+source_suffix = ['.rst']
 
 # The master toctree document.
 master_doc = 'index'
