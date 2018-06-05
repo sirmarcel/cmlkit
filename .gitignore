@@ -1,4 +1,5 @@
 *.cache.npy
+*.DS_Store
 
 # Sphinx
 docs/_build
