@@ -6,11 +6,15 @@
 Welcome to cmlkit's documentation!
 ==================================
 
+Hello there. You might be interested in reading the :doc:`install` instructions first, and then read about the main classes: :doc:`dataset`
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    install
+   dataset
+   globals
 
 
 Indices and tables
