@@ -2,6 +2,14 @@
 Dataset
 *******
 
+Imports
+=======
+
+Found in: ``cmlkit.dataset``. For loading from a central location, you can use ``cmlkit.load_dataset`` (a convenience import for ``cmlkit.autoload.load_dataset``), which checks the :doc:`globals` for a path. Alternatively, the ``cmlkit.dataset.read`` function can be used to read files from disk.
+
+Introduction
+============
+
 The ``Dataset`` class, alongside its subclass ``Subset`` provides a container for datasets, which for our purposes essentially consist of
 
 * Geometries, either molecules or crystal structures
@@ -24,6 +32,8 @@ For additional details, please check the source code, or the automatically gener
 
 (Naming) Conventions
 ====================
+
+Datasets are always saved with the extension ``.dat.npy``.
 
 Some care has been taken to make sure that datasets can be identified and addressed. So here are the different bits of meta-data:
 
