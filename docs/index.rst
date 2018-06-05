@@ -6,7 +6,7 @@
 Welcome to cmlkit's documentation!
 ==================================
 
-Hello there. You might be interested in reading the :doc:`install` instructions first, and then read about the main classes: :doc:`dataset`
+Hello there. You might be interested in reading the :doc:`install` instructions first, and then read about the main classes: :doc:`dataset`, :doc:`mbtr`
 
 .. toctree::
    :maxdepth: 2
@@ -14,6 +14,7 @@ Hello there. You might be interested in reading the :doc:`install` instructions 
 
    install
    dataset
+   mbtr
    globals
 
 
