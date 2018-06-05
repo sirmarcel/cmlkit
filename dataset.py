@@ -96,7 +96,7 @@ class Dataset(object):
         return d
 
     def save(self, dirname='', filename=None):
-        """Save to disk"""
+        """Save to disk, defaulting to the id as filename"""
 
         if filename is None:
             filename = self.id

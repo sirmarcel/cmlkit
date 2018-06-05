@@ -31,7 +31,9 @@ Some care has been taken to make sure that datasets can be identified and addres
 * ``id``: A (ideally) unique identifier. For Subsets, this is automatically generated as ``parentname-subsetname``.
 * ``family``: A broader category identifier. At present, this is only used for the property converter.
 * ``desc``: A short text description of the dataset
-  
+
+The default filename is the ``id``.
+
 Internally, datasets are also hashed on creation, with some rudimentary sanity-checking.
 
 Docs
