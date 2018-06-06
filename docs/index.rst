@@ -16,6 +16,7 @@ Hello there. You might be interested in reading the :doc:`install` instructions 
    dataset
    model_spec
    mbtr
+   regression
    globals
    conventions
 
