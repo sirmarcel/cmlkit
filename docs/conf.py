@@ -42,13 +42,7 @@ templates_path = ['_templates']
 # You can specify multiple suffix as a list of string:
 #
 
-from recommonmark.parser import CommonMarkParser
-
-source_parsers = {
-    '.md': CommonMarkParser,
-}
-
-source_suffix = ['.rst', '.md']
+source_suffix = ['.rst']
 
 # The master toctree document.
 master_doc = 'index'
@@ -85,6 +79,9 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
+# Additional config
+
+autodoc_member_order = 'bysource'
 
 # -- Options for HTML output ----------------------------------------------
 
