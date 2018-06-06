@@ -3,9 +3,10 @@ from cmlkit.dataset import read
 
 if 'CML_DATASET_PATH' in os.environ:
     storage_path = [os.path.normpath(p) for p in str(os.environ['CML_DATASET_PATH']).split(':')]
-    storage_path.append('')
 else:
-    storage_path = ['']
+    storage_path = []
+
+storage_path.append(os.path.normpath(os.environ['PWD']))
 
 
 def load_dataset(name):
@@ -27,5 +28,10 @@ def load_dataset(name):
     """
     # This implicitly loads the first dataset found
     for p in storage_path:
-        file = os.path.join(p, name + '.dat.npy')
-        return read(file)
+        try:
+            file = os.path.join(p, name + '.dat.npy')
+            return read(file)
+        except FileNotFoundError:
+            pass
+
+    raise FileNotFoundError('Could not find dataset {} in paths {}'.format(name, storage_path))
