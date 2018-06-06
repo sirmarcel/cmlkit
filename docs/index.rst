@@ -14,6 +14,7 @@ Hello there. You might be interested in reading the :doc:`install` instructions 
 
    install
    dataset
+   model_spec
    mbtr
    globals
    conventions
