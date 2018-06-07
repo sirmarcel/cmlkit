@@ -1,5 +1,5 @@
 from unittest import TestCase
-from indices import *
+from cmlkit.indices import *
 
 
 class TestFourwaySplit(TestCase):

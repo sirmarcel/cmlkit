@@ -1,6 +1,6 @@
 from unittest import TestCase
 import numpy as np
-from optimize import *
+from cmlkit.optimize import *
 
 
 class TestFindsMinimum(TestCase):

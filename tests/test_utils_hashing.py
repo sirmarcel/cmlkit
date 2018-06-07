@@ -1,6 +1,6 @@
 import numpy as np
 from unittest import TestCase
-from utils.hashing import *
+from cmlkit.utils.hashing import *
 
 
 class TestHashSortableDict(TestCase):
