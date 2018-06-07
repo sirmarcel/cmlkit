@@ -85,6 +85,8 @@ class MBTR(object):
         return make_mbtrs(dataset, spec)
 
     def save(self, directory='', filename=None):
+        """Save this MBTR to disk with default name datasetid_specname"""
+
         tosave = {
             'name': self.name,
             'dataset_id': self.dataset_id,
@@ -102,11 +104,15 @@ class MBTR(object):
 
     @classmethod
     def from_file(cls, file):
+        """Read an MBR from file"""
+
         d = cmlio.read(file, ext=False)
         return cls(None, None, restore_data=d)
 
     @property
     def raw(self):
+        """Return the raw representation, i.e. an ndarray"""
+
         return self.mbtr
 
 

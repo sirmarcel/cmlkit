@@ -29,6 +29,6 @@ Docs
 MBTR
 -------
 
-.. autoclass:: cmlkit.reps.MBTR
+.. autoclass:: cmlkit.MBTR
     :members:
     :undoc-members:
