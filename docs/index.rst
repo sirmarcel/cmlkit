@@ -19,6 +19,7 @@ Hello there. You might be interested in reading the :doc:`install` instructions 
    regression
    globals
    conventions
+   losses
 
 
 Indices and tables
