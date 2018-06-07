@@ -9,3 +9,4 @@ dependencies:
   - hyperopt
   - nose
   - pyyaml
+  - mongodb
