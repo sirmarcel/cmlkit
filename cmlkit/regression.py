@@ -1,7 +1,7 @@
 import numpy as np
 import warnings
 import qmmlpack as qmml
-import cmlkit.stats as cmls
+import cmlkit.losses as cmls
 from cmlkit import logger
 from cmlkit.dataset import Dataset, Subset
 from cmlkit.reps.mbtr import MBTR

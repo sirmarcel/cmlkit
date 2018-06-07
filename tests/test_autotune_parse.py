@@ -3,7 +3,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock
 from hyperopt import hp
 from cmlkit.autotune.parse import *
-import cmlkit.stats as cmls
+import cmlkit.losses as cmls
 
 
 class TestHyperoptConversions(TestCase):

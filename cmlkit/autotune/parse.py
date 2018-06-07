@@ -4,7 +4,7 @@ from hyperopt import hp
 import cmlkit.autotune.grid as gr
 import cmlkit.inout as cmlio
 import cmlkit.helpers as cmlh
-import cmlkit.stats as cmls
+import cmlkit.losses as cmls
 
 
 def preprocess(d):
