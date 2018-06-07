@@ -12,6 +12,5 @@ Its main features are:
 It also (hopefully) provides a simple framework to experiment with the MBTR and collaborate, and reduces the amount of boilerplate code required to get things up and running.
 
 ## Resources
-- A Getting Started Guide can be found TODO
-- The documentation automatically generated from docstring can be found TODO
-- Installation instructions are in link TODO
+- Installation instructions are [here](https://cmlkit.readthedocs.io/en/latest/install.html)
+- The docs are [here](https://cmlkit.readthedocs.io/en/latest/)
