@@ -1,0 +1,41 @@
+name: 'model_1'
+desc: 'A 2-body MBTR + KRR model; number 10 in MR notebook'
+data:
+  name: 'kaggle'
+  property: 'fec'
+mbtrs:
+  mbtr_1:
+    k: 1
+    d: [-0.5, 1.6333333333333333, 30]
+    geomf: 'count'
+    broadening: 11.313708499
+    weightf: '1/identity'
+    distrf: 'normal'
+    corrf: 'identity'
+    eindexf: 'full'
+    aindexf: 'full'
+    norm: 1.0
+    flatten: True
+    elems: Null
+    acc: 0.001
+
+  mbtr_2:
+    k: 2
+    d: [-0.04, 0.008, 100]
+    geomf: '1/distance'
+    broadening: 0.005524271728019903
+    weightf: 'identity^2'
+    distrf: 'normal'
+    corrf: 'identity'
+    eindexf: 'noreversals'
+    aindexf: 'noreversals'
+    norm: 1.0
+    flatten: True
+    elems: Null
+    acc: 0.001
+
+krr:
+  kernelf: 'gaussian'
+  ls: 0.3535533905932738
+  nl: 6.103515625e-05
+  centering: False
