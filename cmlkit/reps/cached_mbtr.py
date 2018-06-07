@@ -16,11 +16,10 @@ else:
 # Note that this will not be automatically cleared
 if 'CML_CACHE_LOC' in os.environ:
     cache_loc = str(os.environ['CML_CACHE_LOC'])
+    makedir(cache_loc)
 else:
     # default to current running path of the script
-    cache_loc = os.environ['PWD'] + '/cache'
-
-makedir(cache_loc)
+    cache_loc = os.environ['PWD']
 
 
 @memcached(max_entries=cache_size)
