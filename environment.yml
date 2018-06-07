@@ -1,0 +1,11 @@
+name: cmlkit
+channels:
+  - defaults
+  - 'conda-forge'
+  - jaikumarm
+dependencies:
+  - python=3.6
+  - numpy
+  - hyperopt
+  - nose
+  - pyyaml
