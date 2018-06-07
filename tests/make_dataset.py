@@ -14,8 +14,8 @@ d.save()
 sub = Subset(d, [1], 'sub', 'test subset')
 sub.save()
 
-from datasets.autoload import load
-k = load('kaggle')
+from cmlkit import load_dataset
+k = load_dataset('kaggle')
 
 idx = np.arange(20)
 
