@@ -4,7 +4,7 @@ def convert(data, prop, origin, target):
     if origin == target:
         return prop
     else:
-        if data.family == 'kaggle':
+        if data.family == 'tco':
             if target == 'fe':
                 if origin == 'fec':
                     assert 'n_atoms' in data.p
