@@ -33,7 +33,7 @@ else:
     __commit__ = None
 
 __author__ = "Marcel Langer"
-__email__ = "mail@sirmarcel.org"
+__email__ = "mail@sirmarcel.com"
 
 __license__ = "MIT License"
 __copyright__ = "2018 %s" % __author__
