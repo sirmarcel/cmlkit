@@ -12,7 +12,7 @@ from cmlkit.autotune.timeout import wrap_cost
 
 
 def objective(d):
-    my_objective = wrap_cost(_objective, timeout=r['config']['timeout'], iters=1, verbose=1)
+    my_objective = wrap_cost(_objective, timeout=d['config']['timeout'], iters=1, verbose=1)
     
     return my_objective(d)
 
