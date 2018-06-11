@@ -27,8 +27,7 @@ def objective(d):
 
     lossvec = []
     for rest, train, test in splits:
-        loss = cmlr.loss(dataset, spec, rep, train, test, config['loss'],
-                         target_property=data['property'])
+        loss = cmlr.idx_compute_loss(dataset, spec, train, test, rep=rep, lossf=config['loss'], target_property=data['property'])
 
         lossvec.append(loss)
 
