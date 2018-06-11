@@ -69,7 +69,7 @@ def trials_setup(r):
     # Trials object for hyperopt
     if r['config']['parallel'] is True:
         logger.info('Performing parallel run with db_name {}. Remember to start the db and the workers.'.format(r['config']['db_name']))
-        trials = MongoTrials('{}/{}/jobs'.format(r['config']['db_url'], r['config']['db_name']), exp_key=r['name'])
+        trials = MongoTrials('{}/jobs'.format(r['config']['db_url'], r['config']['db_name']), exp_key=r['name'])
     else:
         trials = Trials()
         logger.info('Performing serial run.')
