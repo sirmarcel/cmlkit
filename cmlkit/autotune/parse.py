@@ -103,7 +103,11 @@ def to_hyperopt(x):
     except AttributeError:
         raise NotImplementedError("Hyperopt can't find function named {}!".format(s[1]))
 
-    f = f(*x[1:])
+    args = x[1:]
+    for a in args:
+        parse(a)
+
+    f = f(*args)
     return f
 
 
