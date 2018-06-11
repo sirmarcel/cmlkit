@@ -1,0 +1,157 @@
+#!/usr/bin/env python
+
+import argparse
+import sys
+from hyperopt.mongoexp import *
+from cmlkit import logger
+from cmlkit.autotune.parse import preprocess
+from cmlkit.autotune.core import setup_logger
+import cmlkit.inout as cmlio
+
+def my_worker_helper(options):
+    N = int(options.max_jobs)
+    if options.last_job_timeout is not None:
+        last_job_timeout = time.time() + float(options.last_job_timeout)
+    else:
+        last_job_timeout = None
+
+    def sighandler_shutdown(signum, frame):
+        logger.info('Caught signal %i, shutting down.' % signum)
+        raise Shutdown(signum)
+
+    def sighandler_wait_quit(signum, frame):
+        logger.info('Caught signal %i, shutting down.' % signum)
+        raise WaitQuit(signum)
+
+    signal.signal(signal.SIGINT, sighandler_shutdown)
+    signal.signal(signal.SIGHUP, sighandler_shutdown)
+    signal.signal(signal.SIGTERM, sighandler_shutdown)
+    signal.signal(signal.SIGUSR1, sighandler_wait_quit)
+
+    if N > 1:
+        proc = None
+        cons_errs = 0
+        if last_job_timeout and time.time() > last_job_timeout:
+            logger.info("Exiting due to last_job_timeout")
+            return
+
+        while N and cons_errs < int(options.max_consecutive_failures):
+            try:
+                # recursive Popen, dropping N from the argv
+                # By using another process to run this job
+                # we protect ourselves from memory leaks, bad cleanup
+                # and other annoying details.
+                # The tradeoff is that a large dataset must be reloaded once for
+                # each subprocess.
+                sub_argv = [sys.argv[0],
+                            '--poll-interval=%s' % options.poll_interval,
+                            '--max-jobs=1',
+                            '--mongo=%s' % options.mongo,
+                            '--name=%s' % options.name,
+                            '--reserve-timeout=%s' % options.reserve_timeout,
+                            options.infile]
+                if options.workdir is not None:
+                    sub_argv.append('--workdir=%s' % options.workdir)
+                if options.exp_key is not None:
+                    sub_argv.append('--exp-key=%s' % options.exp_key)
+                proc = subprocess.Popen(sub_argv)
+                retcode = proc.wait()
+                proc = None
+
+            except Shutdown:
+                # this is the normal way to stop the infinite loop (if originally N=-1)
+                if proc:
+                    # proc.terminate() is only available as of 2.6
+                    os.kill(proc.pid, signal.SIGTERM)
+                    return proc.wait()
+                else:
+                    return 0
+
+            except WaitQuit:
+                # -- sending SIGUSR1 to a looping process will cause it to
+                # break out of the loop after the current subprocess finishes
+                # normally.
+                if proc:
+                    return proc.wait()
+                else:
+                    return 0
+
+            if retcode != 0:
+                cons_errs += 1
+            else:
+                cons_errs = 0
+            N -= 1
+        logger.info("exiting with N=%i after %i consecutive exceptions" % (
+            N, cons_errs))
+    elif N == 1:
+        # XXX: the name of the jobs collection is a parameter elsewhere,
+        #      so '/jobs' should not be hard-coded here
+        mj = MongoJobs.new_from_connection_str(
+            as_mongo_str(options.mongo) + '/jobs')
+
+        mworker = MongoWorker(mj,
+                              float(options.poll_interval),
+                              workdir=options.workdir,
+                              exp_key=options.exp_key)
+        mworker.run_one(reserve_timeout=float(options.reserve_timeout))
+    else:
+        raise ValueError("N <= 0")
+
+parser = argparse.ArgumentParser(description='Start an autotune worker.')
+parser.add_argument('infile', metavar='infile', type=str,
+                    help='path to a yaml autotune input file')
+
+parser.add_argument('--name', '-n',
+                    help='A name for this worker (logs are named worker_name.log)',
+                    metavar='name',
+                    default='',
+                    dest='name')
+parser.add_argument("--exp-key",
+                  dest='exp_key',
+                  default=None,
+                  metavar='str',
+                  help="identifier for this workers's jobs")
+parser.add_argument("--last-job-timeout",
+                  dest='last_job_timeout',
+                  metavar='T',
+                  default=None,
+                  help="Do not reserve a job after T seconds have passed")
+parser.add_argument("--max-consecutive-failures",
+                  dest="max_consecutive_failures",
+                  metavar='N',
+                  default=2,
+                  help="stop if N consecutive jobs fail (default: 2)")
+parser.add_argument("--max-jobs",
+                  dest='max_jobs',
+                  default=sys.maxsize,
+                  help="stop after running this many jobs (default: inf)")
+parser.add_argument("--mongo",
+                  dest='mongo',
+                  default='localhost/hyperopt',
+                  help="<host>[:port]/<db> for IPC and job storage")
+parser.add_argument("--poll-interval",
+                  dest='poll_interval',
+                  metavar='N',
+                  default=5,
+                  help="check work queue every 1 < T < N seconds (default: 5")
+parser.add_argument("--reserve-timeout",
+                  dest='reserve_timeout',
+                  metavar='T',
+                  default=60.0,
+                  help="poll database for up to T seconds to reserve a job")
+parser.add_argument("--workdir",
+                  dest="workdir",
+                  default='',
+                  help="root workdir (default: '')",
+                  metavar="DIR")
+
+options = parser.parse_args()
+
+
+r = cmlio.read_yaml(options.infile)
+preprocess(r)
+setup_logger(r, logname='worker_' + str(options.name))
+options.mongo = r['config']['db_url']
+options.exp_key = r['name']
+
+sys.exit(my_worker_helper(options))
