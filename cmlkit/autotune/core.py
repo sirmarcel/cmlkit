@@ -37,6 +37,7 @@ def run_autotune(r):
 
     preprocess(r)
     setup_local(r)
+    setup_logger(r)
     logger.info('Setup finished. Welcome to AutoTune.')
     trials = trials_setup(r)
 
@@ -53,10 +54,14 @@ def setup_local(r):
     cmlio.makedir('logs')
     cmlio.makedir('out')
 
-    # logger
+def setup_logger(r, logname=None):
     logger.setLevel(r['config']['loglevel'])
 
-    file_logger = logging.FileHandler("{}.log".format('logs/' + r['name']))
+    if logname is None:
+        file_logger = logging.FileHandler("{}.log".format('logs/' + r['name']))
+    else:
+        file_logger = logging.FileHandler("{}.log".format('logs/' + logname))
+
     file_logger.setLevel(r['config']['loglevel'])
     logger.addHandler(file_logger)
 
