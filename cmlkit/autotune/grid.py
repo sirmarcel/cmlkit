@@ -8,4 +8,4 @@ def log2(start, stop, n):
 
 
 def medium():
-    return np.logspace(-20, 20, num=41, base=2.0)
+    return np.logspace(-18, 20, num=39, base=2.0)
