@@ -21,7 +21,7 @@ def preprocess(d):
     d['config'] = {**defaults_config, **d['config']}
 
     if d['config']['parallel'] is True:
-        defaults_parallel = {'db_name': d['config']['project'], 'db_port': 1234, 'db_ip': '127.0.0.1'}
+        defaults_parallel = {'db_name': d['project'], 'db_port': 1234, 'db_ip': '127.0.0.1'}
         d['config'] = {**defaults_parallel, **d['config']}
         db_url = 'mongo://{}:{}/{}'.format(d['config']['db_ip'], d['config']['db_port'], d['config']['db_name'])
         d['config'] = {**{'db_url': db_url}, **d['config']}
