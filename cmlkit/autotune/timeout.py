@@ -132,6 +132,7 @@ def wrap_cost(cost_fn, timeout=None, iters=1, verbose=0):
                 return fn_rval[1]
 
         return {'status': hyperopt.STATUS_FAIL,
-                'failure': 'timeout'}
+                'failure': 'timeout',
+                'loss': float('inf')}
 
     return wrapper
