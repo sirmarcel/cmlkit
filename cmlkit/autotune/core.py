@@ -100,7 +100,8 @@ def postprocess(r, result, duration):
         'final_loss_variance': result.best_trial['result']['loss_variance'],
         'duration': duration,
         'losses': result.losses(),
-        'run_config': r['internal']['original_task']
+        'run_config': r['internal']['original_task'],
+        'trials': result.trials
     }
 
     cmlio.save('out/' + r['name'] + '.run', to_save)
