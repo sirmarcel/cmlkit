@@ -19,10 +19,13 @@ args = parser.parse_args()
 r = cmlio.read_yaml(args.infile)
 preprocess(r)
 
-config = {'net': {'bindIp': r['config']['db_ip'], 'port': r['config']['db_port']},
-                  'storage': {'db_path': this_path + '/db/',
-                              'journal': {'enabled': True}}}
-config_name = 'mongod_{}'.format(r['name'])
-cmlio.save_yaml(config_name, config)
+if r['config']['parallel'] is True:
+    config = {'net': {'bindIp': r['config']['db_ip'], 'port': r['config']['db_port']},
+                      'storage': {'dbPath': this_path + '/db/',
+                                  'journal': {'enabled': True}}}
+    config_name = 'mongod_{}'.format(r['name'])
+    cmlio.save_yaml(config_name, config)
 
-print('Please start mongodb with\n mongod --config {}'.format(config_name + '.yml'))
+    print('Please start mongodb with\n mongod --config {}'.format(config_name + '.yml'))
+else:
+    print('Parallelisation not enabled in config file, not doing anything.')
