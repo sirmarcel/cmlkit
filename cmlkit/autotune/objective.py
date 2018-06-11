@@ -1,6 +1,7 @@
 import numpy as np
 from hyperopt import STATUS_OK, STATUS_FAIL
 import qmmlpack as qmml
+import time
 from cmlkit import logger
 from cmlkit.model_spec import ModelSpec
 from cmlkit.autoload import load_dataset
@@ -10,6 +11,7 @@ import cmlkit.indices as cmli
 
 
 def objective(d):
+    start = time.time()
     spec = d['spec']
     data = d['data']
     config = d['config']
@@ -35,7 +37,10 @@ def objective(d):
 
         mean_loss = np.mean(lossvec)
         var_loss = np.var(lossvec)
-        logger.debug("Evaluated objective, loss was %.8f ± %.8f" % (mean_loss, var_loss))
+
+        end = time.time()
+        duration = end - start
+        logger.debug("Evaluated objective in {}s, loss was {} ± {}".format(duration, mean_loss, var_loss))
 
         return {
             'loss': mean_loss,
