@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+import os
+import argparse
+from cmlkit.autotune.parse import preprocess
+import cmlkit.inout as cmlio
+
+this_path = os.environ['PWD']
+cmlio.makedir(this_path + '/db')
+
+parser = argparse.ArgumentParser(description='Create mongodb config from a autotune config.')
+
+
+parser.add_argument('infile', metavar='infile', type=str,
+                    help='path to a yaml autotune input file')
+
+args = parser.parse_args()
+
+r = cmlio.read_yaml(args.infile)
+preprocess(r)
+
+config = {'net': {'bindIp': r['config']['db_ip'], 'port': r['config']['db_port']},
+                  'storage': {'db_path': this_path + '/db/',
+                              'journal': {'enabled': True}}}
+config_name = 'mongod_{}'.format(r['name'])
+cmlio.save_yaml(config_name, config)
+
+print('Please start mongodb with\n mongod --config {}'.format(config_name + '.yml'))
