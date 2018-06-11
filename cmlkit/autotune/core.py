@@ -79,10 +79,9 @@ def trials_setup(r):
 
 def run_hyperopt(r, trials):
     logger.info('Starting optimisation.')
-    safe_objective = wrap_cost(objective, timeout=r['config']['timeout'], iters=1, verbose=1)
 
     start = time.time()
-    best = fmin(safe_objective,
+    best = fmin(objective,
                 space=r,
                 algo=tpe.suggest,
                 max_evals=r['config']['n_calls'],

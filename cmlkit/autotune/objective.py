@@ -8,9 +8,16 @@ from cmlkit.autoload import load_dataset
 from cmlkit.reps.cached_mbtr import DiskAndMemCachedMBTR
 import cmlkit.regression as cmlr
 import cmlkit.indices as cmli
+from cmlkit.autotune.timeout import wrap_cost
 
 
 def objective(d):
+    my_objective = wrap_cost(_objective, timeout=r['config']['timeout'], iters=1, verbose=1)
+    
+    return my_objective(d)
+
+
+def _objective(d):
     start = time.time()
     spec = d['spec']
     data = d['data']
