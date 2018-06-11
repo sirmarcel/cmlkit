@@ -15,7 +15,8 @@ def preprocess(d):
     d['spec']['desc'] = 'Model during autotune run; ' + d['desc']
 
     # Defaults
-    d = {**{'project': 'default'}, **d}
+    if 'project' not in d:
+        d['project'] = 'default'
 
     defaults_config = {'parallel': False, 'loss': 'rmse', 'n_cands': 2, 'loglevel': 'INFO', 'timeout': None}
     d['config'] = {**defaults_config, **d['config']}
