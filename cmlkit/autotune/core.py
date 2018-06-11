@@ -1,6 +1,7 @@
 import numpy as np
 import time
 import logging
+from cmlkit.autotune.timeout import wrap_cost
 from cmlkit import logger
 import cmlkit.inout as cmlio
 import cmlkit.autoload as cmla
@@ -78,13 +79,16 @@ def trials_setup(r):
 
 def run_hyperopt(r, trials):
     logger.info('Starting optimisation.')
+    safe_objective = wrap_cost(objective, timeout=r['config']['timeout'], iters=1, verbose=1)
+
     start = time.time()
-    best = fmin(objective,
+    best = fmin(safe_objective,
                 space=r,
                 algo=tpe.suggest,
                 max_evals=r['config']['n_calls'],
                 trials=trials)
     end = time.time()
+
     duration = int(end - start)
 
     return trials, duration
