@@ -20,10 +20,16 @@ r = cmlio.read_yaml(args.infile)
 preprocess(r)
 
 if r['config']['parallel'] is True:
-    config = {'net': {'bindIp': r['config']['db_ip'], 'port': r['config']['db_port']},
-                      'storage': {'dbPath': this_path + '/db/',
-                                  'journal': {'enabled': True}}}
     config_name = 'mongod_{}'.format(r['name'])
+    logpath = this_path + '/logs/{}.txt'.format(config_name)
+
+    config = {'net': {'bindIp': r['config']['db_ip'], 'port': r['config']['db_port']},
+              'storage': {'dbPath': this_path + '/db/',
+                          'journal': {'enabled': True}},
+              'systemLog': {'path': logpath, 'destination': 'file', 'logAppend': True}
+              }
+
+
     cmlio.save_yaml(config_name, config)
 
     print('Please start mongodb with\n mongod --config {}'.format(config_name + '.yml'))
