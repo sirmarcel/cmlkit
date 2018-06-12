@@ -20,8 +20,8 @@ if 'CML_CACHE_LOC' in os.environ:
 else:
     # default to current running path of the script
     current = os.environ['PWD']
-    if os.path.isdir(os.path.join(current, '/cache')):
-        cache_loc = os.path.join(current, '/cache')
+    if os.path.isdir(os.path.join(current, 'cache')):
+        cache_loc = os.path.join(current, 'cache')
     else:
         cache_loc = current
 
