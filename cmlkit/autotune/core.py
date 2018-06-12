@@ -1,13 +1,13 @@
 import numpy as np
 import time
 import logging
-from cmlkit.autotune.timeout import wrap_cost
 from cmlkit import logger
 import cmlkit.inout as cmlio
 import cmlkit.autoload as cmla
 from hyperopt import fmin, tpe, Trials
 from hyperopt.mongoexp import MongoTrials
 from cmlkit.autotune.objective import objective
+from cmlkit.autotune.timeout import timeout_objective
 from cmlkit.autotune.parse import preprocess
 from cmlkit.model_spec import ModelSpec
 from cmlkit.reps.cached_mbtr import cache_loc
@@ -85,8 +85,13 @@ def trials_setup(r):
 def run_hyperopt(r, trials):
     logger.info('Starting optimisation.')
 
+    if r['config']['timeout'] is None:
+        o = objective
+    else:
+        o = timeout_objective
+
     start = time.time()
-    best = fmin(objective,
+    best = fmin(o,
                 space=r,
                 algo=tpe.suggest,
                 max_evals=r['config']['n_calls'],
