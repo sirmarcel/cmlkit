@@ -250,4 +250,4 @@ def sanity_check(data, spec, rep):
             warnings.warn('The hash for the spec {} and the MBTR {} do not match!'.format(spec.name, rep.name))
 
         if data.hashes['geom'] != rep.hashes['geom']:
-            warnings.warn('The hash for the geometries in dataset {} and the MBTR {} do not match!'.format(dataset.id, rep.name))
+            warnings.warn('The hash for the geometries in dataset {} and the MBTR {} do not match!'.format(data.id, rep.name))
