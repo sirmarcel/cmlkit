@@ -1,0 +1,3 @@
+#!/bin/bash
+
+nohup start_worker -n $2 $1 > logs/worker_$2.out &
