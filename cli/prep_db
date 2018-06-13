@@ -32,6 +32,6 @@ if r['config']['parallel'] is True:
 
     cmlio.save_yaml(config_name, config)
 
-    print('Please start mongodb with\n mongod --config {}'.format(config_name + '.yml'))
+    print('Please start mongodb with\n mongod --config {}\nor (if working on a remote server) \n nh_start_db {}'.format(config_name + '.yml', config_name + '.yml'))
 else:
     print('Parallelisation not enabled in config file, not doing anything.')
