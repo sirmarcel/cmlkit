@@ -17,9 +17,11 @@ Hello there. You might be interested in reading the :doc:`install` instructions 
    model_spec
    mbtr
    regression
+   autotune
    globals
    conventions
    losses
+   grids
 
 
 Indices and tables
