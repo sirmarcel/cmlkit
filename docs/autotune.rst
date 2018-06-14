@@ -115,9 +115,9 @@ As you can see, the structure is identical to the one used in :doc:`model_spec`,
 Hyperopt Specifications
 -----------------------
 
-In principle, all ``hyperopt`` functions are supported, but in practice, we currently only use ``hp_choice`` (it might be worth investigating this in more detail). For ``hp_choice``, the first argument has to be a string uniquely identifying the parameter to be chosen. The second argument has to be a list of possible options. In the case of numerical parameters, it is tedious to specify these lists by hand, and so the ``grid`` module exists...
+In principle, all ``hyperopt`` functions are supported, but in practice, we currently only use ``hp_choice`` (it might be worth investigating this in more detail). For ``hp_choice``, the first argument has to be a string uniquely identifying the parameter to be chosen. The second argument has to be a list of possible options. In the case of numerical parameters, it is tedious to specify these lists by hand, and so the ``grid`` module exists. However, we are *not* restricted to numerical parameters -- for instance, the choices could also be made between full dictionaries describing different MBTRs.
 
-Note that, the choices can be *nested* and *conditional*. For instance, in the above, some choices of ``weightf`` require an additional parameter, which is also chosen with ``hp_choice``. The same principle applies when whole MBTR configurations are put into ``hp_choice``. In such cases, some care has to be taken to keep the labels of parameters unique.
+Also please note that the choices can be *nested* and *conditional*. For instance, in the above, some choices of ``weightf`` require an additional parameter, which is also chosen with ``hp_choice``. The same principle applies when whole MBTR configurations are put into ``hp_choice``. In such cases, some care has to be taken to keep the labels of parameters unique.
 
 Grid Specifications
 -------------------
@@ -125,3 +125,42 @@ Grid Specifications
 Prefixed with ``gr_``. A few convenience shortcuts have been implemented, for instance ``gr_medium`` is a grid evenly spaced in log2 space from -18 to +20 in steps of 1. These shortcuts currently require the use of a one-item list, which is somewhat awkward, this will be changed at some point. 
 
 ``gr_log2`` generates a log2 grid. A full list can be found in :doc:`grids`.
+
+In summary, the statement ``['hp_choice', 'krr_ls', ['gr_log2', -20, 20, 41]]`` will, at runtime, be replaced with a random pick of 2^-20, 2^-19, ... 2^19, 2^20. 
+
+Usage
+=====
+
+Once a fully-formed ``yaml`` config exists, ``autotune`` can be invoked with the command ``run_autotune config.yml`` from the shell, or alternatively through the ``cmlkit.autotune.core.run_autotune`` python method. Autotune will assume that it is running in a folder intended for this purpose, and create subfolders for logs, the resulting models, and caches. Currently, computed single (i.e. the different k-body terms are saved separately) MBTRs are automatically saved to disk so they don't have to be recomputed if only other parameters have changed.
+
+Workflow for single-core run
+----------------------------
+
+* Convert the dataset you're working on into ``cmlkit`` format and place it in a location specified by the ``$CML_DATASET_PATH`` environment variable (see :doc:`dataset` and :doc:`globals`, as well as `the examples <https://github.com/sirmarcel/cmlkit-examples>`_)
+* Verify that ``$CML_DATASET_PATH`` is set
+* Create a directory for the project you're working on
+* Write a config file (in that folder), omitting the ``parallel`` entry in the ``config`` block (or setting it to ``false``)
+* While in that folder, run ``run_autotune config.yml`` (if you're logged into a remote computer via ssh, use the ``nh_run_autotune`` script, which will start the process in the background and makes sure it doesn't get terminated when the shell exits)
+* You can observe the run in ``logs/name_given_in_config.log``
+* Once it's finished, the best n models are saved to ``out/``
+  
+Post-processing of results is currently under active development, please check back soon.
+  
+Workflow for a parallel run
+---------------------------
+
+The steps are essentially identical, with the following modifications:
+
+* Make sure ``parallel`` is set to ``true``
+* A MongoDB instance has to be running:
+
+    - Before starting autotune, navigate to the project directory and run ``prep_db config.yml``
+    - This will generate a config file for MongoDB, which you can then start with ``mongod --config mongod_config.yml``
+    - If you're on a server, the ``nh_start_db mongod_config.yml`` command can be used instead of starting ``mongod`` directly
+      
+* Worker processes need to be running, which is most easily achieved by using the ``start_worker -n N config.yml`` command, where you replace N with some short number or string identifying the worker you want to start. If you're logged in via ssh, use the ``nh_start_worker config.yml N`` script instead.
+* Logs for the workers can be found in ``logs/worker_N.log``.
+  
+Note: For some reason, worker processes are resistant to termination with ``SIGTERM``, you have to send ``SIGKILL`` instead.
+
+Note: You need to run ``prep_db`` in the project folder, and you need to re-run it every time the folder moves. I am aware this is not elegant. ;)
