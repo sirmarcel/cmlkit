@@ -38,6 +38,8 @@ The :doc:`autotune` page contains all information needed to run automated hyperp
    mbtr
    regression
    autotune
+   autoload
+   indices
    globals
    conventions
    losses
