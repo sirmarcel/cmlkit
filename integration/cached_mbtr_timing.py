@@ -1,10 +1,10 @@
-from datasets.autoload import load
+from cmlkit import load_dataset
 import numpy as np
-from cmlkit.model import ModelSpec
+from cmlkit.model_spec import ModelSpec
 from cmlkit.reps.cached_mbtr import DiskAndMemCachedMBTR
 from cmlkit.utils.timing import timerfunc
 
-d = load('kaggle')
+d = load_dataset('kaggle')
 
 mbtr1 = {'acc': 0.001,
          'geomf': 'count',
