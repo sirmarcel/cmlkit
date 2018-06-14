@@ -53,6 +53,8 @@ def setup_local(r):
     # Folders
     cmlio.makedir('logs')
     cmlio.makedir('out')
+    cmlio.makedir('cache')
+
 
 def setup_logger(r, logname=None):
     logger.setLevel(r['config']['loglevel'])
