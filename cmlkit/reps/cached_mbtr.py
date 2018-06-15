@@ -19,7 +19,13 @@ if 'CML_CACHE_LOC' in os.environ:
     makedir(cache_loc)
 else:
     # default to current running path of the script
-    cache_loc = os.environ['PWD']
+    current = os.environ['PWD']
+    if os.path.isdir(os.path.join(current, 'cache')):
+        cache_loc = os.path.join(current, 'cache')
+    else:
+        cache_loc = current
+
+cache_loc = os.path.normpath(cache_loc)
 
 
 @memcached(max_entries=cache_size)

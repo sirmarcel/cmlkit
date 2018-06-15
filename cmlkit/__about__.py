@@ -23,7 +23,7 @@ __title__ = "cmlkit"
 __summary__ = "Tools for working with qmmlpack"
 __uri__ = "https://github.com/sirmarcel/cmlkit"
 
-__version__ = "1.0.dev1"
+__version__ = "1.0.0-alpha"
 __short_version__ = "1.0"
 
 if base_dir is not None and os.path.exists(os.path.join(base_dir, ".commit")):
@@ -33,7 +33,7 @@ else:
     __commit__ = None
 
 __author__ = "Marcel Langer"
-__email__ = "mail@sirmarcel.org"
+__email__ = "mail@sirmarcel.com"
 
 __license__ = "MIT License"
 __copyright__ = "2018 %s" % __author__

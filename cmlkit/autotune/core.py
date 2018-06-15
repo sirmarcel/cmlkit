@@ -7,6 +7,7 @@ import cmlkit.autoload as cmla
 from hyperopt import fmin, tpe, Trials
 from hyperopt.mongoexp import MongoTrials
 from cmlkit.autotune.objective import objective
+from cmlkit.autotune.timeout import timeout_objective
 from cmlkit.autotune.parse import preprocess
 from cmlkit.model_spec import ModelSpec
 from cmlkit.reps.cached_mbtr import cache_loc
@@ -36,6 +37,7 @@ def run_autotune(r):
 
     preprocess(r)
     setup_local(r)
+    setup_logger(r)
     logger.info('Setup finished. Welcome to AutoTune.')
     trials = trials_setup(r)
 
@@ -51,11 +53,17 @@ def setup_local(r):
     # Folders
     cmlio.makedir('logs')
     cmlio.makedir('out')
+    cmlio.makedir('cache')
 
-    # logger
+
+def setup_logger(r, logname=None):
     logger.setLevel(r['config']['loglevel'])
 
-    file_logger = logging.FileHandler("{}.log".format('logs/' + r['name']))
+    if logname is None:
+        file_logger = logging.FileHandler("{}.log".format('logs/' + r['name']))
+    else:
+        file_logger = logging.FileHandler("{}.log".format('logs/' + logname))
+
     file_logger.setLevel(r['config']['loglevel'])
     logger.addHandler(file_logger)
 
@@ -68,7 +76,7 @@ def trials_setup(r):
     # Trials object for hyperopt
     if r['config']['parallel'] is True:
         logger.info('Performing parallel run with db_name {}. Remember to start the db and the workers.'.format(r['config']['db_name']))
-        trials = MongoTrials('{}/{}/jobs'.format(r['config']['db_url'], r['config']['db_name']), exp_key=r['name'])
+        trials = MongoTrials('{}/jobs'.format(r['config']['db_url'], r['config']['db_name']), exp_key=r['name'])
     else:
         trials = Trials()
         logger.info('Performing serial run.')
@@ -78,13 +86,20 @@ def trials_setup(r):
 
 def run_hyperopt(r, trials):
     logger.info('Starting optimisation.')
+
+    if r['config']['timeout'] is None:
+        o = objective
+    else:
+        o = timeout_objective
+
     start = time.time()
-    best = fmin(objective,
+    best = fmin(o,
                 space=r,
                 algo=tpe.suggest,
                 max_evals=r['config']['n_calls'],
                 trials=trials)
     end = time.time()
+
     duration = int(end - start)
 
     return trials, duration
@@ -96,7 +111,8 @@ def postprocess(r, result, duration):
         'final_loss_variance': result.best_trial['result']['loss_variance'],
         'duration': duration,
         'losses': result.losses(),
-        'run_config': r['internal']['original_task']
+        'run_config': r['internal']['original_task'],
+        'trials': result.trials
     }
 
     cmlio.save('out/' + r['name'] + '.run', to_save)

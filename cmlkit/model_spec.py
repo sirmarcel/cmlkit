@@ -64,6 +64,9 @@ class ModelSpec(object):
                        'krr': hash_sortable_dict(krr),
                        'data': hash_sortable_dict(data)}
 
+    def __str__(self):
+        return self.info
+
     @classmethod
     def from_dict(cls, d):
         """Instantiate ModelSpec from dict"""

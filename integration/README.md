@@ -1,0 +1,1 @@
+These are some very very basic integration test scripts. They require the `kaggle` dataset to be present in your `CML_DATASET_PATH` and will test some of the caching. These are mainly for development, you probably won't have to touch these.

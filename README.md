@@ -11,6 +11,10 @@ Its main features are:
 
 It also (hopefully) provides a simple framework to experiment with the MBTR and collaborate, and reduces the amount of boilerplate code required to get things up and running.
 
+WARNING: At present, `qmmlpack` is *not* publicly available, and this package depends on it. Sorry.
+
 ## Resources
-- Installation instructions are [here](https://cmlkit.readthedocs.io/en/latest/install.html)
-- The docs are [here](https://cmlkit.readthedocs.io/en/latest/)
+
+The [documentation](https://cmlkit.readthedocs.io/en/latest/) contains a lot of information on `cmlkit`, in particular the [installation instructions](https://cmlkit.readthedocs.io/en/latest/install.html).
+
+[This repository](https://github.com/sirmarcel/cmlkit-examples) contains some basic examples to get started.

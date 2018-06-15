@@ -15,8 +15,17 @@ def preprocess(d):
     d['spec']['desc'] = 'Model during autotune run; ' + d['desc']
 
     # Defaults
-    defaults_config = {'parallel': False, 'loss': 'rmse', 'n_cands': 2, 'loglevel': 'INFO'}
+    if 'project' not in d:
+        d['project'] = 'default'
+
+    defaults_config = {'parallel': False, 'loss': 'rmse', 'n_cands': 2, 'loglevel': 'INFO', 'timeout': None}
     d['config'] = {**defaults_config, **d['config']}
+
+    if d['config']['parallel'] is True:
+        defaults_parallel = {'db_name': d['project'], 'db_port': 1234, 'db_ip': '127.0.0.1'}
+        d['config'] = {**defaults_parallel, **d['config']}
+        db_url = 'mongo://{}:{}/{}'.format(d['config']['db_ip'], d['config']['db_port'], d['config']['db_name'])
+        d['config'] = {**{'db_url': db_url}, **d['config']}
 
     parse(d)
 
@@ -97,7 +106,11 @@ def to_hyperopt(x):
     except AttributeError:
         raise NotImplementedError("Hyperopt can't find function named {}!".format(s[1]))
 
-    f = f(*x[1:])
+    args = x[1:]
+    for a in args:
+        parse(a)
+
+    f = f(*args)
     return f
 
 
