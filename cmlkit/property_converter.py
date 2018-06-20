@@ -1,7 +1,8 @@
 import numpy as np
 
+
 def convert(data, prop, origin, target):
-    if origin == target:
+    if origin == target or target is None:
         return prop
     else:
         if data.family == 'tco':
