@@ -17,7 +17,7 @@ def load_dataset(name):
     where all datasets are stored as environment variable CML_DATASET_PATH,
     formatted like the normal PATH variable, i.e. /my/first/path:/my/second/path.
 
-    As last resort, an empty path will be tried, which should default to the local directory.
+    As last resort, the current working directory will be tried.
 
     Args:
         name: Filename of dataset

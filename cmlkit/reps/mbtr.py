@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import qmmlpack as qmml
 import cmlkit.inout as cmlio
@@ -84,7 +85,7 @@ class MBTR(object):
     def _make_mbtr(self, dataset, spec):
         return make_mbtrs(dataset, spec)
 
-    def save(self, directory='', filename=None):
+    def save(self, dirname='', filename=None):
         """Save this MBTR to disk with default name datasetid_specname"""
 
         tosave = {
@@ -98,9 +99,10 @@ class MBTR(object):
         }
 
         if filename is None:
-            cmlio.save(directory + self.name + '.mbtr', tosave)
-        else:
-            cmlio.save(directory + filename + '.mbtr', tosave)
+            filename = self.name
+
+        cmlio.save(os.path.join(dirname, filename + '.mbtr'), tosave)
+
 
     @classmethod
     def from_file(cls, file):

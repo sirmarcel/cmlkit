@@ -8,7 +8,10 @@ def log2(start, stop, n):
 
 
 def medium():
+    """Log grid from 2^-18 to 2^20 with 39 steps."""
     return np.logspace(-18, 20, num=39, base=2.0)
 
+
 def coarse():
+    """Log grid from 2^-18 to 2^20 with 16 steps."""
     return np.logspace(-18, 20, num=16, base=2.0)

@@ -126,7 +126,7 @@ class Dataset(object):
             g = i['geometry']
             geom = '\n## Geometry ##'
             geom += '\n### Ranges ###\n'
-            geom += ' These are the ranges for various geometry functions.\n'
+            geom += ' These are the ranges for various geometry properties.\n'
             geom += ' count   : {} to {}'.format(g['min_count'], g['max_count']) + '\n'
             geom += ' dist    : {:4.4f} to {:4.4f}'.format(g['min_dist'], g['max_dist']) + '\n'
             geom += ' 1/dist  : {:4.4f} to {:4.4f}'.format(g['min_1/dist'], g['max_1/dist']) + '\n'
@@ -138,7 +138,7 @@ class Dataset(object):
             geom += ' count     : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05 * g['max_count'], 1.1 * g['max_count']) + '\n'
             geom += ' k=2 MBTR:\n'
             geom += ' 1/dist    : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05 * g['max_1/dist'], 1.1 * g['max_1/dist']) + '\n'
-            geom += ' 1/dist^2  : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05 * g['max_1/dist^2'], 1.1 * g['max_1/dist^2']) + '\n'
+            geom += ' 1/dot     : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05 * g['max_1/dist^2'], 1.1 * g['max_1/dist^2']) + '\n'
             geom += ' k=3 MBTR (experimental):\n'
             geom += ' angle     : ({:4.2f}, {:4.2f}/n, n)'.format(-0.05 * np.pi, 1.1 * np.pi) + '\n'
             geom += ' cos_angle : ({:4.2f}, {:4.2f}/n, n)'.format(-1.05 * 1, 2.1) + '\n'

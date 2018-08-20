@@ -10,7 +10,7 @@ def pretty_loss(loss):
 def loss(true, pred):
     """Return the triple (rmse, mae and r2)"""
 
-    return (rmse(true, pred), mae(true, pred), r2(true, pred) * 100)
+    return (rmse(true, pred), mae(true, pred), r2(true, pred))
 
 
 def rmse(true, pred):
@@ -52,4 +52,4 @@ def logr2(true, pred):
 def logloss(true, pred):
     """Return the triple (rmse, mae and r2)"""
 
-    return (logrmse(true, pred), logmae(true, pred), logr2(true, pred) * 100)
+    return (logrmse(true, pred), logmae(true, pred), logr2(true, pred))
