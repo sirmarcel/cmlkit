@@ -35,7 +35,6 @@ mbtrs:
     acc: 0.001
 
 krr:
-  kernelf: 'gaussian'
-  ls: 0.3535533905932738
+  kernelf: ['gaussian', 0.3535533905932738]
   nl: 6.103515625e-05
   centering: False
