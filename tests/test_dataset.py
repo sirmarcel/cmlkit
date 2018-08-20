@@ -77,6 +77,13 @@ class TestDataset(TestCase):
         self.assertEqual(d2.id, self.d['id'])
         self.assertEqual(d2.family, self.d['family'])
 
+    def test_hashing_as_expected(self):
+        d = read(dirname + '/test.dat.npy')
+        print(d.hashes)
+        self.assertEqual(d.hashes['p'], '6b41fd43bf4c8b0e6251e033851b9fb7')
+        self.assertEqual(d.hashes['geom'], 'fcc255eceeed4db12d9bc411da2b497b')
+
+
 
 class TestSubset(TestCase):
 
