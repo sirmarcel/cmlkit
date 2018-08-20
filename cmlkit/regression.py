@@ -245,10 +245,9 @@ def idx_compute_loss(data, spec, idx_train, idx_predict, rep=None,
 
 
 def sanity_check(data, spec, rep):
-    pass
-    # if isinstance(data, (Dataset, Subset)) and isinstance(rep, MBTR):
-    #     if spec.hashes['mbtrs'] != rep.hashes['spec']:
-    #         warnings.warn('The hash for the spec {} and the MBTR {} do not match!'.format(spec.name, rep.name))
+    if isinstance(data, (Dataset, Subset)) and isinstance(rep, MBTR):
+        if spec.hashes['mbtrs'] != rep.hashes['spec']:
+            warnings.warn('The hash for the spec {} and the MBTR {} do not match!'.format(spec.name, rep.name))
 
-    #     if data.hashes['geom'] != rep.hashes['geom']:
-    #         warnings.warn('The hash for the geometries in dataset {} and the MBTR {} do not match!'.format(data.id, rep.name))
+        if data.hashes['geom'] != rep.hashes['geom']:
+            warnings.warn('The hash for the geometries in dataset {} and the MBTR {} do not match!'.format(data.id, rep.name))
