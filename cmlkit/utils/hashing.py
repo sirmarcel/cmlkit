@@ -64,9 +64,6 @@ def hash_arrays(*args):
 
     f = hashlib.md5()
     for a in args:
-        if a is None:
-            f.update('None'.encode('utf-8'))
-        else:
-            f.update(a)
+        _hash(a, f)
 
     return f.hexdigest()
