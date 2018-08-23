@@ -85,3 +85,89 @@ def find_pattern_apply_f(d, pattern, f):
                 d[i] = f(d[i])
             else:
                 find_pattern_apply_f(d[i], pattern, f)
+
+
+def find_pattern(d, pattern):
+    """In a nested dict/list data structure, find all paths where pattern returns true.
+
+    In a data structure composed of dicts, lists and tuples, evaluate each value,
+    and if pattern returns true, record the sequence of keys leading to this point.
+
+    Args:
+        d: Dict/list/tuple data structure
+        pattern: Boolean function
+
+    Returns:
+        A list of paths, where a path is a list of keys that, when applied in sequence,
+        bring you to a node where pattern returns true.
+
+    """
+
+    results = []
+
+    _find_pattern(d, pattern, results)
+
+    return results
+
+
+def _find_pattern(d, pattern, results, path=[]):
+    # recursive part; should not have to be called standalone
+    if pattern(d) is True:
+        results.append(path)
+
+    else:
+        if isinstance(d, dict):
+            keys = d.keys()
+        elif isinstance(d, (list, tuple)):
+            keys = list(range(len(d)))
+        else:
+            keys = None
+
+        if keys is not None:
+            for k in keys:
+                _find_pattern(d[k], pattern, results, path + [k])
+
+
+def set_with_path(d, path, value):
+    """In a nested dict/list data structure, set the entry at path.
+
+    In a data structure composed of dicts, lists and tuples, apply each
+    key in sequence, then set the resulting entry of the tree to value.
+    This is done in-place!
+
+    Args:
+        d: Dict/list/tuple data structure
+        path: List of keys
+        value: Value to set
+
+    """
+
+    my_d = d
+
+    for key in path[:-1]:
+        my_d = my_d[key]
+
+    my_d[path[-1]] = value
+
+
+def get_with_path(d, path):
+    """In a nested dict/list data structure, set the entry at path.
+
+    In a data structure composed of dicts, lists and tuples, apply each
+    key in sequence, return the result.
+
+    Args:
+        d: Dict/list/tuple data structure
+        path: List of keys
+
+    Returns:
+        Whatever is in the data structure at that path.
+
+    """
+
+    my_d = d
+
+    for key in path:
+        my_d = my_d[key]
+
+    return my_d

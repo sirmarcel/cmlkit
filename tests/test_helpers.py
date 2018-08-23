@@ -87,3 +87,48 @@ class TestFindPatternApplyF(TestCase):
 
         find_pattern_apply_f(d, pattern, lambda x: x[1]**2)
         self.assertEqual(d, {'arg1': 3, 'arg2': ['k', 4]})
+
+
+class TestPathHelpers(TestCase):
+
+    def test_get_path(self):
+        d = {
+            'a': '42',
+            'b': [1, 2, 3, [['42']]],
+            'f': {'m': ['lgs', [1, 2, 3, '42']]},
+            'c': {'m': ['lgs', [1, 2, 3]]},
+            'e': {'m': ['lgs', '42']}
+        }
+
+        self.assertEqual(get_with_path(d, ['f', 'm', 0]), 'lgs')
+
+    def test_set_path(self):
+        d = {
+            'a': '42',
+            'b': [1, 2, 3, [['42']]],
+            'f': {'m': ['lgs', [1, 2, 3, '42']]},
+            'c': {'m': ['lgs', [1, 2, 3]]},
+            'e': {'m': ['lgs', '42']}
+        }
+
+        set_with_path(d, ['f', 'm', 0], '1234')
+
+        self.assertEqual(get_with_path(d, ['f', 'm', 0]), '1234')
+
+    def test_find_pattern(self):
+
+        d = {
+            'a': '42',
+            'b': [1, 2, 3, [['42']]],
+            'f': {'m': ['lgs', [1, 2, 3, '42']]},
+            'c': {'m': ['lgs', [1, 2, 3]]},
+            'e': {'m': ['lgs', '42']}
+        }
+
+        def my_pattern(value):
+            return value == '42'
+
+        found = find_pattern(d, my_pattern)
+
+        for f in found:
+            self.assertTrue(my_pattern(get_with_path(d, f)))
