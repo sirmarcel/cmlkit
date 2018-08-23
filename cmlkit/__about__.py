@@ -23,7 +23,7 @@ __title__ = "cmlkit"
 __summary__ = "Tools for working with qmmlpack"
 __uri__ = "https://github.com/sirmarcel/cmlkit"
 
-__version__ = "1.0.0-beta"
+__version__ = "1.0.0-beta2-dev"
 __short_version__ = "1.0"
 
 if base_dir is not None and os.path.exists(os.path.join(base_dir, ".commit")):
