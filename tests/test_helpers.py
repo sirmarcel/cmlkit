@@ -132,3 +132,27 @@ class TestPathHelpers(TestCase):
 
         for f in found:
             self.assertTrue(my_pattern(get_with_path(d, f)))
+
+    def test_find_pattern_ignore(self):
+        d = {
+            'a': '42',
+            'b': [1, 2, 3, [['42']]],
+            'f': {'m': ['lgs', [1, 2, 3, '42']]},
+            'c': {'m': ['lgs', [1, 2, 3]]},
+            'e': {'m': ['lgs', '42', '42']}
+        }
+
+        def my_pattern(value):
+            return value == '42'
+
+        found = find_pattern(d, my_pattern, ignore=[['f', 'm']])
+
+        self.assertNotEqual(found, [['a'], ['b', 3, 0, 0], ['f', 'm', 1, 3], ['e', 'm', 1], ['e', 'm', 2]])
+        self.assertEqual(found, [['a'], ['b', 3, 0, 0], ['e', 'm', 1], ['e', 'm', 2]])
+
+    def test_match_paths(self):
+        ignore = [['f', 'm'], ['b']]
+
+        self.assertTrue(matches_any(['f', 'm'], ignore))
+        self.assertTrue(matches_any(['b'], ignore))
+        self.assertFalse(matches_any(['c'], ignore))

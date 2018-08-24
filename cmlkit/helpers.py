@@ -87,7 +87,7 @@ def find_pattern_apply_f(d, pattern, f):
                 find_pattern_apply_f(d[i], pattern, f)
 
 
-def find_pattern(d, pattern):
+def find_pattern(d, pattern, ignore=[]):
     """In a nested dict/list data structure, find all paths where pattern returns true.
 
     In a data structure composed of dicts, lists and tuples, evaluate each value,
@@ -96,6 +96,8 @@ def find_pattern(d, pattern):
     Args:
         d: Dict/list/tuple data structure
         pattern: Boolean function
+        ignore: For any of the paths in ignore, stop search a branch when
+                the current path matches it.
 
     Returns:
         A list of paths, where a path is a list of keys that, when applied in sequence,
@@ -105,27 +107,41 @@ def find_pattern(d, pattern):
 
     results = []
 
-    _find_pattern(d, pattern, results)
+    _find_pattern(d, pattern, results, ignore=ignore)
 
     return results
 
 
-def _find_pattern(d, pattern, results, path=[]):
+def _find_pattern(d, pattern, results, path=[], ignore=[]):
     # recursive part; should not have to be called standalone
-    if pattern(d) is True:
-        results.append(path)
+    if matches_any(path, ignore):
+        return None
+    else:
+        if pattern(d) is True:
+            results.append(path)
+
+        else:
+            if isinstance(d, dict):
+                keys = d.keys()
+            elif isinstance(d, (list, tuple)):
+                keys = list(range(len(d)))
+            else:
+                keys = None
+
+            if keys is not None:
+                for k in keys:
+                    _find_pattern(d[k], pattern, results, path + [k], ignore=ignore)
+
+
+def matches_any(path, paths):
+    """If path matches any path in paths, return true."""
+
+    for p in paths:
+        if p == path:
+            return True
 
     else:
-        if isinstance(d, dict):
-            keys = d.keys()
-        elif isinstance(d, (list, tuple)):
-            keys = list(range(len(d)))
-        else:
-            keys = None
-
-        if keys is not None:
-            for k in keys:
-                _find_pattern(d[k], pattern, results, path + [k])
+        return False
 
 
 def set_with_path(d, path, value):
