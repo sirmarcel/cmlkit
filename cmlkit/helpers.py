@@ -12,6 +12,50 @@ def convert_sequence(s):
             return (s[0], s[1:])
 
 
+def tuples_to_lists(d):
+    """In nested object, convert all tuples to lists, in place."""
+
+    # Get an iterator so we can go through both keys and values.
+    # (Unfortunately, list and dict have different interfaces!)
+    if isinstance(d, (tuple, list)):
+        it = enumerate(d)
+    elif isinstance(d, dict):
+        it = d.items()
+
+    # recursively convert
+    for k, v in it:
+        if isinstance(v, (dict, list)):
+            tuples_to_lists(v)
+
+        elif isinstance(v, tuple):
+            d[k] = list(v)
+            tuples_to_lists(d[k])
+
+
+def lists_to_tuples(d):
+    """In nested object, convert all lists to tuples, in place."""
+
+    # Get an iterator so we can go through both keys and values.
+    # (Unfortunately, list and dict have different interfaces!)
+    if isinstance(d, (tuple, list)):
+        it = enumerate(d)
+    elif isinstance(d, dict):
+        it = d.items()
+
+    # recursively convert
+    for k, v in it:
+        if isinstance(v, (dict, tuple)):
+            lists_to_tuples(v)
+
+        elif isinstance(v, list):
+            # the order is important here,
+            # tuples cannot be changed, so
+            # we need to convert from the
+            # 'bottom' of the recursion
+            lists_to_tuples(d[k])
+            d[k] = tuple(v)
+
+
 def find_key_apply_f(d, key, f):
     """Find key in dict, apply f to the value
 
@@ -85,6 +129,7 @@ def find_pattern_apply_f(d, pattern, f):
                 d[i] = f(d[i])
             else:
                 find_pattern_apply_f(d[i], pattern, f)
+
 
 
 def find_pattern(d, pattern, ignore=[]):

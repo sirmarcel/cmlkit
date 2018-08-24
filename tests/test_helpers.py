@@ -89,6 +89,54 @@ class TestFindPatternApplyF(TestCase):
         self.assertEqual(d, {'arg1': 3, 'arg2': ['k', 4]})
 
 
+class TestListsToTuples(TestCase):
+
+    def test_lists_to_tuples(self):
+        d = {
+            'a': '42',
+            'b': [1, 2, 3, [42, 1, 3]],
+            'f': {'m': ['lgs']},
+            'c': {'m': ['lgs', [1, 2, 3]]},
+            'e': {'m': ['lgs', '42']}
+        }
+
+        lists_to_tuples(d)
+        print(d)
+
+        self.assertIsInstance(get_with_path(d, ['b']), tuple)
+        self.assertIsInstance(get_with_path(d, ['b', 3]), tuple)
+        self.assertIsInstance(get_with_path(d, ['f', 'm']), tuple)
+        self.assertIsInstance(get_with_path(d, ['c', 'm']), tuple)
+        self.assertIsInstance(get_with_path(d, ['e', 'm']), tuple)
+
+
+class TestTuplesToLists(TestCase):
+
+    def test_tuples_to_lists(self):
+        d = {
+            'a': '42',
+            'b': [1, 2, 3, (42, 1, 2, 3)],
+            'f': {'m': ['lgs', [1, 2, 3, '42']]},
+            'c': {'m': ('lgs', [1, 2, 3])},
+            'e': {'m': ['lgs', '42']},
+            'tricky': (1, 2, [1, 2, (3, 4)])
+        }
+
+        tuples_to_lists(d)
+        print(d)
+
+        self.assertIsInstance(get_with_path(d, ['b']), list)
+        self.assertIsInstance(get_with_path(d, ['b', 3]), list)
+        self.assertIsInstance(get_with_path(d, ['f', 'm']), list)
+        self.assertIsInstance(get_with_path(d, ['f', 'm', 1]), list)
+        self.assertIsInstance(get_with_path(d, ['c', 'm']), list)
+        self.assertIsInstance(get_with_path(d, ['e', 'm']), list)
+        self.assertIsInstance(get_with_path(d, ['tricky']), list)
+        self.assertIsInstance(get_with_path(d, ['tricky', 2]), list)
+        self.assertIsInstance(get_with_path(d, ['tricky', 2, 2]), list)
+
+
+
 class TestPathHelpers(TestCase):
 
     def test_get_path(self):
