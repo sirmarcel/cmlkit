@@ -6,7 +6,7 @@ import cmlkit
 import cmlkit.helpers as cmlh
 
 
-def run_lgs(template, objective, resolution=None, maxevals=100):
+def run_lgs(template, objective, resolution=None, maxevals=100, ignore=[]):
     """Run a logspace local grid search.
 
     This optimises a function that expects a dict/list/tuple nested data
@@ -24,16 +24,17 @@ def run_lgs(template, objective, resolution=None, maxevals=100):
     Args:
         template: dict/list/tuple nested data structure
         objective: function to optimise
-        resolution: optional, if specified as a number a, 
+        resolution: optional, if specified as a number a,
                     objective will be rounded to multiples of a
         maxevals: optional, maximum evaluations before terminating
+        ignore: list of paths to ignore in template
 
     Returns:
         A dict with diagnostic info.
 
     """
 
-    wrapped_objective, variables, locations = prepare_lgs(template, objective)
+    wrapped_objective, variables, locations = prepare_lgs(template, objective, ignore=ignore)
     cmlkit.logger.debug("Running grid search for the following variables: {}".format(locations))
 
     cmlkit.logger.info("Starting local grid search with {} variables.".format(len(locations)))
@@ -63,8 +64,8 @@ def lgs_pattern(x):
     return False
 
 
-def prepare_lgs(template, objective):
-    locations = cmlh.find_pattern(template, lgs_pattern)
+def prepare_lgs(template, objective, ignore=[]):
+    locations = cmlh.find_pattern(template, lgs_pattern, ignore=ignore)
     variables = (cmlh.get_with_path(template, loc)[1] for loc in locations)
 
     def wrapped_objective(*args):
