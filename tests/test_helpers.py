@@ -120,7 +120,7 @@ class TestPathHelpers(TestCase):
         d = {
             'a': '42',
             'b': [1, 2, 3, [['42']]],
-            'f': {'m': ['lgs', [1, 2, 3, '42']]},
+            'f': {'m': ['lgs', [1, 2, 3, '42']], 'c': ['42']},
             'c': {'m': ['lgs', [1, 2, 3]]},
             'e': {'m': ['lgs', '42']}
         }
@@ -132,6 +132,8 @@ class TestPathHelpers(TestCase):
 
         for f in found:
             self.assertTrue(my_pattern(get_with_path(d, f)))
+
+        self.assertEqual(len(found), 5)
 
     def test_find_pattern_ignore(self):
         d = {
