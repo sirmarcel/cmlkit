@@ -1,8 +1,9 @@
 import os
+import copy
+import pprint
+from bson.son import SON
 import cmlkit.inout as cmlio
 from cmlkit.utils.hashing import hash_sortable_dict
-from bson.son import SON
-import pprint
 
 version = 0.1
 
@@ -71,7 +72,8 @@ class ModelSpec(object):
     def from_dict(cls, d):
         """Instantiate ModelSpec from dict"""
 
-        d = convert_from_SON(d)
+        my_dict = copy.deepcopy(d)
+        d = convert_from_SON(my_dict)
         convert_to_tuple(d)
 
         return cls(d['name'], d['desc'], d['data'], d['mbtrs'], d['krr'])
