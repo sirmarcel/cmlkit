@@ -8,9 +8,40 @@ from cmlkit.autoload import load_dataset
 from cmlkit.reps.cached_mbtr import DiskAndMemCachedMBTR
 import cmlkit.regression as cmlr
 import cmlkit.indices as cmli
+import cmlkit.helpers as cmlh
+import cmlkit.autotune.local_grid_search as lgs
 
 
 def objective(d):
+    cmlh.tuples_to_lists(d)
+    locs = cmlh.find_pattern(d, lgs.lgs_pattern)
+
+    if len(locs) > 0:
+        # lgs expects a real-valued objective, so we must wrap it
+        def lgs_objective(template):
+            return _objective(d)['loss']
+
+        try:
+
+            lgs.run_lgs(d, lgs_objective,
+                        resolution=d['config']['lgs']['resolution'], maxevals=d['config']['lgs']['maxevals'],
+                        ignore=[['config'], ['internal']])
+
+        except qmml.QMMLException as e:
+            logger.error('Encountered QMMLException during local grid search. Will mark this trial as failed. Error text below.')
+            logger.error(e)
+            return {
+                'status': STATUS_FAIL,
+                'spec_dict': d['spec'],
+                'loss': float('inf')
+            }
+
+        return _objective(d)
+    else:
+        return _objective(d)
+
+
+def _objective(d):
     start = time.time()
     spec = d['spec']
     data = d['data']
