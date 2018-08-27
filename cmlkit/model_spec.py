@@ -54,7 +54,8 @@ class ModelSpec(object):
         mbtrs_with_defaults = {}
 
         for mbtr, params in mbtrs.items():
-            mbtrs_with_defaults[mbtr] = {**mbtr_defaults, **params}
+            if params is not None:
+                mbtrs_with_defaults[mbtr] = {**mbtr_defaults, **params}
 
         self.mbtrs = mbtrs_with_defaults
         self.krr = krr
