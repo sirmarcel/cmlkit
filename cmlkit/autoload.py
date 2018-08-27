@@ -1,5 +1,6 @@
 import os
-from cmlkit.dataset import read
+import cmlkit.dataset as cmld
+from cmlkit.utils.caching import _memcached
 
 if 'CML_DATASET_PATH' in os.environ:
     storage_path = [os.path.normpath(p) for p in str(os.environ['CML_DATASET_PATH']).split(':')]
@@ -8,8 +9,10 @@ else:
 
 storage_path.append(os.path.normpath(os.environ['PWD']))
 
+cached_reader = _memcached(cmld.read, max_entries=10)
 
-def load_dataset(name):
+
+def load_dataset(name, reader=cmld.read):
     """Load a dataset with given name
 
     Attempts to automatically load a dataset with the given
@@ -30,8 +33,12 @@ def load_dataset(name):
     for p in storage_path:
         try:
             file = os.path.join(p, name + '.dat.npy')
-            return read(file)
+            return reader(file)
         except FileNotFoundError:
             pass
 
     raise FileNotFoundError('Could not find dataset {} in paths {}'.format(name, storage_path))
+
+
+def load_dataset_cached(name):
+    return load_dataset(name, reader=cached_reader)
