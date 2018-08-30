@@ -63,6 +63,34 @@ def predictive_variance(model, kernel_matrix, kstar=1):
     return pv
 
 
+def negative_log_likelihood(true, pred, var=None, model=None, kernel_matrix=None):
+    """Compute the negative log likelihood
+
+    This is just the -log of p(y* | x), i.e. the log of the
+    posterior probability distribution at the queried points y*.
+
+    Args:
+        true: True labels
+        pred: Predicted labels (predictive mean)
+        var: Optional, predictive mean, if None, model and kernel_matrix have
+             to be specified and we will compute it on the fly
+        model: Optional, qmmlpack.regression.KernelRidgeRegression instance
+        kernel_matrix: Optional, ndarray with each column representing kernel
+                       evaluations between a new point and all training points
+
+    Returns:
+        An ndarray of the negative log likelihood for each point.
+
+    """
+
+    if var is None:
+        assert model is not None, 'If var is not specified, model must be'
+        assert kernel_matrix is not None, 'If var is not specified, kernel_matrix must be'
+        var = predictive_variance(model, kernel_matrix)
+
+    return 0.5*np.log(var) + 0.5*(true-pred)**2/var + 0.5*np.log(2*np.pi)
+
+
 def loo_predictive_variance(model):
     """Compute the log leave-one-out predictive variance.
 
