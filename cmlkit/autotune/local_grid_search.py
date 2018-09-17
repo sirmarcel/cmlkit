@@ -40,7 +40,7 @@ def run_lgs(template, objective, resolution=None, maxevals=100, ignore=[]):
     cmlkit.logger.info("Starting local grid search with {} variables.".format(len(locations)))
     best_v, best_f = qmml.local_grid_search(wrapped_objective, variables, evalmonitor=log_during_eval,
                                             resolution=resolution, maxevals=maxevals)
-
+    cmlkit.logger.info("Ended local grid search with loss {}.".format(best_f))
     # TODO: Once qmmlpack is updated to return actually optimised values remove this, it is very stupid.
     best_values = np.power(2.0, best_v)
 
@@ -54,7 +54,7 @@ def run_lgs(template, objective, resolution=None, maxevals=100, ignore=[]):
 
 
 def log_during_eval(trialv, trialf, bestv, bestf, state):
-    cmlkit.logger.info("Step {}/{}, f={} ({})".format(state['num_evals'], state['max_evals'], trialf, bestf))
+    cmlkit.logger.debug("Step {}/{}, f={} ({})".format(state['num_evals'], state['max_evals'], trialf, bestf))
 
 
 def lgs_pattern(x):
