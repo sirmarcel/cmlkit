@@ -58,7 +58,7 @@ def predictive_variance(model, kernel_matrix, kstar=1):
     else:
         v = qmml.numerics.forward_substitution(model.cholesky_decomposition.T, kernel_matrix)
 
-    pv = kstar - np.diag(v.T @ v)
+    pv = np.diag(kstar - (v.T @ v))
 
     return pv
 
@@ -88,11 +88,11 @@ def negative_log_likelihood(true, pred, var=None, model=None, kernel_matrix=None
         assert kernel_matrix is not None, 'If var is not specified, kernel_matrix must be'
         var = predictive_variance(model, kernel_matrix)
 
-    return 0.5*np.log(var) + 0.5*(true-pred)**2/var + 0.5*np.log(2*np.pi)
+    return 0.5 * np.log(var) + 0.5 * (true - pred)**2 / var + 0.5 * np.log(2 * np.pi)
 
 
-def loo_predictive_variance(model):
-    """Compute the log leave-one-out predictive variance.
+def loo_negative_log_likelihood(model):
+    """Compute the log leave-one-out negative likelihood.
 
     As defined in eq. 5.10 of Rasmussen and Williams:
 
@@ -104,8 +104,8 @@ def loo_predictive_variance(model):
 
     (K is the augmented kernel matrix)
 
-    This is the log of the predictive variance, for a model
-    that was trained on all data, but without that particular point.
+    This is the log of the probability assigned to the label value y, 
+    for a model that was trained on all data, but without that particular point.
 
     It is therefore a retrospective measure!
 
@@ -113,9 +113,9 @@ def loo_predictive_variance(model):
         model: qmmlpack.regression.KernelRidgeRegression instance
 
     Returns:
-        pv: 1-d ndarray with the log leave-one-out predictive variance for all training points
-        y: Labels centred to their mean
-        mu: Predictive mean (leaving out the ith training point)
+        The negative loo log likelihood,
+        the predictive mean, and
+        the predictive variance.
 
     """
 
@@ -129,8 +129,8 @@ def loo_predictive_variance(model):
     kinv = uinv @ np.transpose(uinv)
 
     sigma = 1 / np.diag(kinv)
-    mu = y - (kinv @ y)/np.diag(kinv)
+    mu = y - (kinv @ y) / np.diag(kinv)
 
-    pv = -0.5*np.log(sigma) - (y - mu)**2/(2*sigma) - 0.5*np.log(2*np.pi)
+    nll = 0.5*np.log(sigma) + 0.5*(y - mu)**2/sigma + 0.5*np.log(2*np.pi)
 
-    return pv, y, mu
+    return nll, mu, sigma
