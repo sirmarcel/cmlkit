@@ -33,6 +33,11 @@ def convert(data, prop, origin, target):
                     assert 'n_atoms' in data.p
                     return prop / data.p['n_atoms']
 
+                if origin == 'fe':
+                    assert 'n_atoms' in data.p
+                    assert 'n_sub' in data.p
+                    return prop * data.p['n_sub'] / data.p['n_atoms'] 
+
             elif target == 'fsb':
                 return prop
             else:

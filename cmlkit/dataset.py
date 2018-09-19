@@ -274,6 +274,10 @@ class View(object):
         else:
             self.n = len(idx)
 
+        self.hashes = {'p': hash_sortable_dict(self.p),              # hash of properties
+                       'geom': hash_arrays(self.z, self.r, self.b)}  # hash of structure description
+
+
     @property
     def z(self):
         return self.dataset.z[self.idx]

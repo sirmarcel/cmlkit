@@ -13,6 +13,10 @@ It also (hopefully) provides a simple framework to experiment with the MBTR and 
 
 WARNING: At present, `qmmlpack` is *not* publicly available, and this package depends on it. Sorry.
 
+## Credit
+
+If you use this code in any scientific work, please mention it in the publication and let me know. Thanks!
+
 ## Resources
 
 The [documentation](https://cmlkit.readthedocs.io/en/latest/) contains a lot of information on `cmlkit`, in particular the [installation instructions](https://cmlkit.readthedocs.io/en/latest/install.html).

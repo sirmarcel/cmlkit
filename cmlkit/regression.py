@@ -114,14 +114,18 @@ def train_and_predict(data_train, data_predict,
 
     pred = model(kernel_predict)
 
+    intermediate = {'kernel_train': kernel_train, 'kernel_predict': kernel_predict, 'model': model,
+                    'rep_train': rep_train, 'rep_predict': rep_predict}
+
     if target_property is not None:
+        intermediate['orig_pred'] = pred
         pred = convert(data_predict, pred, spec.data['property'], target_property)
+
+    intermediate['pred'] = pred
 
     if return_intermediate is False:
         return pred
     else:
-        intermediate = {'kernel_train': kernel_train, 'kernel_predict': kernel_predict, 'model': model,
-                        'rep_train': rep_train, 'rep_predict': rep_predict, 'pred': pred}
         return pred, intermediate
 
 
@@ -149,24 +153,33 @@ def compute_loss(data_train, data_predict,
 
     Returns:
         loss: Result of loss function, varying types
-        intermdiate: dict with intermediate info (if requested)
+        intermediate: dict with intermediate info (if requested)
 
     """
 
-    pred, intermdiate = train_and_predict(data_train, data_predict,
-                                          spec,
-                                          rep_train, rep_predict,
-                                          target_property,
-                                          return_intermediate=True)
+    pred, intermediate = train_and_predict(data_train, data_predict,
+                                           spec,
+                                           rep_train, rep_predict,
+                                           target_property,
+                                           return_intermediate=True)
 
     if target_property is None:
         true = data_predict.p[spec.data['property']]
     else:
+        intermediate['orig_true'] = data_predict.p[spec.data['property']]
         true = data_predict.p[target_property]
 
-    loss = lossf(true, pred)
+    intermediate['true'] = true
 
-    intermdiate['true'] = true
+    intermediate['return_intermediate'] = return_intermediate
+    loss = lossf(true, pred, context=intermediate)
+
+    # some more complicated loss functions can optionally return
+    # internal data (such as predictive variance et al), here we
+    # capture that and splice it into the big return dict
+    if isinstance(loss, dict):
+        intermediate = {**intermediate, **loss}
+        loss = loss['loss']
 
     if return_intermediate is False:
         return loss
@@ -193,7 +206,7 @@ def idx_train_and_predict(data, spec, idx_train, idx_predict, rep=None,
 
     Returns:
         predictions: ndarray with predictions
-        intermdiate: dict with intermediate info (if requested)
+        intermediate: dict with intermediate info (if requested)
 
     """
     if rep is None:
@@ -230,7 +243,7 @@ def idx_compute_loss(data, spec, idx_train, idx_predict, rep=None,
 
     Returns:
         loss: Float or list, depending on lossf
-        intermdiate: dict with intermediate info (if requested)
+        intermediate: dict with intermediate info (if requested)
 
     """
 

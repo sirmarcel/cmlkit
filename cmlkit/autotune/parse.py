@@ -18,8 +18,12 @@ def preprocess(d):
     if 'project' not in d:
         d['project'] = 'default'
 
-    defaults_config = {'parallel': False, 'loss': 'rmse', 'n_cands': 2, 'loglevel': 'INFO', 'timeout': None}
+    defaults_config = {'parallel': False, 'loss': 'rmse', 'n_cands': 2,
+                       'loglevel': 'INFO', 'timeout': None, 'lgs': {}, 'cv': None}
     d['config'] = {**defaults_config, **d['config']}
+
+    defaults_lgs = {'maxevals': 20, 'resolution': None}
+    d['config']['lgs'] = {**defaults_lgs, **d['config']['lgs']}
 
     if d['config']['parallel'] is True:
         defaults_parallel = {'db_name': d['project'], 'db_port': 1234, 'db_ip': '127.0.0.1'}
@@ -31,8 +35,6 @@ def preprocess(d):
 
     d['internal'] = {}
     d['internal']['original_task'] = og
-
-
 
 
 def parse(d):

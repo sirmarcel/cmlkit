@@ -25,7 +25,7 @@ def run_autotune(r):
 
     Args:
         r: either a dict, or a yaml file specifying the run,
-           for full docs see TODO
+           please check the docs at https://cmlkit.readthedocs.io/en/master/
 
     Returns:
         None, everything is written to disk

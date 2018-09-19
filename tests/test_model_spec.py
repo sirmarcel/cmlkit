@@ -1,9 +1,10 @@
+import os
+from bson.son import SON
 from unittest import TestCase
 from unittest.mock import MagicMock
 import cmlkit.inout as cmlio
-import os
 from cmlkit.model_spec import *
-from bson.son import SON
+import cmlkit.helpers as cmlh
 
 dirname = os.path.dirname(os.path.abspath(__file__))
 
@@ -12,6 +13,10 @@ class TestModel(TestCase):
     def setUp(self):
         # load test data
         self.data = cmlio.read_yaml(dirname + '/model_1.spec.yml')
+        cmlh.lists_to_tuples(self.data)  # otherwise init_from_dict fails
+
+        self.raw_data = cmlio.read_yaml(dirname + '/model_1.spec.yml')
+        self.maxDiff = None
 
     def test_init_from_dict(self):
         modelSpec = ModelSpec.from_dict(self.data)
@@ -27,7 +32,7 @@ class TestModel(TestCase):
 
         modelSpec = ModelSpec.from_yaml(dirname + '/model_1.spec.yml')
 
-        ModelSpec.from_dict.assert_called_with(self.data)
+        ModelSpec.from_dict.assert_called_with(self.raw_data)
 
     def test_defaults_for_mbtr(self):
         modelSpec = ModelSpec.from_yaml(dirname + '/model_mini.spec.yml')

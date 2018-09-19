@@ -1,8 +1,9 @@
 import os
+import copy
+import pprint
+from bson.son import SON
 import cmlkit.inout as cmlio
 from cmlkit.utils.hashing import hash_sortable_dict
-from bson.son import SON
-import pprint
 
 version = 0.1
 
@@ -34,8 +35,10 @@ class ModelSpec(object):
               should contain the key 'property' at a minimum, defining
               the property that it is intended to predict.
         mbtrs: Dict of dicts specifying the parameters of MBTRs; for
-               details please refer to the (TODO) docs
-        krr: Dict of arguments for KRR; check the (TODO) docs for details
+               details please refer to the qmmlpack docs (some information
+               also at https://cmlkit.readthedocs.io/en/master/)
+        krr: Dict of arguments for KRR; check the qmmlpack docs for details
+             (some information also at https://cmlkit.readthedocs.io/en/master/)
         version: Version of format; can be safely ignored at present, but
                  will be used for backwards compatibility in the future
         hashes: Dict with various hashes of different sub-specs,
@@ -53,7 +56,8 @@ class ModelSpec(object):
         mbtrs_with_defaults = {}
 
         for mbtr, params in mbtrs.items():
-            mbtrs_with_defaults[mbtr] = {**mbtr_defaults, **params}
+            if params is not None:
+                mbtrs_with_defaults[mbtr] = {**mbtr_defaults, **params}
 
         self.mbtrs = mbtrs_with_defaults
         self.krr = krr
@@ -71,7 +75,8 @@ class ModelSpec(object):
     def from_dict(cls, d):
         """Instantiate ModelSpec from dict"""
 
-        d = convert_from_SON(d)
+        my_dict = copy.deepcopy(d)
+        d = convert_from_SON(my_dict)
         convert_to_tuple(d)
 
         return cls(d['name'], d['desc'], d['data'], d['mbtrs'], d['krr'])
