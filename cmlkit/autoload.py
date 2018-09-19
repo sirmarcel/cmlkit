@@ -13,26 +13,34 @@ cached_reader = _memcached(cmld.read, max_entries=10)
 
 
 def load_dataset(name, reader=cmld.read):
-    """Load a dataset with given name
+    """Load a dataset with given (file) name
 
     Attempts to automatically load a dataset with the given
-    file name. The idea here is that you set a global location
-    where all datasets are stored as environment variable CML_DATASET_PATH,
-    formatted like the normal PATH variable, i.e. /my/first/path:/my/second/path.
-
-    As last resort, the current working directory will be tried.
+    (file) name. If a path to a dataset is passed, this is loaded,
+    if not, we will look for a dataset with that name in the PATHs
+    specified in $CML_DATASET_PATH. This path always also includes
+    the local working directory, so omitting the '.dat.npy' extension
+    will also work.
 
     Args:
-        name: Filename of dataset
+        name: Name of dataset, or path to dataset
 
     Returns:
         Instance of Dataset or Subset
 
     """
-    # This implicitly loads the first dataset found
+    # First, try if you have passed a fully formed dataset path
+    if os.path.isfile(name):
+        return reader(name)
+
+    # If we have a dataset name (and not a file name), add the default extension
+    if '.dat.npy' not in name:
+        name += '.dat.npy'
+
+    # Go through the dataset paths, return the first dataset found
     for p in storage_path:
         try:
-            file = os.path.join(p, name + '.dat.npy')
+            file = os.path.join(p, name)
             return reader(file)
         except FileNotFoundError:
             pass
