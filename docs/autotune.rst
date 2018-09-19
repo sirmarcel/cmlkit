@@ -152,7 +152,9 @@ Local grid search specification
 
 Marked by ``lgs``, followed by a list following the syntax used in ``qmmlpack`` for a single variable, for instance:
 
-``['lgs', [start_exponent, priority, step_size, min, max]]``
+``['lgs', [start_exponent, priority, step_size, min_exponent, max_exponent]]``
+
+Note that the search is performed on a *log* grid with base 2. (Custom basis choices will be supported in a later release, once ``qmmlpack-master`` is ready.)
 
 Usage
 =====
