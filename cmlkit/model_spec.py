@@ -35,8 +35,10 @@ class ModelSpec(object):
               should contain the key 'property' at a minimum, defining
               the property that it is intended to predict.
         mbtrs: Dict of dicts specifying the parameters of MBTRs; for
-               details please refer to the (TODO) docs
-        krr: Dict of arguments for KRR; check the (TODO) docs for details
+               details please refer to the qmmlpack docs (some information
+               also at https://cmlkit.readthedocs.io/en/master/)
+        krr: Dict of arguments for KRR; check the qmmlpack docs for details
+             (some information also at https://cmlkit.readthedocs.io/en/master/)
         version: Version of format; can be safely ignored at present, but
                  will be used for backwards compatibility in the future
         hashes: Dict with various hashes of different sub-specs,
