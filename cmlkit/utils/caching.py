@@ -151,6 +151,7 @@ class _diskcached:
         except FileNotFoundError:
             val = self.f(*args, **kwargs)
             tosave = {'val': val, 'name': self.name}
+            cmlio.makedir(self.cache_location)  # make sure cache_location exists
             cmlio.save(self.cache_location + key + '.cache', tosave)
             self.misses += 1
             return val
