@@ -1,7 +1,7 @@
 def convert_sequence(s):
     """Convert arguments to qmmlpack format"""
 
-    if isinstance(s, str):
+    if isinstance(s, (str, type(None), float, int)):
         return s
     else:
         if len(s) == 1:
