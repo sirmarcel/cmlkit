@@ -7,7 +7,12 @@ def convert_sequence(s):
         if len(s) == 1:
             return s[0]
         elif len(s) == 2:
-            return (s[0], (s[1],))
+            if isinstance(s[1], (tuple, list)):
+                # guards against accidentally passing an already
+                # properly formed sequence
+                return (s[0], s[1])
+            else:
+                return (s[0], (s[1],))
         else:
             return (s[0], s[1:])
 
