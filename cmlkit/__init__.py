@@ -57,6 +57,3 @@ def from_npy(config, context={}):
 def from_yaml(path, context={}):
     config = read_yaml(path)
     return from_config(config, context=context)
-
-
-
