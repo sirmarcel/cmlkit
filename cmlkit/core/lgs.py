@@ -1,8 +1,9 @@
 import time
 from qmmlpack import local_grid_search
+
+from cmlkit import logger
 import cmlkit.helpers as cmlh
-import cmlkit2 as cml2
-from cmlkit2.engine import BaseComponent
+from cmlkit.engine import BaseComponent
 
 
 class LocalGridSearch(BaseComponent):
@@ -55,7 +56,7 @@ def run_lgs(template, objective, seed=None, resolution=0.0001, maxevals=50, igno
     qmmlpack.local_grid_search. The optimised parameters are substituted
     in place of the tokens, so note that template is changed!
 
-    Information during optimisation is written to the cml2 logger.
+    Information during optimisation is written to the logger.
 
     Args:
         template: dict/list/tuple nested data structure
@@ -75,9 +76,9 @@ def run_lgs(template, objective, seed=None, resolution=0.0001, maxevals=50, igno
 
     wrapped_objective, variables, locations = prepare_lgs(template, objective, ignore=ignore)
 
-    cml2.logger.debug("Running grid search for the following variables: {}".format(locations))
+    logger.debug("Running grid search for the following variables: {}".format(locations))
     if not silent:
-        cml2.logger.info("Starting local grid search with {} variables.".format(len(locations)))
+        logger.info("Starting local grid search with {} variables.".format(len(locations)))
 
     result = local_grid_search(f=wrapped_objective,
                                variables=variables,
@@ -91,7 +92,7 @@ def run_lgs(template, objective, seed=None, resolution=0.0001, maxevals=50, igno
     best_f = result['best_f']
 
     if not silent:
-        cml2.logger.info("Ended local grid search with loss {}.".format(best_f))
+        logger.info("Ended local grid search with loss {}.".format(best_f))
 
     for i, arg in enumerate(best_values):
         loc = locations[i]
@@ -109,7 +110,7 @@ def run_lgs(template, objective, seed=None, resolution=0.0001, maxevals=50, igno
 
 
 def log_during_eval(trialv, trialf, bestv, bestf, state):
-    cml2.logger.debug("Step {}/{}, f={} ({})".format(state['num_evals'], state['max_evals'], trialf, bestf))
+    logger.debug("Step {}/{}, f={} ({})".format(state['num_evals'], state['max_evals'], trialf, bestf))
 
 
 def lgs_pattern(x):

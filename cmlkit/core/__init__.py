@@ -1,6 +1,6 @@
 """This sub-module implements core functionality specific to ML"""
-import cmlkit2.core.losses
-from cmlkit2.core.lgs import LocalGridSearch, run_lgs
+import losses
+from .lgs import LocalGridSearch, run_lgs
 
 
 def get_loss(name):
