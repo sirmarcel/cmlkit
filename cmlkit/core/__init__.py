@@ -9,10 +9,10 @@ def get_loss(name):
         return name
     elif isinstance(name, (tuple, list)):
         return [get_loss(l) for l in name]
-    elif name in cmlkit2.core.losses.groups:
-        return cmlkit2.core.losses.groups[name]
-    elif hasattr(cmlkit2.core.losses, name):
-        return getattr(cmlkit2.core.losses, name)
+    elif name in losses.groups:
+        return losses.groups[name]
+    elif hasattr(losses, name):
+        return getattr(losses, name)
     else:
         raise ValueError("Loss named {} not found.".format(name))
 

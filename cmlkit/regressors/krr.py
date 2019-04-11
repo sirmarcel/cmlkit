@@ -3,8 +3,8 @@ import qmmlpack as qmml
 from qmmlpack.experimental import recursive_matrix_map
 import numpy as np
 from qmmlpack.experimental import ExtensiveKernelRidgeRegression
-import cmlkit2 as cml2
 
+from cmlkit import logger, cache_location
 from ..helpers import convert_sequence
 from ..engine import *  # TODO TRY TO FIX THIS MESS LMAO
 
@@ -51,7 +51,7 @@ class KRR(BaseComponent):
         self.print_timings = self.context['print_timings']
 
         self.cache_type = self.context['cache_type']
-        self.cache_location = cml2.cache_location
+        self.cache_location = cache_location
         self.min_duration = self.context['min_duration']
 
         if self.cache_type == 'mem':
@@ -80,7 +80,7 @@ class KRR(BaseComponent):
         start = time.time()
         kernel_train = self.kernel_self(x)
         if self.print_timings:
-            cml2.logger.info(f"Computed kernel_train in {time.time()-start:.2f}s.")
+            logger.info(f"Computed kernel_train in {time.time()-start:.2f}s.")
 
         start = time.time()
         self.krr = qmml.KernelRidgeRegression(kernel_train,
@@ -89,7 +89,7 @@ class KRR(BaseComponent):
                                               centering=self.centering)
 
         if self.print_timings:
-            cml2.logger.info(f"Trained KRR in {time.time()-start:.2f}s.")
+            logger.info(f"Trained KRR in {time.time()-start:.2f}s.")
 
         self.is_trained = True
         self.kernel_train = self.krr.kernel_matrix  # qmml internally copies the kernel matrix, no reason to keep it
@@ -101,7 +101,7 @@ class KRR(BaseComponent):
         start = time.time()
         kernel_pred = self.kernel_other(x)
         if self.print_timings:
-            cml2.logger.info(f"Computed kernel_pred in {time.time()-start:.2f}s.")
+            logger.info(f"Computed kernel_pred in {time.time()-start:.2f}s.")
 
         # prediction is typically very fast, so we don't bother timing it
         return self.krr(kernel_pred)
@@ -110,7 +110,7 @@ class KRR(BaseComponent):
         start = time.time()
         kernel = self.kernel_self(x)
         if self.print_timings:
-            cml2.logger.info(f"Computed overall kernel for cv in {time.time()-start:.2f}s.")
+            logger.info(f"Computed overall kernel for cv in {time.time()-start:.2f}s.")
 
         start = time.time()
         results = []
@@ -126,18 +126,18 @@ class KRR(BaseComponent):
             results.append(krr(kernel_pred))
 
         if self.print_timings:
-            cml2.logger.info(f"Trained and predicted over {len(idx)} splits in {time.time()-start:.2f}s.")
+            logger.info(f"Trained and predicted over {len(idx)} splits in {time.time()-start:.2f}s.")
 
         return results
 
     def kernel_self(self, x):
         if self.print_timings:
-            cml2.logger.info(f"   (dim={len(x[0])} per structure)")
+            logger.info(f"   (dim={len(x[0])} per structure)")
         return self.kernelf(x, theta=self.kernel_theta)
 
     def kernel_other(self, x):
         if self.print_timings:
-            cml2.logger.info(f"   (dim={len(x[0])} per structure)")
+            logger.info(f"   (dim={len(x[0])} per structure)")
         return self.kernelf(self.x_train, z=x, theta=self.kernel_theta)
 
 
@@ -157,8 +157,8 @@ class ExtensiveKRR(KRR):
         self.kernel_theta = self.kernel[1][0]
 
         if self.cache_type == 'disk':
-            self.atomic_kernel_self = diskcached(atomic_kernel_self, cml2.cache_location, name='atomic_kernel_self')
-            self.atomic_kernel_other = diskcached(atomic_kernel_other, cml2.cache_location, name='atomic_kernel_other')
+            self.atomic_kernel_self = diskcached(atomic_kernel_self, cache_location, name='atomic_kernel_self')
+            self.atomic_kernel_other = diskcached(atomic_kernel_other, cache_location, name='atomic_kernel_other')
 
         else:
             self.atomic_kernel_self = atomic_kernel_self
@@ -167,12 +167,12 @@ class ExtensiveKRR(KRR):
 
     def kernel_self(self, x):
         if self.print_timings:
-            cml2.logger.info(f"   (dim={len(x[0][0])} per atom)")
+            logger.info(f"   (dim={len(x[0][0])} per atom)")
         return self.atomic_kernel_self(self.kernelf, self.kernel_theta, x, max_size=self.max_size)
 
     def kernel_other(self, x):
         if self.print_timings:
-            cml2.logger.info(f"   (dim={len(x[0][0])} per atom)")
+            logger.info(f"   (dim={len(x[0][0])} per atom)")
         return self.atomic_kernel_other(self.kernelf, self.kernel_theta, self.x_train, x, max_size=self.max_size)
 
 

@@ -1,4 +1,4 @@
-import cmlkit2 as cml2
+from cmlkit import load_dataset
 from ..evaluators import EvaluatorBase
 
 
@@ -20,8 +20,8 @@ class EvaluatorHoldout(EvaluatorBase):
         self.include_nonconvert = include_nonconvert
         self.include_pred = include_pred  # whether to include full predictions/true values in result
 
-        self.data_train = cml2.load_dataset(data_train)
-        self.data_test = cml2.load_dataset(data_test)
+        self.data_train = load_dataset(data_train)
+        self.data_test = load_dataset(data_test)
 
     @classmethod
     def _from_config(cls, config, context={}):

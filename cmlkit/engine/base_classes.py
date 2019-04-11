@@ -65,7 +65,7 @@ class BaseComponent(Configurable):
 
     def __init__(self, context={}):
         # import global context here so that it can be changed dynamically in a running session
-        from cmlkit2 import default_context as global_default_context
+        from cmlkit import default_context as global_default_context
 
         # special case: if context includes a sub-dict
         # under the key that is the name of this class,
