@@ -5,10 +5,10 @@ import time
 import hashlib
 import pickle
 import numpy as np
-from cmlkit2.engine import read_npy, safe_save_npy
-import cmlkit.inout as cmlio
-from cmlkit2.engine.hashing import compute_hash, fast_hash
-from cmlkit2 import logger
+
+from cmlkit.engine import read_npy, safe_save_npy, makedir
+from cmlkit.engine.hashing import compute_hash, fast_hash
+from cmlkit import logger
 
 
 def make_memcached(max_entries=500):
@@ -132,7 +132,7 @@ class diskcached:
 
         if duration > self.min_duration:
             tosave = {'val': val, 'name': self.name, 'duration': duration}
-            cmlio.makedir(self.cache_location)  # make sure cache_location exists
+            makedir(self.cache_location)  # make sure cache_location exists
             safe_save_npy(filename, tosave)
 
         self.misses += 1

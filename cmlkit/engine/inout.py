@@ -76,3 +76,13 @@ def save_yaml(filename, d):
 
     with open(filename, 'w') as outfile:
         yaml.dump(d, outfile, default_flow_style=False)
+
+
+def read_yaml(filename):
+    """Read yaml dictionary from file."""
+
+    stream = open(filename, 'r')
+    d = yaml.load(stream)
+    stream.close()
+
+    return d

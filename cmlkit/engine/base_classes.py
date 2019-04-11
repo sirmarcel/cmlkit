@@ -1,5 +1,5 @@
-from cmlkit2 import logger
-from cmlkit2.engine.inout import save_yaml
+from cmlkit import logger
+from cmlkit.engine.inout import save_yaml
 
 
 class Configurable():

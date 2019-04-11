@@ -1,4 +1,4 @@
-from cmlkit2.engine import BaseComponent, read_npy
+from cmlkit.engine import BaseComponent, read_npy
 
 
 def from_npy(path, context={}, classes={}):
