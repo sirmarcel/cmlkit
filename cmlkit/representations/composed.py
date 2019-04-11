@@ -1,6 +1,6 @@
 import numpy as np
-import cmlkit2 as cml
-from cmlkit2.engine import BaseComponent
+from cmlkit import from_config
+from ..engine import BaseComponent
 
 
 class ComposedRepresentation(BaseComponent):

@@ -3,7 +3,8 @@ import time
 from pathlib import Path
 import shutil
 import subprocess
-import cmlkit2 as cml2
+
+import cmlkit as cml
 
 
 class BasicSymmetryFunctions(cml2.engine.BaseComponent):

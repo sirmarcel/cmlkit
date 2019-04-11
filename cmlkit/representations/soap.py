@@ -1,13 +1,13 @@
 import os
 import numpy as np
 import time
-import cmlkit2 as cml2
 import ase
 import ase.io
 import subprocess
 from pathlib import Path
 import shutil
 
+import cmlkit as cml
 
 run_quippy = Path(__file__).parents[0] / 'run_quippy.py'
 

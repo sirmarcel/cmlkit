@@ -1,6 +1,6 @@
 import numpy as np
-import cmlkit2 as cml2
-from cmlkit2.engine import BaseComponent, memcached, diskcached
+from cmlkit import cache_location
+from ..engine import BaseComponent, memcached, diskcached
 
 
 def compute_distances(r):
@@ -58,7 +58,7 @@ class OnlyDists(BaseComponent):
             self.computer = memcached(self.computer, max_entries=cache_entries)
 
         elif self.cache_type == 'mem+disk':
-            disk_cached = diskcached(self.computer, cache_location=cml2.cache_location, name='dists', min_duration=self.min_duration)
+            disk_cached = diskcached(self.computer, cache_location=cache_location, name='dists', min_duration=self.min_duration)
             self.computer = memcached(disk_cached, max_entries=cache_entries)
 
     @classmethod
@@ -98,10 +98,10 @@ class OnlyDistsHistogram(BaseComponent):
             self.hist_computer = memcached(self.hist_computer, max_entries=cache_entries)
 
         elif self.cache_type == 'mem+disk':
-            dist_disk_cached = diskcached(self.dist_computer, cache_location=cml2.cache_location, name='dists', min_duration=self.min_duration)
+            dist_disk_cached = diskcached(self.dist_computer, cache_location=cache_location, name='dists', min_duration=self.min_duration)
             self.dist_computer = memcached(dist_disk_cached, max_entries=cache_entries)
 
-            hist_disk_cached = diskcached(self.hist_computer, cache_location=cml2.cache_location, name='hists', min_duration=self.min_duration)
+            hist_disk_cached = diskcached(self.hist_computer, cache_location=cache_location, name='hists', min_duration=self.min_duration)
             self.hist_computer = memcached(hist_disk_cached, max_entries=cache_entries)
 
     @classmethod

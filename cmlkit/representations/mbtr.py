@@ -1,10 +1,10 @@
 from copy import deepcopy
 import numpy as np
 import qmmlpack as qmml
-from cmlkit.helpers import convert_sequence
-import cmlkit2 as cml2
-import cmlkit2.representations
-from cmlkit2.engine import *
+
+from ..helpers import convert_sequence
+from cmlkit import cache_location
+from ..engine import *
 
 # Pure functions for different k-body MBTRs; required to be pure for caching & wrapping
 
@@ -91,7 +91,7 @@ class BaseMBTR(BaseComponent):
         if self.compute_per_structure:
             self.compute = self._compute_per_structure
 
-        self.cache_location = cml2.cache_location
+        self.cache_location = cache_location
         self.timeout = self.context['timeout']  # mbtr computation will be terminated after this number of seconds
 
         if self.config['norm'] is not None:

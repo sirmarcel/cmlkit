@@ -1,7 +1,8 @@
 import numpy as np
 import qmmlpack as qmml
-import cmlkit2 as cml2
-from cmlkit2.engine import BaseComponent, memcached, diskcached
+
+from cmlkit import cache_location
+from ..engine import BaseComponent, memcached, diskcached
 
 
 def compute_cm_minimal(z, r, unit='Angstroms', padding=False, flatten=True, sort=True):
@@ -39,7 +40,7 @@ class CoulombMatrixMinimal(BaseComponent):
             self.computer = memcached(self.computer, max_entries=cache_entries)
 
         elif self.cache_type == 'mem+disk':
-            disk_cached = diskcached(self.computer, cache_location=cml2.cache_location, name='cmm', min_duration=self.min_duration)
+            disk_cached = diskcached(self.computer, cache_location=cache_location, name='cmm', min_duration=self.min_duration)
             self.computer = memcached(disk_cached, max_entries=cache_entries)
 
     @classmethod
