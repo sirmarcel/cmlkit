@@ -1,5 +1,13 @@
 from pathlib import Path, PurePath
-from cmlkit import dataset_path, from_npy, Dataset
+
+from .dataset import Dataset, Subset
+from .engine import _from_npy
+from .env import dataset_path
+
+classes = {
+    Subset.kind: Subset,
+    Dataset.kind: Dataset,
+}
 
 
 def load_dataset(name, other_paths=[]):
@@ -11,7 +19,7 @@ def load_dataset(name, other_paths=[]):
 
     # First, try if you have passed a fully formed dataset path
     if path.is_file():
-        return from_npy(name)
+        return _from_npy(name, classes=classes)
 
     # If we have a dataset name (and not a file name), add the default extension
     if '.data' not in path.suffixes and '.npy' not in path.suffixes:
@@ -22,7 +30,7 @@ def load_dataset(name, other_paths=[]):
     for p in all_paths:
         try:
             file = Path(p) / path
-            return from_npy(file)
+            return _from_npy(file, classes=classes)
         except FileNotFoundError:
             pass
 

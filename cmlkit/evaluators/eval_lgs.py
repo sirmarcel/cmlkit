@@ -1,8 +1,8 @@
 from copy import deepcopy
 import traceback
 
-from cmlkit import logger, read_yaml, from_config
-from ..engine import BaseComponent
+from cmlkit import logger, classes
+from ..engine import BaseComponent, _from_config, read_yaml
 
 
 class EvaluatorLGS(BaseComponent):
@@ -25,8 +25,8 @@ class EvaluatorLGS(BaseComponent):
         self.loss = loss
         assert isinstance(loss, str), 'EvaluatorLGS requires a string name for the loss!'
 
-        self.evaluator = cml.from_config(evaluator, context=self.context)
-        self.lgs = cml.from_config(lgs, context=self.context)
+        self.evaluator = cml._from_config(evaluator, context=self.context, classes=classes)
+        self.lgs = cml._from_config(lgs, context=self.context, classes=classes)
 
     @classmethod
     def _from_config(cls, config, context={}):
@@ -84,7 +84,7 @@ class EvaluatorLGS(BaseComponent):
 
     def _optimize(self, config):
         def target(this_config):
-            this_model = cml.from_config(this_config, context=self.context)
+            this_model = cml._from_config(this_config, context=self.context, classes=classes)
             loss = self.evaluator._evaluate(this_model)
             return loss[self.loss]
 

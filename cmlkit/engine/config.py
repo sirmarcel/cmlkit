@@ -1,12 +1,12 @@
 from cmlkit.engine import BaseComponent, read_npy
 
 
-def from_npy(path, context={}, classes={}):
+def _from_npy(path, context={}, classes={}):
     config = read_npy(path)
     return from_config(config, context=context, classes=classes)
 
 
-def from_config(config, classes={}, context={}):
+def _from_config(config, classes={}, context={}):
     if isinstance(config, BaseComponent):
         # did we accidentally pass an already loaded thing?
         return config

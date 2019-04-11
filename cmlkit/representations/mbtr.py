@@ -121,6 +121,7 @@ class BaseMBTR(BaseComponent):
 
 
 class MBTR1(BaseMBTR):
+    kind = "mbtr1"
     """One-body MBTR"""
     defaults = {'aindexf': 'full', 'eindexf': 'full', 'corrf': 'identity', 'acc': 0.001, 'flatten': True, 'elems': None, 'norm': None}
 
@@ -148,6 +149,7 @@ class MBTR1(BaseMBTR):
 
 
 class MBTR2(BaseMBTR):
+    kind = "mbtr2"
     """Two-body MBTR"""
     defaults = {'aindexf': 'noreversals', 'eindexf': 'noreversals', 'corrf': 'identity', 'acc': 0.001, 'flatten': True, 'elems': None, 'norm': None}
 
@@ -175,6 +177,7 @@ class MBTR2(BaseMBTR):
 
 
 class MBTR3(BaseMBTR):
+    kind = "mbtr3"
     """Three-body MBTR"""
     defaults = {'aindexf': 'noreversals', 'eindexf': 'noreversals', 'corrf': 'identity', 'acc': 0.01, 'flatten': True, 'elems': None, 'norm': None}
     default_context = {'timeout': None, 'compute_per_structure': False, 'disable_external_wrap': False}
@@ -207,6 +210,7 @@ class MBTR3(BaseMBTR):
 
 
 class MBTR4(BaseMBTR):
+    kind = "mbtr4"
     """Four-body MBTR"""
     defaults = {'aindexf': 'noreversals', 'eindexf': 'noreversals', 'corrf': 'identity', 'acc': 0.01, 'flatten': True, 'elems': None, 'norm': None}
     default_context = {'timeout': None, 'compute_per_structure': True, 'disable_external_wrap': False}

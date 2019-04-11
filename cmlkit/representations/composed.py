@@ -1,6 +1,6 @@
 import numpy as np
-from cmlkit import from_config
-from ..engine import BaseComponent
+from cmlkit import classes
+from ..engine import BaseComponent, _from_config
 
 
 class ComposedRepresentation(BaseComponent):
@@ -10,7 +10,7 @@ class ComposedRepresentation(BaseComponent):
 
     def __init__(self, *reps, context={}):
         super().__init__(context=context)
-        self.reps = [cml.from_config(rep, context=self.context) for rep in reps]
+        self.reps = [_from_config(rep, context=self.context, classes=classes) for rep in reps]
 
     @classmethod
     def _from_config(cls, config, context={}):

@@ -1,5 +1,5 @@
 from cmlkit import load_dataset
-from ..evaluators import EvaluatorBase
+from .eval_base import EvaluatorBase
 
 
 class EvaluatorHoldout(EvaluatorBase):

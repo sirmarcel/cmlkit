@@ -3,7 +3,7 @@ import numpy as np
 import qmmlpack as qmml
 
 from .engine import compute_hash, Configurable, save_npy
-from .convert import convert
+from .conversion import convert
 
 
 def from_old_datset(data):

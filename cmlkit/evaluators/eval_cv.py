@@ -1,7 +1,7 @@
 import numpy as np
 
 from cmlkit import load_dataset
-from .evaluator_base import EvaluatorBase
+from .eval_base import EvaluatorBase
 
 
 class EvaluatorCV(EvaluatorBase):

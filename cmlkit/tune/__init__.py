@@ -40,3 +40,12 @@ from .search_base import SearchBase
 from .search_grid import SearchGrid
 from .search_hyperopt import SearchHyperopt
 from .search_fixed import SearchFixed
+
+classes = {
+    Evals.kind: Evals,
+    RunnerSingle.kind: RunnerSingle,
+    RunnerPool.kind: RunnerPool,
+    SearchGrid.kind: SearchGrid,
+    SearchHyperopt.kind: SearchHyperopt,
+    SearchFixed.kind: SearchFixed,
+}

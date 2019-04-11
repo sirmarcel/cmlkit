@@ -35,6 +35,8 @@ def obtain_kernel_and_theta(config):
 class KRR(BaseComponent):
     """Kernel Ridge Regression via qmmlpack"""
 
+    kind = "krr"
+
     needs_incidence = False
     default_context = {'print_timings': False}
 
