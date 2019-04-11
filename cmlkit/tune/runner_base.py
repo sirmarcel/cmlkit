@@ -70,14 +70,14 @@ class RunnerBase(BaseComponent):
             makedir(self.outdir)
 
             file_logger = logging.FileHandler(f"{self.outdir}/log.log")
-            cml2.logger.addHandler(file_logger)
+            cml.logger.addHandler(file_logger)
 
             welcome = f"Set up {self.get_kind()} named {self.name} in standalone mode. Outdir is {self.outdir}. Loglevel is {self.loglevel}. Enjoy!"
-            cml2.logger.info(welcome)
+            cml.logger.info(welcome)
             print(welcome)  # printing just in case something went wrong with the logs
 
             if might_overwrite:
-                cml2.logger.warn(f"Runner output directory {self.outdir} already exists, we might overwrite something.")
+                cml.logger.warn(f"Runner output directory {self.outdir} already exists, we might overwrite something.")
 
             save_yaml(self.outdir + '/search.yml', self.search_config)
             save_yaml(self.outdir + '/eval.yml', self.evaluator_config)
@@ -87,7 +87,7 @@ class RunnerBase(BaseComponent):
 
         else:
             welcome = f"Set up {self.get_kind()} named {self.name} in interactive mode. Nothing will be saved!"
-            cml2.logger.info(welcome)
+            cml.logger.info(welcome)
 
     def run(self, maxtime=120):
         raise NotImplementedError('Runners must implement run()!')
@@ -115,7 +115,7 @@ class RunnerBase(BaseComponent):
 
 
     def _compute_eval_hash(self, config):
-        return cml2.engine.compute_hash(config)
+        return cml.engine.compute_hash(config)
 
 
     def in_cache(self, eid, config):
@@ -126,14 +126,14 @@ class RunnerBase(BaseComponent):
         # else:
         #   run_job(eid, config)
         if config is not None and eid in self.evals:
-            cml2.logger.debug(f"Checking cache for {eid}")
+            cml.logger.debug(f"Checking cache for {eid}")
             self.cache_hits += 1
             # cache hit!
             # TODO: if the thing in the cache a) is a Timeout error
             # AND b) the timeout of this search instance (also TODO)
             # is bigger, pretend it's not in the cache and compute it!
             result = self.evals[eid]
-            cml2.logger.debug(f"Found eid {eid} in evals DB, submitting directly to search.")
+            cml.logger.debug(f"Found eid {eid} in evals DB, submitting directly to search.")
             self.search.submit(self.eid_to_tid[eid], result)
             return True
 
@@ -152,7 +152,7 @@ class RunnerBase(BaseComponent):
 
         status = f"Finished running after {self.elapsed:.1f}s. If in standalone mode, I will save things, then exit. Thanks!"
         self.save_status(status)
-        cml2.logger.info(status)
+        cml.logger.info(status)
         self.save()
 
         if self.standalone:
@@ -168,7 +168,7 @@ class RunnerBase(BaseComponent):
 
             status = f"Finished saving things into {self.outdir}. Exiting. Have a good day!"
             self.save_status(status)
-            cml2.logger.info(status)
+            cml.logger.info(status)
 
         return self.best_n(self.top_n)
 
@@ -189,13 +189,13 @@ class RunnerBase(BaseComponent):
         # should be called occasionally as the runner runs
         if self.standalone:
             for i, res in enumerate(self.best_n(self.top_n)):
-                cml2.save_yaml(self.outdir + f"/model_{self.name}-{i}.yml", res['model_config'])
+                cml.save_yaml(self.outdir + f"/model_{self.name}-{i}.yml", res['model_config'])
 
     def save_history(self):
         # should be called occasionally as the runner runs
         if self.standalone:
             to_save = {'losses': self.search.losses, 'eid_to_tid': self.eid_to_tid, 'suggestions': self.search.suggestions}
-            cml2.engine.safe_save_npy(self.history, to_save)
+            cml.engine.safe_save_npy(self.history, to_save)
 
     def save_status(self, s):
         # Status is a short, overwritten text file that
@@ -227,7 +227,7 @@ class RunnerBase(BaseComponent):
 
     def log_status(self, s):
         # should be called ~once per event
-        cml2.logger.info(self.make_logline(s))
+        cml.logger.info(self.make_logline(s))
 
     def make_logline(self, s):
         # s should be a short, single-line string that will be written to the log

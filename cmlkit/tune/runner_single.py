@@ -1,9 +1,9 @@
 import time
 from copy import deepcopy
-import cmlkit2 as cml2
-import concurrent.futures
 import os
+import concurrent.futures
 
+from cmlkit import logger
 from .runner_base import RunnerBase
 
 
@@ -37,7 +37,7 @@ class RunnerSingle(RunnerBase):
             result = self.evaluator.evaluate(config)
             self.submit_result(eid, result)
         elif config is None:
-            cml2.logger.info('Received None as suggestion, waiting for a bit.')
+            logger.info('Received None as suggestion, waiting for a bit.')
             time.sleep(0.5)
 
     def run(self, timeout=None):
@@ -60,7 +60,7 @@ class RunnerSingle(RunnerBase):
                 if timeout is not None:
                     if self.elapsed > timeout:
                         self.save_status('Timeout')
-                        cml2.logger.info('Timeout!')
+                        logger.info('Timeout!')
                         break
 
                 self.step()

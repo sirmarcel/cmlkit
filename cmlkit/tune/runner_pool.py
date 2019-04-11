@@ -3,7 +3,7 @@ import time
 from copy import deepcopy
 import concurrent.futures
 
-import cmlkit as cml
+from cmlkit import logger
 from .runner_base import RunnerBase
 
 
@@ -70,7 +70,7 @@ class RunnerPool(RunnerBase):
                 break
 
         with concurrent.futures.ProcessPoolExecutor(max_workers=self.nworkers) as main_exec:  # this pool is for evaluation work
-            with concurrent.futures.ThreadPoolExecutor(max_workers=2, thread_name_prefix='cml2_io_') as aux_exec:  # this pool is for i/o, like saving the eval db
+            with concurrent.futures.ThreadPoolExecutor(max_workers=2, thread_name_prefix='cml_io_') as aux_exec:  # this pool is for i/o, like saving the eval db
                 while not self.search.done:
                     self.elapsed = time.time() - start
                     since_save = self.elapsed - last_save
@@ -79,7 +79,7 @@ class RunnerPool(RunnerBase):
                         if self.elapsed > timeout:
                             status = f"Breaking due to timeout (will wait up to {self.wait_per_loop}s to finish computations)."
                             self.save_status(status)
-                            cml2.logger.info(status)
+                            logger.info(status)
                             break
 
                     # log every 2s to avoid congesting i/o when progressing quickly
@@ -111,7 +111,7 @@ class RunnerPool(RunnerBase):
                     # new run of a search so the caches don't overwrite each other
                     for i in range(abs(len(futures) - self.max_new_evals) + 1):
                         eid, config = self.get_task()
-                        cml2.logger.debug(f"Refilling task {i} with eid {eid}.")
+                        logger.debug(f"Refilling task {i} with eid {eid}.")
 
                         if not self.in_cache(eid, config) and config is not None:
                             f = main_exec.submit(self.evaluator.evaluate, config)

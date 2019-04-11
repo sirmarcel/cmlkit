@@ -7,7 +7,7 @@ import subprocess
 import cmlkit as cml
 
 
-class BasicSymmetryFunctions(cml2.engine.BaseComponent):
+class BasicSymmetryFunctions(cml.engine.BaseComponent):
     """Baseline of atom-centred symmetry functions"""
 
     kind = 'bsf'
@@ -15,7 +15,7 @@ class BasicSymmetryFunctions(cml2.engine.BaseComponent):
     default_context = {'timeout': None, 'cleanup': True}
 
     def __init__(self, params, dim, elems=None, context={}):
-        if cml2.runner_path is None:
+        if cml.runner_path is None:
             raise RuntimeError(f"Could not find $CML2_RUNNER_PATH, which is needed to compute symmetry functions.")
 
         if dim > 500:
@@ -35,14 +35,14 @@ class BasicSymmetryFunctions(cml2.engine.BaseComponent):
         cache_entries = 10
 
         if self.cache_type == 'mem':
-            self.computer = cml2.engine.memcached(self.computer, max_entries=cache_entries)
+            self.computer = cml.engine.memcached(self.computer, max_entries=cache_entries)
 
         elif self.cache_type == 'mem+disk':
-            disk_cached = cml2.engine.diskcached(self.computer, cache_location=cml2.cache_location, name='bsf', min_duration=self.min_duration)
-            self.computer = cml2.engine.memcached(disk_cached, max_entries=cache_entries)
+            disk_cached = cml.engine.diskcached(self.computer, cache_location=cml.cache_location, name='bsf', min_duration=self.min_duration)
+            self.computer = cml.engine.memcached(disk_cached, max_entries=cache_entries)
 
         elif self.cache_type == 'disk':
-            self.computer = cml2.engine.diskcached(self.computer, cache_location=cml2.cache_location, name='bsf', min_duration=self.min_duration)
+            self.computer = cml.engine.diskcached(self.computer, cache_location=cml.cache_location, name='bsf', min_duration=self.min_duration)
 
     @classmethod
     def _from_config(cls, config, context={}):
@@ -219,9 +219,9 @@ def compute_symmfs(data, params, dim, elems=None, timeout=None, cleanup=True):
 
 
 def prepare_task(data, params, elems):
-    tid = cml2.engine.compute_hash(time.time() + np.random.rand())
+    tid = cml.engine.compute_hash(time.time() + np.random.rand())
 
-    folder = Path(cml2.scratch_location) / f"runner_{tid}"
+    folder = Path(cml.scratch_location) / f"runner_{tid}"
     folder.mkdir(parents=True)  # will raise error if already exists!
 
     with open(folder / 'input.data', 'w+') as f:
@@ -256,7 +256,7 @@ def make_infile(data, params, elems=None):
     if elems is None:
         elems = data.info['elements']
 
-    symbol_elements = [cml2.charges_to_elements[elem] for elem in elems]
+    symbol_elements = [cml.charges_to_elements[elem] for elem in elems]
     lines.append(f"number_of_elements {len(symbol_elements)}")
     lines.append(f"elements {' '.join(symbol_elements)}")
     for elem in symbol_elements:
@@ -286,7 +286,7 @@ def make_datafile(data):
         for j in range(len(z)):
             rs = r[j]
             zs = z[j]
-            lines.append(f"atom {rs[0]} {rs[1]} {rs[2]} {cml2.charges_to_elements[zs]} 0.0 0.0 0.0 0.0 0.0")
+            lines.append(f"atom {rs[0]} {rs[1]} {rs[2]} {cml.charges_to_elements[zs]} 0.0 0.0 0.0 0.0 0.0")
 
         lines.append("end")
 
@@ -298,7 +298,7 @@ def run_task(folder, timeout=None):
     # this will raise an error if ruNNer does not
     # terminate with 0 or times out
     finished = subprocess.run(
-        [cml2.runner_path, str(folder / 'input.data'), str(folder / 'input.nn')],
+        [cml.runner_path, str(folder / 'input.data'), str(folder / 'input.nn')],
         cwd=folder,
         timeout=timeout,
         check=True,

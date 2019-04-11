@@ -1,6 +1,7 @@
 from copy import deepcopy
 import traceback
-import cmlkit as cml
+
+from cmlkit import logger, read_yaml, from_config
 from ..engine import BaseComponent
 
 
@@ -24,8 +25,8 @@ class EvaluatorLGS(BaseComponent):
         self.loss = loss
         assert isinstance(loss, str), 'EvaluatorLGS requires a string name for the loss!'
 
-        self.evaluator = cml2.from_config(evaluator, context=self.context)
-        self.lgs = cml2.from_config(lgs, context=self.context)
+        self.evaluator = cml.from_config(evaluator, context=self.context)
+        self.lgs = cml.from_config(lgs, context=self.context)
 
     @classmethod
     def _from_config(cls, config, context={}):
@@ -48,7 +49,7 @@ class EvaluatorLGS(BaseComponent):
         except Exception as e:
             # TODO: Use more general form from base class
             trace = traceback.format_exc()
-            cml2.logger.error(f"An error occurred while running lgs on model: {e}. Model config (at time of error): {config}. \n {trace}")
+            cml.logger.error(f"An error occurred while running lgs on model: {e}. Model config (at time of error): {config}. \n {trace}")
             result = {'status': 'error',
                       'error': (e.__class__.__name__, str(e)),
                       'report': f"ERROR during LGS: {e}",
@@ -73,7 +74,7 @@ class EvaluatorLGS(BaseComponent):
         if isinstance(model, BaseComponent):
             config = model.get_config()
         elif isinstance(model, str):
-            config = cml2.read_yaml(model)
+            config = cml.read_yaml(model)
         elif isinstance(model, dict):
             config = deepcopy(model)
         else:
@@ -83,7 +84,7 @@ class EvaluatorLGS(BaseComponent):
 
     def _optimize(self, config):
         def target(this_config):
-            this_model = cml2.from_config(this_config, context=self.context)
+            this_model = cml.from_config(this_config, context=self.context)
             loss = self.evaluator._evaluate(this_model)
             return loss[self.loss]
 

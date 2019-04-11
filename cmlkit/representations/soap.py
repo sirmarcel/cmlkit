@@ -12,7 +12,7 @@ import cmlkit as cml
 run_quippy = Path(__file__).parents[0] / 'run_quippy.py'
 
 
-class Soap(cml2.engine.BaseComponent):
+class Soap(cml.engine.BaseComponent):
     """SOAP descriptor as implemented in quippy"""
 
     kind = 'soap'
@@ -37,14 +37,14 @@ class Soap(cml2.engine.BaseComponent):
         cache_entries = 10
 
         if self.cache_type == 'mem':
-            self.computer = cml2.engine.memcached(self.computer, max_entries=cache_entries)
+            self.computer = cml.engine.memcached(self.computer, max_entries=cache_entries)
 
         elif self.cache_type == 'mem+disk':
-            disk_cached = cml2.engine.diskcached(self.computer, cache_location=cml2.cache_location, name='soap', min_duration=self.min_duration)
-            self.computer = cml2.engine.memcached(disk_cached, max_entries=cache_entries)
+            disk_cached = cml.engine.diskcached(self.computer, cache_location=cml.cache_location, name='soap', min_duration=self.min_duration)
+            self.computer = cml.engine.memcached(disk_cached, max_entries=cache_entries)
 
         elif self.cache_type == 'disk':
-            self.computer = cml2.engine.diskcached(self.computer, cache_location=cml2.cache_location, name='soap', min_duration=self.min_duration)
+            self.computer = cml.engine.diskcached(self.computer, cache_location=cml.cache_location, name='soap', min_duration=self.min_duration)
 
     @classmethod
     def _from_config(cls, config, context={}):
@@ -91,8 +91,8 @@ def compute_soap(data, sigma, n_max, l_max, cutoff, elems=None, cleanup=True, ti
 
 
 def check_dependencies():
-    assert cml2.quippy_pythonpath is not None, f"Could not find $CML2_QUIPPY_PYTHONPATH, which is needed to compute SOAP."
-    assert cml2.quippy_python_exe is not None, f"Could not find $CML2_QUIPPY_PYTHON_EXE, which is needed to compute SOAP."
+    assert cml.quippy_pythonpath is not None, f"Could not find $CML2_QUIPPY_PYTHONPATH, which is needed to compute SOAP."
+    assert cml.quippy_python_exe is not None, f"Could not find $CML2_QUIPPY_PYTHON_EXE, which is needed to compute SOAP."
 
 
 def make_config(sigma, n_max, l_max, cutoff, elems):
@@ -102,8 +102,8 @@ def make_config(sigma, n_max, l_max, cutoff, elems):
 
 
 def prepare_task(data, config, elems):
-    tid = 'soap_' + str(cml2.engine.compute_hash(time.time() + np.random.rand()))
-    folder = cml2.scratch_location / Path(tid)
+    tid = 'soap_' + str(cml.engine.compute_hash(time.time() + np.random.rand()))
+    folder = cml.scratch_location / Path(tid)
     folder.mkdir(parents=True)
 
     write_data(data, folder)
@@ -125,11 +125,11 @@ def write_data(data, folder):
 
 def run_task(folder, timeout=None):
     env = {
-        'PYTHONPATH': cml2.quippy_pythonpath,  # environment containing quippy and ase
+        'PYTHONPATH': cml.quippy_pythonpath,  # environment containing quippy and ase
         'HOME': os.environ['HOME']
     }
 
-    python_exe = cml2.quippy_python_exe  # python 2.7 executable
+    python_exe = cml.quippy_python_exe  # python 2.7 executable
     scriptpath = run_quippy
 
     finished = subprocess.run(
