@@ -10,6 +10,8 @@ class TestImports(TestCase):
     def test_instantiation(TestCase):
         import cmlkit
 
-        cmlkit.from_config(
+        krr = cmlkit.from_config(
             {"kind": "krr", "config": {"nl": 1.0, "kernel": ["gaussian", 1.0]}}
         )
+
+        krr.get_config()
