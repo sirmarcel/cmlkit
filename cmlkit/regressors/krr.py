@@ -4,8 +4,9 @@ from qmmlpack.experimental import recursive_matrix_map
 import numpy as np
 from qmmlpack.experimental import ExtensiveKernelRidgeRegression
 import cmlkit2 as cml2
-from cmlkit.helpers import convert_sequence
-from cmlkit2.engine import *
+
+from ..helpers import convert_sequence
+from ..engine import *  # TODO TRY TO FIX THIS MESS LMAO
 
 
 def get_kernelf(name):
