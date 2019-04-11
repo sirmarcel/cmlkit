@@ -20,11 +20,11 @@ except NameError:
 
 
 __title__ = "cmlkit"
-__summary__ = "Tools for working with qmmlpack"
+__summary__ = "Tools from machine learning of molecules and crystals"
 __uri__ = "https://github.com/sirmarcel/cmlkit"
 
-__version__ = "1.0.0"
-__short_version__ = "1.0"
+__version__ = "2.0.0"
+__short_version__ = "2.0"
 
 if base_dir is not None and os.path.exists(os.path.join(base_dir, ".commit")):
     with open(os.path.join(base_dir, ".commit")) as fp:
@@ -36,4 +36,4 @@ __author__ = "Marcel Langer"
 __email__ = "mail@sirmarcel.com"
 
 __license__ = "MIT License"
-__copyright__ = "2018 %s" % __author__
+__copyright__ = "2019 %s" % __author__
