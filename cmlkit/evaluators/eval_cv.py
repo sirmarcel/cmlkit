@@ -1,5 +1,5 @@
 import numpy as np
-import cmlkit2 as cml2
+import cmlkit2 as cml
 from cmlkit2.evaluators import EvaluatorBase
 
 
@@ -22,7 +22,7 @@ class EvaluatorCV(EvaluatorBase):
         # Views, ensuring that they only have to be called once.
         self.prime_datasets = self.context['prime_datasets']
 
-        self.data = cml2.load_dataset(data)
+        self.data = cml.load_dataset(data)
         if self.prime_datasets:
             self.data.info
 

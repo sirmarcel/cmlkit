@@ -1,7 +1,7 @@
 from copy import deepcopy
 import traceback
-import cmlkit2 as cml2
-from cmlkit2.engine import BaseComponent
+import cmlkit as cml
+from ..engine import BaseComponent
 
 
 class EvaluatorLGS(BaseComponent):

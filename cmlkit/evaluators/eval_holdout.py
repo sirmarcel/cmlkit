@@ -1,5 +1,5 @@
 import cmlkit2 as cml2
-from cmlkit2.evaluators import EvaluatorBase
+from ..evaluators import EvaluatorBase
 
 
 class EvaluatorHoldout(EvaluatorBase):

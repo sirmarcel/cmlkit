@@ -1,6 +1,6 @@
 """This module implements various classes that evaluate Models"""
 
-from cmlkit2.evaluators.eval_base import EvaluatorBase
-from cmlkit2.evaluators.eval_holdout import EvaluatorHoldout
-from cmlkit2.evaluators.eval_lgs import EvaluatorLGS
-from cmlkit2.evaluators.eval_cv import EvaluatorCV
+from .eval_base import EvaluatorBase
+from .eval_holdout import EvaluatorHoldout
+from .eval_lgs import EvaluatorLGS
+from .eval_cv import EvaluatorCV
