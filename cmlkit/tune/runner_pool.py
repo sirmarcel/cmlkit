@@ -2,8 +2,9 @@ import os
 import time
 from copy import deepcopy
 import concurrent.futures
-import cmlkit2 as cml2
-from cmlkit2.tune import RunnerBase
+
+import cmlkit as cml
+from .runner_base import RunnerBase
 
 
 class RunnerPool(RunnerBase):

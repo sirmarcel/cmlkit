@@ -4,10 +4,10 @@ import time
 import logging
 import hyperopt as hpo
 
-import cmlkit2 as cml2
-from cmlkit2.engine import compute_hash
-from cmlkit2.tune import SearchBase
-import cmlkit.helpers as cmlh
+from cmlkit import logger
+from ..engine import compute_hash
+from .search_base import SearchBase
+from ..helpers import find_pattern_apply_f
 
 
 class SearchHyperopt(SearchBase):
@@ -53,7 +53,7 @@ class SearchHyperopt(SearchBase):
         self.parsed_space = copy.deepcopy(self.space)
 
         # Parse space to contain hyperopt functions
-        cmlh.find_pattern_apply_f(self.parsed_space, is_hyperopt, to_hyperopt)
+        find_pattern_apply_f(self.parsed_space, is_hyperopt, to_hyperopt)
 
         # The number of suggestions that can be requested before
         # the search demands some results first: It is not helpful to
@@ -145,7 +145,7 @@ class SearchHyperopt(SearchBase):
 
     def _suggest(self):
         if self._num_live_trials() >= self.max_concurrent or self.done:
-            cml2.logger.debug(
+            logger.debug(
                 "Hyperopt has reached max_concurrent trials, please submit some results before asking for more suggestions."
             )
             return None, None
@@ -242,7 +242,7 @@ def to_hyperopt(x):
     # print(f"args={args}")
     for a in args:
         # this takes care of nesting
-        cmlh.find_pattern_apply_f(a, is_hyperopt, to_hyperopt)
+        find_pattern_apply_f(a, is_hyperopt, to_hyperopt)
 
     f = f(*args)
     # print(f"returning {f}")

@@ -3,9 +3,10 @@ from copy import deepcopy
 import itertools
 import numpy as np
 import time
-import cmlkit.helpers as cmlh
-import cmlkit2 as cml2
-from cmlkit2.tune import SearchBase
+
+from cmlkit import logger
+from ..helpers import find_pattern, get_with_path, set_with_path
+from .search_base import SearchBase
 
 
 class SearchGrid(SearchBase):
@@ -45,8 +46,8 @@ class SearchGrid(SearchBase):
 
             return False
 
-        locations = cmlh.find_pattern(space, gs_pattern)
-        variables = [cmlh.get_with_path(space, loc)[1] for loc in locations]
+        locations = find_pattern(space, gs_pattern)
+        variables = [get_with_path(space, loc)[1] for loc in locations]
 
         return variables, locations
 
@@ -54,7 +55,7 @@ class SearchGrid(SearchBase):
         suggestion = deepcopy(self.space)
 
         for i, val in enumerate(choices):
-            cmlh.set_with_path(suggestion, self.locations[i], val)
+            set_with_path(suggestion, self.locations[i], val)
 
         return suggestion
 
@@ -64,7 +65,7 @@ class SearchGrid(SearchBase):
         try:
             choices = next(self.iterator)
         except StopIteration:
-            cml2.logger.info('Grid search has exhausted the search space.')
+            logger.info('Grid search has exhausted the search space.')
             self._done = True
             return None, None
 

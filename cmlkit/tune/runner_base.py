@@ -3,9 +3,9 @@ import time
 from copy import deepcopy
 import logging
 from datetime import datetime
-import cmlkit2 as cml2
-from cmlkit2.engine import BaseComponent, humanize, save_yaml
-from cmlkit.inout import makedir
+
+import cmlkit as cml
+from ..engine import BaseComponent, humanize, save_yaml, makedir
 
 
 class RunnerBase(BaseComponent):
@@ -29,39 +29,39 @@ class RunnerBase(BaseComponent):
         super().__init__(context=context)
         self.standalone = self.context['standalone']
         self.loglevel = self.context['loglevel']
-        cml2.logger.setLevel(self.loglevel)
+        cml.logger.setLevel(self.loglevel)
 
         self.outdir = None
         self.top_n = 5  # how many models we will bother saving; TODO: make this configurable
         self.elapsed = 0.0  # elapsed time in run; should be updated within run()
 
-        self.evaluator = cml2.from_config(evaluator, context=context)
+        self.evaluator = cml.from_config(evaluator, context=context)
         self.evaluator_config = self.evaluator.get_config()
 
-        self.search = cml2.from_config(search, context=context)
+        self.search = cml.from_config(search, context=context)
         self.search_config = self.search.get_config()
 
         self.tid_to_eid = {}  # this maps search trial ids to evaluation ids
         self.cache_hits = 0
 
-        self.task_hash = cml2.engine.compute_hash(self.search_config, self.evaluator_config)
+        self.task_hash = cml.engine.compute_hash(self.search_config, self.evaluator_config)
 
         if name is None:
             # just make sure we have something unique; otherwise we accidentally overwrite logs/status
-            self.name = humanize(cml2.engine.compute_hash(time.time(), self.search_config, self.evaluator_config), words=2)
+            self.name = humanize(cml.engine.compute_hash(time.time(), self.search_config, self.evaluator_config), words=2)
         else:
             self.name = name
 
-        if isinstance(evals, cml2.Evals):
+        if isinstance(evals, cml.Evals):
             self.evals = evals
         elif isinstance(evals, dict):
             # mainly for legacy reasons
-            self.evals = cml2.Evals(db=evals, normalise=True, name='evals')
+            self.evals = cml.Evals(db=evals, normalise=True, name='evals')
         else:
             if os.path.isfile(evals):
-                self.evals = cml2.from_npy(evals)
+                self.evals = cml.from_npy(evals)
             else:
-                self.evals = cml2.Evals(name='evals')
+                self.evals = cml.Evals(name='evals')
 
         # set up directory on disk
         if self.standalone:

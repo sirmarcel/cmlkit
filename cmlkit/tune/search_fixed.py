@@ -1,5 +1,5 @@
-import cmlkit2 as cml2
-from cmlkit2.tune import SearchBase
+import cmlkit as cml
+from .search_base import SearchBase
 
 
 class SearchFixed(SearchBase):
@@ -14,7 +14,7 @@ class SearchFixed(SearchBase):
             if isinstance(c, dict):
                 space.append(c)
             elif isinstance(c, str):
-                space.append(cml2.read_yaml(c))
+                space.append(cml.read_yaml(c))
             else:
                 space.append(c.get_config())
 
@@ -41,7 +41,7 @@ class SearchFixed(SearchBase):
         try:
             suggestion = next(self.iterator)
         except StopIteration:
-            cml2.logger.info('We have looked at all candidates.')
+            cml.logger.info('We have looked at all candidates.')
             self._done = True
             return None, None
 

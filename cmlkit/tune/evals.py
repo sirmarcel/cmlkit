@@ -1,6 +1,6 @@
 import os
 from copy import deepcopy
-from cmlkit2.engine import safe_save_npy, Configurable
+from ..engine import safe_save_npy, Configurable
 
 
 class Evals(Configurable):

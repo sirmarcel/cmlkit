@@ -2,8 +2,9 @@ import time
 from copy import deepcopy
 import numpy as np
 from collections import OrderedDict
-import cmlkit2 as cml2
-from cmlkit2.engine import BaseComponent
+
+from cmlkit import logger
+from ..engine import BaseComponent, compute_hash
 
 
 class SearchBase(BaseComponent):
@@ -60,7 +61,7 @@ class SearchBase(BaseComponent):
     # you should not have to implement anything below in your subclass
 
     def _generate_tid(self):
-        return cml2.engine.compute_hash(time.time() + np.random.rand())
+        return compute_hash(time.time() + np.random.rand())
 
     def suggest(self):
         tid, suggestion = self._suggest()
@@ -79,7 +80,7 @@ class SearchBase(BaseComponent):
         if status == "error":
             error = result.get("error", (Exception.__class__.__name__, str(Exception)))
             self.count_error += 1
-            cml2.logger.info(f"Received error in trial: {error}")
+            logger.info(f"Received error in trial: {error}")
         else:
             error = None
             self.count_ok += 1

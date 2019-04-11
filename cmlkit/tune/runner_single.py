@@ -3,7 +3,8 @@ from copy import deepcopy
 import cmlkit2 as cml2
 import concurrent.futures
 import os
-from cmlkit2.tune import RunnerBase
+
+from .runner_base import RunnerBase
 
 
 class RunnerSingle(RunnerBase):
