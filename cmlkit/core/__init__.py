@@ -1,5 +1,5 @@
 """This sub-module implements core functionality specific to ML"""
-import losses
+from ..core import losses
 from .lgs import LocalGridSearch, run_lgs
 
 

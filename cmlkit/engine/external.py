@@ -3,7 +3,7 @@
 import os
 import signal
 from multiprocessing import Process, Pipe
-from errors import CmlTimeout
+from .errors import CmlTimeout
 
 
 def wrap_external(f, timeout=None, kill=True):
