@@ -19,19 +19,6 @@ def get_kernelf(name):
             raise NotImplementedError("Kernel named {} is not implemented.".format(name))
 
 
-def obtain_kernel_and_theta(config):
-    if isinstance(config, str):
-        f = get_kernelf(config)
-        theta = None
-        return f, theta
-    elif isinstance(config, (list, tuple)) and len(config) == 2:
-        f = get_kernelf(config[0])
-        theta = config[1]
-        return f, theta
-    else:
-        raise ValueError("Cannot interpret kernel config {}".format(config))
-
-
 class KRR(BaseComponent):
     """Kernel Ridge Regression via qmmlpack"""
 
