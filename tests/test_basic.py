@@ -27,7 +27,7 @@ class TestSerialization(TestCase):
 
         krr.get_config()
 
-        cmlkit.save_yaml(self.tmpdir / 'krr.yml', krr.get_config())
-        krr2 = cmlkit.from_yaml(self.tmpdir / 'krr.yml')
+        cmlkit.save_yaml(self.tmpdir / "krr.yml", krr.get_config())
+        krr2 = cmlkit.from_yaml(self.tmpdir / "krr.yml")
 
         self.assertEqual(krr2.get_config(), krr.get_config())
