@@ -20,7 +20,7 @@ from .conversion import convert, unconvert
 
 from .core import get_loss, losses, LocalGridSearch, charges_to_elements
 
-from .engine import save_yaml, read_yaml, _from_config, _from_npy
+from .engine import save_yaml, read_yaml, _from_config, _from_npy, _from_yaml
 
 from .dataset_loader import load_dataset
 
@@ -54,6 +54,5 @@ def from_npy(config, context={}):
     return _from_npy(config, classes=classes, context=context)
 
 
-def from_yaml(path, context={}):
-    config = read_yaml(path)
-    return from_config(config, context=context)
+def from_yaml(config, context={}):
+    return _from_yaml(config, classes=classes, context=context)
