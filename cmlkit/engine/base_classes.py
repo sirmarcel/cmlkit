@@ -33,7 +33,6 @@ interface that avoids side effects.
 """
 
 from cmlkit import logger
-from cmlkit.engine.inout import save_yaml
 
 
 class Configurable:
@@ -111,7 +110,7 @@ class BaseComponent(Configurable):
     # define this in subclass if certain context variables are required
     default_context = {}
 
-    def __init__(self, context={}):
+    def __init__(self, context={}):  # pylint: disable=dangerous-default-value
         # import global context here so that it can be changed dynamically in a running session
         from cmlkit import default_context as global_default_context
 
