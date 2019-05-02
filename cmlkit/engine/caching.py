@@ -1,3 +1,23 @@
+"""Caching functions.
+
+Implements in-memory and on-disk caching. Both are
+quite rudimentary at the moment, and will need some
+kind of overhaul at a future point. A particular
+sticking point is being able to control the memory/disk
+usage, and mabye dynamically switch between disk and memory.
+
+It might also be useful to be more restrictive in the kind
+of data that can be stored/hashed.
+
+Caveats:
+- The current hash function is quite slow (especially for large arrays)
+- Storing mutable objects in the mem cache can lead to unintended consequences
+- There is absolutely no monitoring of disk/mem usage
+
+The original code for this was written by Matthias Rupp.
+
+"""
+
 import sys
 import os
 import glob
@@ -20,10 +40,7 @@ def make_memcached(max_entries=500):
 
 
 class memcached:
-    """Implementation of memoization decorator.
-
-    Function arguments need to be hashable, so not dictionaries and sequences instead of lists.
-    """
+    """Implementation of memoization decorator."""
 
     def __init__(self, f, max_entries=500):
         """Wraps f in a caching wrapper."""
@@ -32,8 +49,14 @@ class memcached:
         self.cache = {}  # stores pairs of hash keys and function results
         self.lruc = 0  # least recently used counter
         self.hashf = None  # hashing function, initialized by __call__
-        self.hits, self.misses = 0, 0  # number of times function values were retrieved from cache/had to be computed
-        self.total_hits, self.total_misses = 0, 0  # statistics over lifetime of cached object
+        self.hits, self.misses = (
+            0,
+            0,
+        )  # number of times function values were retrieved from cache/had to be computed
+        self.total_hits, self.total_misses = (
+            0,
+            0,
+        )  # statistics over lifetime of cached object
 
     def __call__(self, *args, **kwargs):
         """Calls to cached function."""
@@ -69,7 +92,7 @@ class memcached:
         self.hits, self.misses = 0, 0
 
 
-def make_discached(cache_location, name=''):
+def make_discached(cache_location, name=""):
     """Decorator to cache a function on disk."""
 
     return lambda f: diskcached(f, cache_location)
@@ -83,40 +106,39 @@ class diskcached:
     committing large amounts of cpu power.
     """
 
-    def __init__(self, f, cache_location, name='noname', min_duration=0.5):
+    def __init__(self, f, cache_location, name="noname", min_duration=0.5):
         """Wraps f in a caching wrapper."""
         self.f = f  # cached function
-        self.cache_location = os.path.normpath(cache_location) + '/'  # location of cache on disk
+        self.cache_location = (
+            os.path.normpath(cache_location) + "/"
+        )  # location of cache on disk
         self.name = name  # unique name of function to be cached, is hashed w/ args
-        self.min_duration = min_duration  # min duration to bother caching (to avoid caching pointless things)
-        self.hits, self.misses = 0, 0  # number of times function values were retrieved from cache/had to be computed
+        self.min_duration = (
+            min_duration
+        )  # min duration to bother caching (to avoid caching pointless things)
+        self.hits, self.misses = (
+            0,
+            0,
+        )  # number of times function values were retrieved from cache/had to be computed
 
     def __call__(self, *args, **kwargs):
         """Calls to cached function."""
 
-        # # compute hash key of arguments
-        # self.hashf = hashlib.md5()  # non-cryptographic fast hash function
-        # _hash(self.name, self.hashf)
-        # for i in args:
-        #     _hash(i, self.hashf)
-        # for i in kwargs:
-        #     _hash(kwargs[i], self.hashf)
-
-        # key = self.hashf.hexdigest()  # hexdigest for readability
         key = compute_hash(self.name, *args, **kwargs)
 
-        filename = self.cache_location + self.name + '.' + key + '.cache.npy'
+        filename = self.cache_location + self.name + "." + key + ".cache.npy"
 
-        # return stored or computed value
         if os.path.isfile(filename):
             try:
                 data = read_npy(filename)
                 self.hits += 1
-                return data['val']
+                return data["val"]
             except (EOFError, OSError, pickle.UnpicklingError):
-                logger.error(f"Could not read cache file {filename}; deleting and recomputing.")
-                # if this is occured, the file in question is probably corrupted, let's purge it
-                # and run again
+                # All of these occur when the cached file is corrupted.
+
+                logger.error(
+                    f"Could not read cache file {filename}; deleting and recomputing."
+                )
                 os.remove(filename)
                 return self.compute_cache_result(args, kwargs, filename)
 
@@ -124,14 +146,13 @@ class diskcached:
             return self.compute_cache_result(args, kwargs, filename)
 
     def compute_cache_result(self, args, kwargs, filename):
-        # actually compute!
         start = time.time()
         val = self.f(*args, **kwargs)
         stop = time.time()
         duration = stop - start
 
         if duration > self.min_duration:
-            tosave = {'val': val, 'name': self.name, 'duration': duration}
+            tosave = {"val": val, "name": self.name, "duration": duration}
             makedir(self.cache_location)  # make sure cache_location exists
             safe_save_npy(filename, tosave)
 
