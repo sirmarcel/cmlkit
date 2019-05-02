@@ -1,3 +1,5 @@
+"""The backend on which cmlkit is built."""
+
 from .base_classes import BaseComponent, Configurable
 from .inout import *
 from .config import to_config, _from_config, _from_npy
