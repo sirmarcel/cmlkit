@@ -14,7 +14,7 @@ but in the future a more mature plugin system might be needed.
 """
 
 
-from cmlkit.engine import read_npy, read_yaml
+from cmlkit.engine import read_npy, read_yaml, is_config, parse_config
 from cmlkit import logger
 
 
@@ -30,21 +30,14 @@ def _from_yaml(path, classes={}, **kwargs):
 
 def _from_config(config, classes={}, **kwargs):
     if isinstance(config, Configurable):
-        # did we accidentally pass an already loaded thing?
+        # did we accidentally pass an already instantiated object?
         return config
-    elif isinstance(config, dict):
-        if "kind" not in config or "config" not in config:
-            raise ValueError("Improper config format: " + str(config))
-
-        class_name = config["kind"]
-        if class_name in classes:
-            return classes[class_name].from_config(config["config"], **kwargs)
-
-        else:
-            raise ValueError("Unknown class with name {}.".format(class_name))
     else:
-        # TODO: attempt to load?
-        raise ValueError("Config must be a dict type.")
+        kind, inner = parse_config(config)
+        if kind in classes:
+            return classes[kind].from_config(inner, **kwargs)
+        else:
+            raise ValueError(f"Cannot find class with name {kind} in registry.")
 
 
 class Configurable:
@@ -59,29 +52,29 @@ class Configurable:
 
     ```
     {
-    "kind": "class_name",
-    "config": { ... },
+    "kind": { # inner config }
     }
     ```
 
     "kind" will be used to look up the class to instantiate, and the
-    "config" dict will be used to then instantiate. Typically, this will
+    "inner config" dict will be used to then instantiate. Typically, this will
     be some variation on calling `__init__(**config)`.
 
-    The term "kind" is used because class is a keyword in Python.
+    For more information see configparse.
 
     """
 
     @classmethod
     def from_config(cls, config, **kwargs):
-        """Instantiate this class from config."""
+        """Instantiate this class from (inner) config."""
 
         # Note: We retain the **kwargs for future flexibility,
         # at the moment it is only needed to pass along the context.
 
-        if "config" in config and "kind" in config:
-            # we have been handed a fully formed config, not one for this class
-            return cls.from_config(config["config"], **kwargs)
+        if is_config(config):
+            # we have been handed a fully formed config, not an inner config
+            kind, inner = parse_config(config)
+            return cls.from_config(inner, **kwargs)
         else:
             return cls._from_config(config, **kwargs)
 
@@ -91,7 +84,7 @@ class Configurable:
 
     def get_config(self):
         """Return a dictionary describing this component"""
-        return {"kind": self.get_kind(), "config": self._get_config()}
+        return {self.get_kind(): self._get_config()}
 
     def get_kind(self):
         """Return the class identifier."""

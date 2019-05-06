@@ -23,7 +23,7 @@ class TestConfigurable(TestCase):
 
     def test_to_config(self):
         hello = MyClass(a=1)
-        self.assertEqual(hello.get_config(), {"kind": "hello", "config": {"a": 1}})
+        self.assertEqual(hello.get_config(), {"hello": {"a": 1}})
 
 
 class TestContext(TestCase):
