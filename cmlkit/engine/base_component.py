@@ -1,8 +1,9 @@
-"""Base classes.
+"""Base class.
 
 The main objects in cmlkit follow a pattern similar to Keras models:
 
 They can be serialised into and instantiated from `config` dictionaries.
+Their syntax is specified in the `engine.config` module.
 
 The underlying idea is that these objects are essentially convenience wrappers
 around functions with lots of arguments (for instance a regression method or
@@ -33,66 +34,7 @@ interface that avoids side effects.
 """
 
 from cmlkit import logger
-
-
-class Configurable:
-    """Mixin for serialising/de-serialising objects as dictionaries.
-
-    The goal is to provide a simple, robust, human-readable way to
-    pass objects around that have little to no state and are mainly
-    containers for a bunch of arguments/parameters.
-
-    This representation is the *config*, a tree-structured
-    nested dictionary. It's core structure is:
-
-    ```
-    {
-    "kind": "class_name",
-    "config": { ... },
-    }
-    ```
-
-    "kind" will be used to look up the class to instantiate, and the
-    "config" dict will be used to then instantiate. Typically, this will
-    be some variation on calling `__init__(**config)`.
-
-    The term "kind" is used because class is a keyword in Python.
-
-    """
-
-    @classmethod
-    def from_config(cls, config, **kwargs):
-        """Instantiate this class from config."""
-
-        # Note: We retain the **kwargs for future flexibility,
-        # at the moment it is only needed to pass along the context.
-
-        if "config" in config and "kind" in config:
-            # we have been handed a fully formed config, not one for this class
-            return cls.from_config(config["config"], **kwargs)
-        else:
-            return cls._from_config(config, **kwargs)
-
-    @classmethod
-    def _from_config(cls, config, **kwargs):
-        return cls(**config, **kwargs)
-
-    def get_config(self):
-        """Return a dictionary describing this component"""
-        return {"kind": self.get_kind(), "config": self._get_config()}
-
-    def get_kind(self):
-        """Return the class identifier."""
-        # 'kind' is used to identify components
-        # for de-serialisation; by default this will
-        # be the lowercase version of the class name,
-        # or manually defined as class-level attribute 'kind'
-        return getattr(self.__class__, "kind", self.__class__.__name__.lower())
-
-    def _get_config(self):
-        # this method must return a dict that fully
-        # described how to re-instantiate this component
-        raise NotImplementedError("Configurables must implement a get_config method")
+from .config import Configurable
 
 
 class BaseComponent(Configurable):
