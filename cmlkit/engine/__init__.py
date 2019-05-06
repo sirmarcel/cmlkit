@@ -9,4 +9,4 @@ from .caching import diskcached, memcached
 from .errors import CmlTimeout
 from .external import wrap_external
 from .humanhash import humanize
-from .timing import timed
+from .timing import timed, time_repeat

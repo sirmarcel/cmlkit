@@ -1,0 +1,12 @@
+This file contains rough benchmark results on my home machine, just to keep track.
+
+Last commit: ef04d68a81a2af6c82bdbad8056e9dc8c94ba8b2
+Date: 2019-05-06
+
+Benchmark: external
+
+Running benchmark of big_wrapped with 5 reps...
+Mean, min, max: 66.348042, 34.352051, 106.407549.
+
+Running benchmark of big_unwrapped with 5 reps...
+Mean, min, max: 2.364774, 2.311365, 2.450663.
