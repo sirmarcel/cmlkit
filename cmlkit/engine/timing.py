@@ -1,4 +1,4 @@
-"""Basic timing tools"""
+"""Basic timing tools."""
 
 from functools import wraps
 import time
@@ -6,7 +6,7 @@ import numpy as np
 
 
 def timed(f):
-    """Wraps a function so it returns results and run time"""
+    """Wraps a function so it returns results and run time."""
 
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -19,7 +19,7 @@ def timed(f):
 
 
 def time_repeat(f, repeats=3):
-    """Time a function multiple times and return statistics
+    """Time a function multiple times and return statistics.
 
     Expects a function without arguments.
     """
