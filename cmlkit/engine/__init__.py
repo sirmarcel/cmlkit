@@ -4,7 +4,7 @@ from .inout import *
 from .configparse import is_config, parse_config
 from .config import _from_config, _from_npy, _from_yaml, Configurable
 from .base_component import BaseComponent
-from .hashing import compute_hash, fast_hash
+from .hashing import compute_hash
 from .caching import diskcached, memcached
 from .errors import CmlTimeout
 from .external import wrap_external

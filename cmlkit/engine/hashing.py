@@ -1,24 +1,26 @@
+"""Implements hashes that are (hopefully) stable across sessions.
+
+Note: I have found a hash instability in my implementation,
+which produces different hashes for dicts that were deepcopied
+from each other... which is VERY problematic. The hashes are stable
+across restarts, which is doubly strange.
+
+Therefore, we now use the joblib implementation, which is slower, but stable.
+
+Further improvement in this area are needed.
+
+"""
+
 import numpy as np
 import hashlib
 import joblib
-"""Implements hashes that are (hopefully) stable across sessions."""
-# Note: I have found a hash instability in my implementation below,
-# which produces different hashes for dicts that were deepcopied
-# from each other... which is VERY problematic. The hashes are stable
-# across restarts, which is doubly strange.
-
-# Will use the joblib implementation for cases like this,
-# which seems to not suffer from this problem. Joblibs hashes
-# seem to be much slower (I suspect the dumping of the ndarrays is problematic)
-# so I will keep both for now...
 
 
 def compute_hash(*args, **kwargs):
-    to_hash = {'args': args, 'kwargs': kwargs}
+    """Compute a hash of anything joblib can handle."""
+    to_hash = {"args": args, "kwargs": kwargs}
     return joblib.hash(to_hash)
 
-
-fast_hash = compute_hash  # I am fed up with fixing this shit
 
 # def fast_hash(*items, **kwitems):
 #     """Return hexdigest of argument(s).
@@ -36,7 +38,7 @@ fast_hash = compute_hash  # I am fed up with fixing this shit
 #     for k, v in kwitems.items():
 #         _hash(k, hashf)
 #         _hash(v, hashf)
-
+#
 #     return hashf.hexdigest()
 
 

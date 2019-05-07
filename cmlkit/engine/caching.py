@@ -27,7 +27,7 @@ import pickle
 import numpy as np
 
 from cmlkit.engine import read_npy, safe_save_npy, makedir
-from cmlkit.engine.hashing import compute_hash, fast_hash
+from cmlkit.engine.hashing import compute_hash
 from cmlkit import logger
 
 
@@ -61,7 +61,7 @@ class memcached:
     def __call__(self, *args, **kwargs):
         """Calls to cached function."""
 
-        key = fast_hash(*args, **kwargs)
+        key = compute_hash(*args, **kwargs)
 
         # return stored or computed value
         if key in self.cache:
