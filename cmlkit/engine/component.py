@@ -37,7 +37,7 @@ from cmlkit import logger
 from .config import Configurable
 
 
-class BaseComponent(Configurable):
+class Component(Configurable):
     """Base class for cmlkit components.
 
     Provides the mechanism for passing context (see explanation above)
