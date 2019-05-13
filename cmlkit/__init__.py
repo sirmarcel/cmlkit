@@ -27,7 +27,7 @@ from .dataset_loader import load_dataset
 from .tune import classes as classes_tune
 from .evaluators import classes as classes_evaluators
 from .representations import classes as classes_representations
-from .regressors import classes as classes_regressors
+from .regression import classes as classes_regression
 from .model import Model
 from .dataset import Dataset, Subset
 
@@ -35,7 +35,7 @@ classes = {
     **classes_tune,
     **classes_evaluators,
     **classes_representations,
-    **classes_regressors,
+    **classes_regression,
     LocalGridSearch.kind: LocalGridSearch,
     Dataset.kind: Dataset,
     Subset.kind: Subset,
