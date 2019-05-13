@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-from cmlkit.engine import BaseComponent, Configurable
+from cmlkit.engine import Component, Configurable
 
 
-class MyClass(BaseComponent):
+class MyClass(Component):
     kind = "hello"
 
     default_context = {"b": 1}

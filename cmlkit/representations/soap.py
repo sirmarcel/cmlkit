@@ -12,7 +12,7 @@ import cmlkit as cml
 run_quippy = Path(__file__).parents[0] / 'run_quippy.py'
 
 
-class Soap(cml.engine.BaseComponent):
+class Soap(cml.engine.Component):
     """SOAP descriptor as implemented in quippy"""
 
     kind = 'soap'

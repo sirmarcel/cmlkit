@@ -2,14 +2,14 @@ import numpy as np
 import qmmlpack as qmml
 
 from cmlkit import cache_location
-from ..engine import BaseComponent, memcached, diskcached
+from ..engine import Component, memcached, diskcached
 
 
 def compute_cm_minimal(z, r, unit='Angstroms', padding=False, flatten=True, sort=True):
     return qmml.coulomb_matrix(z, r, unit=unit, padding=padding, flatten=flatten, sort=sort)
 
 
-class CoulombMatrixMinimal(BaseComponent):
+class CoulombMatrixMinimal(Component):
     """A representation which is simply all distances 
 
     Like OnlyCoords this will not work for multiple molecules/structures,

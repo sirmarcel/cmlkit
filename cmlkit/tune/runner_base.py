@@ -5,10 +5,10 @@ import logging
 from datetime import datetime
 
 import cmlkit as cml
-from ..engine import BaseComponent, humanize, save_yaml, makedir
+from ..engine import Component, humanize, save_yaml, makedir
 
 
-class RunnerBase(BaseComponent):
+class RunnerBase(Component):
     """Runner prototype class"""
 
     kind = 'runner_base'

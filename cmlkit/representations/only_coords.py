@@ -1,9 +1,9 @@
 import numpy as np
 
-from ..engine import BaseComponent
+from ..engine import Component
 
 
-class OnlyCoords(BaseComponent):
+class OnlyCoords(Component):
     """A representation which is just all coordinates
 
     This will not work for multiple molecules/structures,

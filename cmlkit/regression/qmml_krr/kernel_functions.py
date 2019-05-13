@@ -17,7 +17,7 @@ There is no getattr magic because it doesn't seem needed.
 
 import qmmlpack
 
-from cmlkit.engine import BaseComponent, _from_config
+from cmlkit.engine import Component, _from_config
 
 
 def get_kernelf(config, context={}):
@@ -31,7 +31,7 @@ def get_raw_kernelf(name):
     return kernelfs[name]
 
 
-class Kernelf(BaseComponent):
+class Kernelf(Component):
     """Base class for kernel functions."""
 
     def __init__(self, ls, context={}):

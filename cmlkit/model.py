@@ -1,10 +1,10 @@
 import numpy as np
 import time
 import cmlkit as cml
-from .engine import BaseComponent
+from .engine import Component
 
 
-class Model(BaseComponent):
+class Model(Component):
     """Model"""
 
     default_context = {
@@ -24,7 +24,7 @@ class Model(BaseComponent):
         elif isinstance(representation, (list, tuple)):
             # we got a composed rep (or garbage!)
             self.representation = cml.ComposedRepresentation(*representation, context=self.context)
-        elif isinstance(representation, BaseComponent):
+        elif isinstance(representation, Component):
             self.representation = representation
         else:
             raise ValueError('Cannot do anything with representation {}'.format(representation))
@@ -32,7 +32,7 @@ class Model(BaseComponent):
         if isinstance(regressor, dict):
             # we got a config, let us instantiate the regressor
             self.regressor = cml.from_config(regressor, context=self.context)
-        elif isinstance(regressor, BaseComponent):
+        elif isinstance(regressor, Component):
             self.regressor = regressor
         else:
             raise ValueError('Cannot do anything with regressor {}'.format(representation))

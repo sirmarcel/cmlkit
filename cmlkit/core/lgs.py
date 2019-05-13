@@ -3,10 +3,10 @@ from qmmlpack import local_grid_search
 
 from cmlkit import logger
 import cmlkit.helpers as cmlh
-from cmlkit.engine import BaseComponent
+from cmlkit.engine import Component
 
 
-class LocalGridSearch(BaseComponent):
+class LocalGridSearch(Component):
     """Wrapper for qmmlpack global grid search"""
     kind = 'lgs'
 

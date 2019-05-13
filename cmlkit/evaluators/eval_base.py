@@ -1,9 +1,9 @@
 import traceback
 import cmlkit as cml
-from cmlkit.engine import BaseComponent
+from cmlkit.engine import Component
 
 
-class EvaluatorBase(BaseComponent):
+class EvaluatorBase(Component):
     """Base class for evaluators"""
 
     kind = 'eval_base'

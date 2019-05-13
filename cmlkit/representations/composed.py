@@ -1,9 +1,9 @@
 import numpy as np
 from cmlkit import classes
-from ..engine import BaseComponent, _from_config
+from ..engine import Component, _from_config
 
 
-class ComposedRepresentation(BaseComponent):
+class ComposedRepresentation(Component):
     """A representation composed of other representations; results are concatenated"""
 
     kind = 'composed'

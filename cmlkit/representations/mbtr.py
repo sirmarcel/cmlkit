@@ -66,7 +66,7 @@ def single_mbtr(data, config, mbtr_gen):
         return mbtr
 
 
-class BaseMBTR(BaseComponent):
+class BaseMBTR(Component):
     """MBTR Base Class"""
     default_context = {'timeout': None, 'compute_per_structure': False, 'disable_external_wrap': False}
 

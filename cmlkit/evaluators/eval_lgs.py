@@ -2,10 +2,10 @@ from copy import deepcopy
 import traceback
 
 from cmlkit import logger, classes
-from ..engine import BaseComponent, _from_config, read_yaml
+from ..engine import Component, _from_config, read_yaml
 
 
-class EvaluatorLGS(BaseComponent):
+class EvaluatorLGS(Component):
     """Evaluate model with a (local) grid search performed on a target quantity
 
     Note that this should be used as part of a hyper-parameter searching pipeline,
@@ -71,7 +71,7 @@ class EvaluatorLGS(BaseComponent):
     def _get_model_config(self, model):
         # we need to make sure that we have a config dict,
         # so LGS has something to parse!
-        if isinstance(model, BaseComponent):
+        if isinstance(model, Component):
             config = model.get_config()
         elif isinstance(model, str):
             config = cml.read_yaml(model)

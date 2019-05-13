@@ -1,6 +1,6 @@
 import numpy as np
 from cmlkit import cache_location
-from ..engine import BaseComponent, memcached, diskcached
+from ..engine import Component, memcached, diskcached
 
 
 def compute_distances(r):
@@ -38,7 +38,7 @@ def compute_histograms(all_dists, d, broadening):
     return result
 
 
-class OnlyDists(BaseComponent):
+class OnlyDists(Component):
     """A representation which is simply all distances 
 
     Like OnlyCoords this will not work for multiple molecules/structures,
@@ -73,7 +73,7 @@ class OnlyDists(BaseComponent):
         return self.computer(data.r)
 
 
-class OnlyDistsHistogram(BaseComponent):
+class OnlyDistsHistogram(Component):
     """A representation which is simply all distances, smeared out as histogram
 
     This is basically a poor man's MBTR2, but will only work under the

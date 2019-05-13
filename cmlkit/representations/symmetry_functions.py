@@ -7,7 +7,7 @@ import subprocess
 import cmlkit as cml
 
 
-class BasicSymmetryFunctions(cml.engine.BaseComponent):
+class BasicSymmetryFunctions(cml.engine.Component):
     """Baseline of atom-centred symmetry functions"""
 
     kind = 'bsf'

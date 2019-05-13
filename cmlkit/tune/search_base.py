@@ -4,10 +4,10 @@ import numpy as np
 from collections import OrderedDict
 
 from cmlkit import logger
-from ..engine import BaseComponent, compute_hash
+from ..engine import Component, compute_hash
 
 
-class SearchBase(BaseComponent):
+class SearchBase(Component):
     """Template class for Search"""
 
     def __init__(

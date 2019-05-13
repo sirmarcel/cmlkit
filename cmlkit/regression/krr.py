@@ -19,7 +19,7 @@ def get_kernelf(name):
             raise NotImplementedError("Kernel named {} is not implemented.".format(name))
 
 
-class KRR(BaseComponent):
+class KRR(Component):
     """Kernel Ridge Regression via qmmlpack"""
 
     kind = "krr"
