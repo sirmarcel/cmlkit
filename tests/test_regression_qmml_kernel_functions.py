@@ -2,7 +2,7 @@ from unittest import TestCase
 import numpy as np
 from functools import partial
 
-from cmlkit.regression.qmml_krr import (
+from cmlkit.regression.qmml import (
     get_kernelf,
     KernelfGaussian,
     KernelfLaplacian,

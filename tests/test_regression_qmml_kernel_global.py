@@ -1,8 +1,8 @@
 from unittest import TestCase
 import numpy as np
 
-from cmlkit.regression.qmml_krr import KernelGlobal
-from cmlkit.regression.qmml_krr import KernelfGaussian
+from cmlkit.regression.qmml import KernelGlobal
+from cmlkit.regression.qmml import KernelfGaussian
 
 kernelf = KernelfGaussian(ls=3.0)
 
