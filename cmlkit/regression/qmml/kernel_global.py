@@ -11,7 +11,7 @@ from .kernel_functions import get_kernelf
 class KernelGlobal(Component):
     """Compute kernels for global representations."""
 
-    kind = "kernel_global"
+    kind = "qmml_kernel_global"
 
     def __init__(self, kernelf, context={}):
         super().__init__(context=context)

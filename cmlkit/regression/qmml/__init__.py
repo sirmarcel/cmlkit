@@ -16,3 +16,5 @@ from .kernel_functions import (
 
 from .kernel_atomic import kernel_atomic, KernelAtomic
 from .kernel_global import KernelGlobal
+
+classes = {KernelAtomic.kind: KernelAtomic, KernelGlobal.kind: KernelGlobal}
