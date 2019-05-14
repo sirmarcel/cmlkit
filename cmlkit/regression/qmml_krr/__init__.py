@@ -13,3 +13,6 @@ from .kernel_functions import (
     KernelfLaplacian,
     KernelfLinear,
 )
+
+from .kernel_atomic import kernel_atomic, KernelAtomic
+from .kernel_global import KernelGlobal
