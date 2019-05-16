@@ -16,5 +16,10 @@ from .kernel_functions import (
 
 from .kernel_atomic import kernel_atomic, KernelAtomic
 from .kernel_global import KernelGlobal
+from .krr import KRR
 
-classes = {KernelAtomic.kind: KernelAtomic, KernelGlobal.kind: KernelGlobal}
+classes = {
+    KernelAtomic.kind: KernelAtomic,
+    KernelGlobal.kind: KernelGlobal,
+    KRR.kind: KRR,
+}
