@@ -71,12 +71,10 @@ class Configurable:
         # Note: We retain the **kwargs for future flexibility,
         # at the moment it is only needed to pass along the context.
 
-        if is_config(config):
-            # we have been handed a fully formed config, not an inner config
-            kind, inner = parse_config(config)
-            return cls.from_config(inner, **kwargs)
-        else:
-            return cls._from_config(config, **kwargs)
+        # Keeping this proxy method allows us to add further functionality as needed,
+        # while leaving sub-classes free to implement their own instantiation logic.
+
+        return cls._from_config(config, **kwargs)
 
     @classmethod
     def _from_config(cls, config, **kwargs):
