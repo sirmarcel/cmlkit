@@ -6,7 +6,22 @@ logger.addHandler(logging.StreamHandler())
 
 default_context = {"cache_type": "mem", "min_duration": 0.5}
 
+from .engine import save_yaml, read_yaml, _from_config, _from_npy, _from_yaml
+
 classes = {}
+
+
+def from_config(config, context={}):
+    return _from_config(config, classes=classes, context=context)
+
+
+def from_npy(config, context={}):
+    return _from_npy(config, classes=classes, context=context)
+
+
+def from_yaml(config, context={}):
+    return _from_yaml(config, classes=classes, context=context)
+
 
 from .env import (
     cache_location,
@@ -20,7 +35,6 @@ from .conversion import convert, unconvert
 
 from .core import get_loss, losses, LocalGridSearch, charges_to_elements
 
-from .engine import save_yaml, read_yaml, _from_config, _from_npy, _from_yaml
 
 from .dataset_loader import load_dataset
 
@@ -44,15 +58,3 @@ classes = {
 # 'model': Model,
 # 'dataset': Dataset,
 #     'subset': Subset,
-
-
-def from_config(config, context={}):
-    return _from_config(config, classes=classes, context=context)
-
-
-def from_npy(config, context={}):
-    return _from_npy(config, classes=classes, context=context)
-
-
-def from_yaml(config, context={}):
-    return _from_yaml(config, classes=classes, context=context)
