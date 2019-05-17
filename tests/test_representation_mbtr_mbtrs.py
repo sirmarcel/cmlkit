@@ -68,6 +68,23 @@ class TestMBTR2(TestCase):
         self.assertEqual(computed[0][1], 1.0)
         self.assertEqual(computed[0][2], 0.0)
 
+    def test_mbtr_2_with_parametrized_weightf(self):
+        # just make sure things don't explode
+        mbtr = MBTR2(
+            start=0,
+            stop=1,
+            num=3,
+            geomf="1/distance",
+            weightf={"exp_-1/identity": {"ls": 1.0}},
+            broadening=0.001,
+            eindexf="noreversals",
+            aindexf="noreversals",
+            elems=[0],
+            flatten=True,
+        )
+
+        computed = mbtr(self.data)
+
 
 class TestMBTR3(TestCase):
     def setUp(self):
@@ -79,7 +96,7 @@ class TestMBTR3(TestCase):
     def test_mbtr_3(self):
         mbtr = MBTR3(
             start=0,
-            stop=np.pi/2 + 0.01,
+            stop=np.pi / 2 + 0.01,
             num=3,
             geomf="angle",
             weightf="unity",

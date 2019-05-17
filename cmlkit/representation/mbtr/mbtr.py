@@ -141,7 +141,7 @@ def _to_weightf(config):
     else:
         kind, inner = parse_config(config)
 
-        return (kind, (inner["scale"],))
+        return (kind, (inner["ls"],))
 
 
 def _to_distrf(broadening):
