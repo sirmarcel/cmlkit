@@ -9,7 +9,7 @@ from cmlkit import from_config
 class KRR(Component):
     """Kernel Ridge Regression with qmmlpack backend."""
 
-    kind = "qmml_krr"
+    kind = "krr"
     default_context = {"print_timings": False}
 
     def __init__(self, kernel, nl, centering=False, context={}):

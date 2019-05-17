@@ -21,7 +21,14 @@ class TestSerialization(TestCase):
     def test_serialization(self):
         import cmlkit
 
-        krr = cmlkit.from_config({"krr": {"nl": 1.0, "kernel": ["gaussian", [1.0]]}})
+        krr = cmlkit.from_config(
+            {
+                "krr": {
+                    "nl": 1.0,
+                    "kernel": {"kernel_global": {"kernelf": {"gaussian": {"ls": 2}}}},
+                }
+            }
+        )
 
         krr.get_config()
 

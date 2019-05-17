@@ -24,7 +24,7 @@ from .kernel_functions import get_kernelf
 class KernelAtomic(Component):
     """Compute kernels for atomic representations."""
 
-    kind = "qmml_kernel_atomic"
+    kind = "kernel_atomic"
 
     default_context = {"max_size": 256}
 

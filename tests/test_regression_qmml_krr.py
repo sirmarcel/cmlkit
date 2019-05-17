@@ -32,7 +32,7 @@ class TestKRR(TestCase):
 
     def test_does_it_work(self):
         krr = KRR(
-            kernel={"qmml_kernel_global": {"kernelf": {"gaussian": {"ls": 0.5}}}},
+            kernel={"kernel_global": {"kernelf": {"gaussian": {"ls": 0.5}}}},
             nl=1.0e-7,
         )
 
