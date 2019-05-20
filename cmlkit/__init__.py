@@ -26,7 +26,7 @@ def from_yaml(config, context={}):
 from .env import (
     cache_location,
     dataset_path,
-    scratch_location,
+    get_scratch,
     runner_path,
     quippy_pythonpath,
     quippy_python_exe,
