@@ -30,33 +30,26 @@ class TestSOAP(TestCase):
             res = np.array([np.array([1.0]), np.array([2.0])], dtype=object)
 
             def fake_output(*args, **kwargs):
-                np.save(
-                    self.tmpdir / "soap_fake" / "out",
-                    res,
-                )
+                outfolder = list(self.tmpdir.glob("soap_*"))[0]
+                np.save(outfolder / "out", res)
 
                 return "", ""
 
-            fake_task = unittest.mock.MagicMock(
-                side_effect=fake_output
-            )
+            fake_task = unittest.mock.MagicMock(side_effect=fake_output)
 
-            fake_hash = unittest.mock.MagicMock(return_value="fake")
+            with unittest.mock.patch(
+                "cmlkit.representation.soap.quippy_interface.run_task", fake_task
+            ):
 
-            with unittest.mock.patch("cmlkit.engine.compute_hash", fake_hash):
-                with unittest.mock.patch(
-                    "cmlkit.representation.soap.quippy_interface.run_task", fake_task
-                ):
+                from cmlkit.representation.soap import SOAP
+                from cmlkit import Dataset
 
-                    from cmlkit.representation.soap import SOAP
-                    from cmlkit import Dataset
+                data = Dataset(
+                    z=np.array([[1, 1]]),
+                    r=np.array([[[0.0, 0.0, 0.0], [2.0, 0.0, 0.0]]]),
+                )
+                soap = SOAP(elems=[1], sigma=0.1, n_max=2, l_max=3, cutoff=5.0)
 
-                    data = Dataset(
-                        z=np.array([[1, 1]]),
-                        r=np.array([[[0.0, 0.0, 0.0], [2.0, 0.0, 0.0]]]),
-                    )
-                    soap = SOAP(elems=[1], sigma=0.1, n_max=2, l_max=3, cutoff=5.0)
+                computed = soap(data)
 
-                    computed = soap(data)
-
-                    np.testing.assert_array_equal(computed, res)
+                np.testing.assert_array_equal(computed, res)
