@@ -1,4 +1,3 @@
-import numpy as np
 import qmmlpack
 
 from .representation import Representation
