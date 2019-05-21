@@ -45,12 +45,12 @@ else:
     runner_path = None
 
 # environment variables for quippy integreation
-if "CML2_QUIPPY_PYTHONPATH" in os.environ:
-    quippy_pythonpath = os.path.normpath(os.environ["CML2_QUIPPY_PYTHONPATH"])
+if "CML_QUIPPY_PYTHONPATH" in os.environ:
+    quippy_pythonpath = os.path.normpath(os.environ["CML_QUIPPY_PYTHONPATH"])
 else:
     quippy_pythonpath = None
 
-if "CML2_QUIPPY_PYTHON_EXE" in os.environ:
-    quippy_python_exe = os.path.normpath(os.environ["CML2_QUIPPY_PYTHON_EXE"])
+if "CML_QUIPPY_PYTHON_EXE" in os.environ:
+    quippy_python_exe = os.path.normpath(os.environ["CML_QUIPPY_PYTHON_EXE"])
 else:
     quippy_python_exe = None
