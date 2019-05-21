@@ -10,7 +10,7 @@ def fc(r, cutoff):
 
 
 def rad_sf(r, eta, mu):
-    return np.exp(-eta * (2.0 - mu) ** 2)
+    return np.exp(-eta * (r - mu) ** 2)
 
 
 def ang_sf(ang, r1, r2, r3, lambd, zeta, eta):
@@ -28,6 +28,14 @@ class TestSymmetryFunctions(TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir)
+
+    def test_infile(self):
+        from cmlkit.representation.sf import SymmetryFunctions
+        sf = SymmetryFunctions(
+                    [1], universal=[{"rad": {"eta": 1.0, "mu": 1.0, "cutoff": 3.0}}]
+                )
+
+        sf.get_infile()
 
     def test_rad_sf(self):
 
@@ -149,4 +157,65 @@ class TestSymmetryFunctions(TestCase):
                     * fc(1.0, cutoff)
                     * fc(1.0, cutoff)
                     * fc(np.sqrt(2.0), cutoff),
+                )
+
+    def test_rad_sf_multiple_elements(self):
+
+        with unittest.mock.patch.dict("os.environ", {"CML_SCRATCH": str(self.tmpdir)}):
+            from cmlkit.representation.sf import SymmetryFunctions
+            from cmlkit import Dataset, runner_path
+
+            print(runner_path)
+
+            data = Dataset(
+                z=np.array([[1, 2, 3]]),
+                r=np.array([[[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]]),
+            )
+
+            for i in range(5):
+                eta = np.random.random()
+                mu = np.random.random()
+                cutoff = 5.0
+                sf = SymmetryFunctions(
+                    [1, 2, 3], universal=[{"rad": {"eta": eta, "mu": mu, "cutoff": cutoff}}]
+                )
+
+                computed = sf(data)
+
+                print(computed)
+
+                np.testing.assert_almost_equal(
+                    computed[0][0][0], 0.0
+                )
+
+                np.testing.assert_almost_equal(
+                    computed[0][0][1], rad_sf(1.0, eta, mu) * fc(1.0, cutoff)
+                )
+
+                np.testing.assert_almost_equal(
+                    computed[0][0][2], rad_sf(1.0, eta, mu) * fc(1.0, cutoff)
+                )
+
+                np.testing.assert_almost_equal(
+                    computed[0][1][3 + 0], rad_sf(1.0, eta, mu) * fc(1.0, cutoff)
+                )
+
+                np.testing.assert_almost_equal(
+                    computed[0][1][3 + 1], 0.0
+                )
+
+                np.testing.assert_almost_equal(
+                    computed[0][1][3 + 2], rad_sf(np.sqrt(2), eta, mu) * fc(np.sqrt(2), cutoff)
+                )
+
+                np.testing.assert_almost_equal(
+                    computed[0][2][6 + 0], rad_sf(1.0, eta, mu) * fc(1.0, cutoff)
+                )
+
+                np.testing.assert_almost_equal(
+                    computed[0][2][6 + 1], rad_sf(np.sqrt(2), eta, mu) * fc(np.sqrt(2), cutoff)
+                )
+
+                np.testing.assert_almost_equal(
+                    computed[0][2][6 + 2], 0.0
                 )
