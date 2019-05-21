@@ -5,7 +5,7 @@ from .only_coords import OnlyCoords
 from .only_dists import OnlyDists, OnlyDistsHistogram
 from .coulomb_matrix import CoulombMatrixMinimal
 from .symmetry_functions import BasicSymmetryFunctions, EmpiricalSymmetryFunctions
-from .soap import Soap
+# from .soap import Soap
 
 classes = {
     # MBTR1.kind: MBTR1,
