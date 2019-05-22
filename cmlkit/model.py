@@ -1,206 +1,112 @@
-import numpy as np
-import time
-import cmlkit as cml
-from .engine import Component
+"""Model class.
+
+A Model is a combination of representation and regression method,
+and can be regarded as a rudimentary pipeline.
+
+It essentially wraps these two components, and takes care
+of passing the computed representation around to the regressor.
+
+The only additional task a Model has is to make sure the property
+to be predicted is converted appropriately for the regression method.
+
+For instance, it is occasionally better to predict a target quantity
+normalised by the number of atoms in a structure, or the convention
+in a community demands per-atom predictions, but the model is better
+suited to predict quantitites for the entire system.
+
+The `cmlkit` convention is that all properties are stored scaled
+with the number of atoms in the system. This is arbitrary, but it
+makes the conversion a bit more easy.
+
+An alternative approach is to always use `None` as `per`, in which
+case no conversion is ever done!
+
+"""
+
+from cmlkit.engine import Component
+from cmlkit import from_config
+from cmlkit.representation import Composed
+from .conversion import convert
 
 
 class Model(Component):
-    """Model"""
+    """Model class.
 
-    default_context = {
-        'print_timings': False,
-        'use_naive_cv': False,  # if True, cv routines offered by regressor will be ignored
-    }
+    When training, automatically computes a representation,
+    and then trains a regression method. When predicting,
+    automatically computes the representation for that,
+    and then predicts using the regression method.
 
-    def __init__(self, representation, regressor, predict_per=None, context={}):
+    Attributes:
+        representation: Representation instance.
+        regression: Regression method.
+        per: Preferred units/scaling for target property.
+            (Popular choices: "atom", "cell", "mol")
+            (see `conversion.py` for more info.)
+
+    """
+
+    kind = "model"
+
+    def __init__(self, representation, regression, per=None, context={}):
+        """Create model.
+
+        Args:
+            representation: Representation instance, or config for one, or
+                a list with any of the above, in which case a Composed representation
+                is automatically generated.
+            regression: Regression method or config of one.
+            per: Optional, String (or None) specifying per what the regression should
+                internally predict. Default is to not convert.
+
+        """
         super().__init__(context=context)
 
-        self.print_timings = self.context['print_timings']
-        self.use_naive_cv = self.context['use_naive_cv']
-
-        if isinstance(representation, dict):
-            # we got a config, let us instantiate the representation
-            self.representation = cml.from_config(representation, context=self.context)
-        elif isinstance(representation, (list, tuple)):
-            # we got a composed rep (or garbage!)
-            self.representation = cml.ComposedRepresentation(*representation, context=self.context)
-        elif isinstance(representation, Component):
-            self.representation = representation
+        # Allowing myself ONE piece of "magic"!
+        if isinstance(representation, (list, tuple)):
+            self.representation = Composed(*representation, context=self.context)
         else:
-            raise ValueError('Cannot do anything with representation {}'.format(representation))
+            self.representation = from_config(representation, context=self.context)
 
-        if isinstance(regressor, dict):
-            # we got a config, let us instantiate the regressor
-            self.regressor = cml.from_config(regressor, context=self.context)
-        elif isinstance(regressor, Component):
-            self.regressor = regressor
-        else:
-            raise ValueError('Cannot do anything with regressor {}'.format(representation))
+        self.regression = from_config(regression, context=self.context)
 
-        self.predict_per = predict_per
-
-    @classmethod
-    def _from_config(cls, config, context={}):
-        if 'predict_per' in config:
-            return cls(config['representation'], config['regressor'], predict_per=config['predict_per'], context=context)
-        else:
-            return cls(config['representation'], config['regressor'], context=context)
+        self.per = per
 
     def _get_config(self):
-        return {'representation': self.representation.get_config(),
-                'regressor': self.regressor.get_config(),
-                'predict_per': self.predict_per}
+        return {
+            "representation": self.representation.get_config(),
+            "regression": self.regression.get_config(),
+            "per": self.per,
+        }
 
     def train(self, data, target):
-        n = data.n
+        """Train model.
 
-        start = time.time()
-        self.x_train = self.representation.compute(data)
-        if self.print_timings:
-            cml.logger.info('Computed training representation in {:.2f}s (n={}).'.format(time.time() - start, n))
-
-        start = time.time()
-        self.y_train = cml.convert(data, data.p[target], self.predict_per)
-
-        self.regressor.train(self.x_train, self.y_train)
-
-        if self.print_timings:
-            cml.logger.info('Trained in {:.2f}s (n={}).'.format(time.time() - start, n))
-
-    def predict(self, data, target, per=None):
-        n = data.n
-
-        if per is 'original':
-            per = self.predict_per
-
-        start = time.time()
-        x_pred = self.representation.compute(data)
-        if self.print_timings:
-            cml.logger.info('Computed prediction representation in {:.2f}s (n={}).'.format(time.time() - start, n))
-
-        start = time.time()
-
-        y_pred = self.regressor.predict(x_pred)
-
-        if self.print_timings:
-            cml.logger.info('Predicted in {:.2f}s (n={}).'.format(time.time() - start, n))
-
-        if per is None:
-            return y_pred
-        else:
-            y_pred_per_atom = cml.unconvert(data, y_pred, self.predict_per)
-            return cml.convert(data, y_pred_per_atom, per)
-
-        return y_pred
-
-    def loss(self, data, target, per=None, lossf='rmse'):
-        lossf = cml.get_loss(lossf)
-
-        if per is 'original':
-            per = self.predict_per
-
-        if isinstance(lossf, list):
-            return self.losses(data, target, per=per, lossfs=lossf)
-
-        pred = self.predict(data, target, per=per)
-        true = data.pp(target, per=per)
-        if lossf.needs_pv:
-            raise NotImplementedError("Predictive variance is not yet implemented!")
-
-        return lossf(true, pred, pv=None)
-
-    def losses(self, data, target, per=None, lossfs=['rmse', 'mae', 'r2']):
-        lossfs = cml.get_loss(lossfs)
-
-        if per is 'original':
-            per = self.predict_per
-
-        true = data.pp(target, per=per)
-        pred = self.predict(data, target, per=per)
-
-        if any(l.needs_pv for l in lossfs):
-            raise NotImplementedError("Predictive variance is not yet implemented!")
-
-        result = {lossf.name: lossf(true, pred, pv=None) for lossf in lossfs}
-
-        return result
-
-    def cv_losses(self, data, idx, target, per=None, lossfs=['rmse', 'mae', 'r2']):
-        """Compute cross-validation loss over data with idx.
-
-        idx is expected to be a list of lists [idx_train, idx_test], where both
-        are index arrays (i.e. int arrays) or something that can be cast to it.
+        Args:
+            data: Dataset instance
+            target: Name of target property,
+                must be present in data.
         """
-        start_all = time.time()
+        x = self.representation(data)
+        y = data.pp(target, self.per)
 
-        lossfs = cml.get_loss(lossfs)
+        self.regression.train(x=x, y=y)
 
-        if per is 'original':
-            per = self.predict_per
+        return self  # return trained Model
 
-        start = time.time()
-        x = self.representation.compute(data)
-        if self.print_timings:
-            cml.logger.info(f"Computed CV representation in {time.time()-start:.2f}")
+    def predict(self, data, per=None):
+        """Predict with model.
 
-        y = data.pp(target, per=self.predict_per)  # converted to quantity internally used by regressor
+        Args:
+            data: Dataset instance
+            per: Optional, String specifying in which units
+                the prediciton should be made.
 
-        if hasattr(self.regressor, 'cv_train_and_predict') and not self.use_naive_cv:
-            preds = self.regressor.cv_train_and_predict(x, y, idx)
-        else:
-            preds = self._naive_cv(x, y, data, idx, per)
+        Returns:
+            ndarray with predictions.
 
-        y_test = data.pp(target, per=per)  # converted to the quantity we want to predict
+        """
+        z = self.representation(data)
+        pred = self.regression.predict(z)
 
-        result = {lossf.name: {'losses': []} for lossf in lossfs}
-        for i, pred in enumerate(preds):
-            test = idx[i][1]  # we only need the test indices
-
-            if per is not None:
-                pred = cml.unconvert(data[test], pred, self.predict_per)
-                pred = cml.convert(data[test], pred, per)
-
-            if any(l.needs_pv for l in lossfs):
-                raise NotImplementedError("Predictive variance is not yet implemented!")
-
-            for lossf in lossfs:
-                result[lossf.name]['losses'].append(lossf(y_test[test], pred, pv=None))
-
-        for lossf in lossfs:
-            result[lossf.name]['losses'] = np.array(result[lossf.name]['losses'])
-            result[lossf.name]['mean'] = np.mean(result[lossf.name]['losses'])
-            result[lossf.name]['std'] = np.std(result[lossf.name]['losses'])
-            result[lossf.name]['var'] = np.var(result[lossf.name]['losses'])
-
-
-        final = {**{lossf.name: result[lossf.name]['mean'] for lossf in lossfs}, 'cv': result}
-
-        if self.print_timings:
-            cml.logger.info(f"Finished cv_losses in {time.time()-start_all:.2f}.")
-
-        return final
-
-    def _naive_cv(self, x, y, data, idx, per):
-        # If the regressor does not offer an optimised CV routine,
-        # this is used. (Might also be preferable if only small subsets
-        # of the data are used in CV, since the regressor CV routines
-        # should be optimised around the assumption that all data gets
-        # used during the cross-validation.)
-
-        start = time.time()
-        preds = []
-        for train, test in idx:
-
-            self.regressor.train(x[train], y[train])
-            pred = self.regressor.predict(x[test])
-
-            if per is not None:
-                pred = cml.unconvert(data[test], pred, self.predict_per)
-                pred = cml.convert(data[test], pred, per)
-
-            preds.append(pred)
-
-        if self.print_timings:
-            cml.logger.info(f"Finished naive CV in {time.time()-start:.2f}")
-
-        return preds
+        return convert(data, pred, per)
