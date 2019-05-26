@@ -43,4 +43,4 @@ class EvaluatorHoldout(Evaluator):
         model.train(self.train, target=self.target)
         pred = model.predict(self.test, per=self.per)
 
-        return self.loss(self.test.pp(self.target, self.per), pred)
+        return self.loss(self.test.pp(self.target, per=self.per), pred)
