@@ -26,6 +26,13 @@ class TestDataset(TestCase):
         self.b = np.random.random((self.n, 3, 3))
         self.p1 = np.random.random(self.n)
         self.p2 = np.random.random(self.n)
+        self.splits = np.array([
+                    [
+                        np.random.randint(0, high=self.n, size=80),
+                        np.random.randint(0, high=self.n, size=80),
+                    ]
+                    for i in range(3)
+                ], dtype=object)
 
         self.data = Dataset(
             z=self.z,
@@ -34,6 +41,7 @@ class TestDataset(TestCase):
             p={"p1": self.p1, "p2": self.p2},
             name="test",
             desc="test",
+            splits=self.splits,
         )
 
         self.data2 = Dataset(
@@ -46,12 +54,25 @@ class TestDataset(TestCase):
         )
 
         self.data_nop = Dataset(
-            z=self.z,
-            r=self.r,
-            b=self.b,
-            p={},
-            name="test",
-            desc="test",
+            z=self.z, r=self.r, b=self.b, p={}, name="test", desc="test"
+        )
+
+        # roll a new dataset
+
+        n = 100
+        n_atoms = np.random.randint(1, high=10, size=n)
+
+        r = [2 * np.random.random((na, 3)) for na in n_atoms]
+        r = np.array(r, dtype=object)
+        z = np.array(
+            [np.random.randint(1, high=10, size=na) for na in n_atoms], dtype=object
+        )
+        b = np.random.random((n, 3, 3))
+        p1 = np.random.random(n)
+        p2 = np.random.random(n)
+
+        self.different = Dataset(
+            z=z, r=r, b=b, p={"p1": p1, "p2": p2}, name="test_different", desc="test!"
         )
 
     def tearDown(self):
@@ -65,6 +86,7 @@ class TestDataset(TestCase):
         np.testing.assert_array_equal(self.data.b, self.b)
         np.testing.assert_array_equal(self.data.p["p1"], self.p1)
         np.testing.assert_array_equal(self.data.p["p2"], self.p2)
+        np.testing.assert_array_equal(self.data.splits, self.splits)
 
     def test_hash_stable(self):
         # is the dataset hash stable across restarts?
@@ -77,6 +99,8 @@ class TestDataset(TestCase):
         self.assertTrue(self.data.hash is not None)
         self.assertTrue(self.data.geom_hash is not None)
 
+        self.assertNotEqual(self.data.hash, self.different.hash)
+
     def test_roundtrip(self):
         self.data.save(directory=self.tmpdir)
         data3 = load_dataset("test", other_paths=[self.tmpdir])
@@ -84,6 +108,7 @@ class TestDataset(TestCase):
         self.assertEqual(self.data.hash, data3.hash)
         self.assertEqual(self.data.name, data3.name)
         self.assertEqual(self.data.desc, data3.desc)
+        np.testing.assert_array_equal(data3.splits, self.splits)
 
     def test_subset(self):
         idx = np.array([3, 1, 5, 6, 28, 32, 11], dtype=int)

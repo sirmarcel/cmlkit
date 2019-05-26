@@ -82,6 +82,9 @@ class Dataset(Configurable):
         p: Dict with properties.
         name: Name of dataset.
         desc: Description of dataset.
+        splits: List of pre-rolled train/test splits of the form
+            [[train_1, test_1], [train_2, test_2]]. Mainly to be used
+            to ensure tighly controlled CV-losses. Ignored in hashing.
         hash: Hash, ignoring name and description.
         geom_hash: Like hash, but also ignoring properties.
         report: String with a report on this dataset and its statistics.
@@ -96,7 +99,7 @@ class Dataset(Configurable):
 
     kind = "dataset"
 
-    def __init__(self, z, r, b=None, p={}, name=None, desc=""):
+    def __init__(self, z, r, b=None, p={}, name=None, desc="", splits=[]):
         super().__init__()
 
         # Sanity checks
@@ -117,6 +120,7 @@ class Dataset(Configurable):
         self.r = r
         self.b = b
         self.p = p
+        self.splits = splits
 
         if name is None:
             name = compute_hash(self.z, self.r, self.b, self.p)
@@ -153,6 +157,7 @@ class Dataset(Configurable):
             "r": self.r,
             "b": self.b,
             "p": self.p,
+            "splits": self.splits,
         }
 
     def save(self, directory="", filename=None):
@@ -321,15 +326,17 @@ class Subset(Dataset):
 
     kind = "subset"
 
-    def __init__(self, z, r, b=None, p={}, name=None, desc="", idx=None, parent_info={}):
+    def __init__(
+        self, z, r, b=None, p={}, name=None, desc="", idx=None, parent_info={}, splits=[]
+    ):
         # you probably want to use from_dataset in 99% of cases
-        super().__init__(z, r, b, p, name=name, desc=desc)
+        super().__init__(z, r, b, p, name=name, desc=desc, splits=splits)
 
         self.idx = idx
         self.parent_info = parent_info
 
     @classmethod
-    def from_dataset(cls, dataset, idx, name=None, desc=""):
+    def from_dataset(cls, dataset, idx, name=None, desc="", splits=[]):
         """From parent dataset, create subset."""
 
         z = dataset.z[idx]
@@ -354,7 +361,17 @@ class Subset(Dataset):
 
         parent_info = {"desc": dataset.desc, "name": dataset.name}
 
-        return cls(z, r, b=b, p=p, name=name, desc=desc, idx=idx, parent_info=parent_info)
+        return cls(
+            z,
+            r,
+            b=b,
+            p=p,
+            name=name,
+            desc=desc,
+            idx=idx,
+            parent_info=parent_info,
+            splits=splits,
+        )
 
     def _get_config(self):
 
@@ -367,6 +384,7 @@ class Subset(Dataset):
             "p": self.p,
             "idx": self.idx,
             "parent_info": self.parent_info,
+            "splits": self.splits,
         }
 
 
