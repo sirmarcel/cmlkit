@@ -42,12 +42,4 @@ from .search_hyperopt import SearchHyperopt
 from .search_fixed import SearchFixed
 from .opt_lgs import OptimizerLGS
 
-classes = {
-    Evals.kind: Evals,
-    RunnerSingle.kind: RunnerSingle,
-    RunnerPool.kind: RunnerPool,
-    SearchGrid.kind: SearchGrid,
-    SearchHyperopt.kind: SearchHyperopt,
-    SearchFixed.kind: SearchFixed,
-    OptimizerLGS.kind: OptimizerLGS,
-}
+components = [OptimizerLGS]

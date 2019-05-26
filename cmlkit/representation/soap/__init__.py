@@ -3,4 +3,4 @@
 from .soap import SOAP
 from .quippy_interface import compute_soap
 
-classes = {SOAP.kind: SOAP}
+components = [SOAP]

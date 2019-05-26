@@ -8,6 +8,7 @@ default_context = {"cache_type": "mem", "min_duration": 0.5}
 
 from .engine import save_yaml, read_yaml, _from_config, _from_npy, _from_yaml
 
+global classes
 classes = {}
 
 
@@ -21,6 +22,12 @@ def from_npy(config, context={}):
 
 def from_yaml(config, context={}):
     return _from_yaml(config, classes=classes, context=context)
+
+
+def register(*components):
+    """Register Components with cmlkit for deserialisation."""
+    for c in components:
+        classes[c.kind] = c
 
 
 from .env import (
@@ -38,23 +45,20 @@ from .core import get_loss, losses, LocalGridSearch, charges_to_elements
 
 from .dataset_loader import load_dataset
 
-from .tune import classes as classes_tune
-from .evaluators import classes as classes_evaluators
-from .representation import classes as classes_representation
-from .regression import classes as classes_regression
+from .tune import components as components_tune
+register(*components_tune)
+
+from .evaluation import components as components_evaluation
+register(*components_evaluation)
+
+from .representation import components as components_representation
+register(*components_representation)
+
+from .regression import components as components_regression
+register(*components_regression)
+
 from .model import Model
+register(Model)
+
 from .dataset import Dataset, Subset
-
-classes = {
-    **classes_tune,
-    **classes_evaluators,
-    **classes_representation,
-    **classes_regression,
-    LocalGridSearch.kind: LocalGridSearch,
-    Dataset.kind: Dataset,
-    Subset.kind: Subset,
-}
-
-# 'model': Model,
-# 'dataset': Dataset,
-#     'subset': Subset,
+register(Dataset, Subset)

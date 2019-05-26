@@ -1,4 +1,4 @@
 from .krr import KRR, ExtensiveKRR
-from .qmml import classes as qmml_classes
+from .qmml import components as qmml_components
 
-classes = {**qmml_classes}
+components = qmml_components

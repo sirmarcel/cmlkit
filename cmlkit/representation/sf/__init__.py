@@ -22,4 +22,4 @@ from .sf import SymmetryFunctions
 from .runner import compute_symmfs
 from .config import prepare_config
 
-classes = {SymmetryFunctions.kind: SymmetryFunctions}
+components = [SymmetryFunctions]
