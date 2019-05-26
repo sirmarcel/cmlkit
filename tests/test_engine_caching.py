@@ -5,7 +5,8 @@ import pathlib
 import shutil
 import time
 
-from cmlkit.engine import diskcached, memcached, timed
+from cmlkit.engine import diskcached, memcached
+from cmlkit.utility import timed
 
 
 def slow_f(x):

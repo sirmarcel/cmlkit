@@ -5,7 +5,7 @@ import numpy as np
 import qmmlpack as qmml
 
 from cmlkit.engine import compute_hash, Configurable, save_npy
-from cmlkit.conversion import convert
+from cmlkit.utility import convert
 
 # Yes, this is a bit of a nightmare -- it is really a very very overloaded class.
 # Note that we're using the Configurable infrastructure here, but it really is

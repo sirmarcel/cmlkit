@@ -1,4 +1,4 @@
-from cmlkit.engine import time_repeat
+from cmlkit.utility import time_repeat
 
 
 def run_benchmark(f, repeats=5):

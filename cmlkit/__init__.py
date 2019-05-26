@@ -38,7 +38,7 @@ from .env import (
     quippy_pythonpath,
     quippy_python_exe,
 )
-from .conversion import convert, unconvert
+from .utility import convert, unconvert
 
 from .core import get_loss, losses, LocalGridSearch, charges_to_elements
 

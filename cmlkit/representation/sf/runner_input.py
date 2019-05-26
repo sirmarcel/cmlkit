@@ -6,7 +6,7 @@ import time
 
 from cmlkit import get_scratch
 from cmlkit.engine import compute_hash, parse_config
-from cmlkit.core import charges_to_elements
+from cmlkit.utility import charges_to_elements
 
 
 def prepare_task(data, config):

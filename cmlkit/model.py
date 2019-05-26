@@ -26,7 +26,7 @@ case no conversion is ever done!
 from cmlkit.engine import Component
 from cmlkit import from_config
 from cmlkit.representation import Composed
-from .conversion import convert
+from .utility import convert
 
 
 class Model(Component):
