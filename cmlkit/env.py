@@ -18,14 +18,14 @@ def get_scratch():
     return scratch_location
 
 
-if "CML2_DATASET_PATH" in os.environ:
+if "CML_DATASET_PATH" in os.environ:
     dataset_path = [
-        os.path.normpath(p) for p in str(os.environ["CML2_DATASET_PATH"]).split(":")
+        Path(p) for p in str(os.environ["CML_DATASET_PATH"]).split(":")
     ]
 else:
     dataset_path = []
 
-dataset_path.append(os.path.normpath(os.environ["PWD"]))
+dataset_path.append(Path.cwd())
 
 if "CML2_CACHE" in os.environ:
     cache_location = str(os.environ["CML2_CACHE"])

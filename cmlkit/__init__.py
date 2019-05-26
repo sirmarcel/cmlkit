@@ -42,8 +42,8 @@ from .conversion import convert, unconvert
 
 from .core import get_loss, losses, LocalGridSearch, charges_to_elements
 
-
-from .dataset_loader import load_dataset
+from .dataset import Dataset, Subset, load_dataset
+register(Dataset, Subset)
 
 from .tune import components as components_tune
 register(*components_tune)
@@ -59,6 +59,3 @@ register(*components_regression)
 
 from .model import Model
 register(Model)
-
-from .dataset import Dataset, Subset
-register(Dataset, Subset)
