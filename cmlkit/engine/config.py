@@ -40,6 +40,16 @@ def _from_config(config, classes={}, **kwargs):
             raise ValueError(f"Cannot find class with name {kind} in registry.")
 
 
+def to_config(configurable):
+    """Turn into config, if possible."""
+    if isinstance(configurable, Configurable):
+        return configurable.get_config()
+    elif is_config(configurable):
+        return configurable
+    else:
+        raise ValueError(f"Can't turn {configurable} into config.")
+
+
 class Configurable:
     """Mixin for serialising/de-serialising objects as dictionaries.
 

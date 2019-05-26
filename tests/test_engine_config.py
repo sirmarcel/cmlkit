@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from cmlkit.engine import Component, _from_config
+from cmlkit.engine import Component, _from_config, to_config
 
 
 class MyClass(Component):
@@ -26,6 +26,8 @@ class TestDeserialisation(TestCase):
         my = _from_config(config, classes=registry)
 
         self.assertEqual(my.a, 2)
+        self.assertEqual(to_config(my), config)
+
 
     def test_raises_valueerror_if_unknown(self):
         config = {"darkness": {"a": 2}}
