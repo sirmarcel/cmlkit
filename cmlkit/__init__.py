@@ -38,9 +38,7 @@ from .env import (
     quippy_pythonpath,
     quippy_python_exe,
 )
-from .utility import convert, unconvert
-
-from .core import get_loss, losses, LocalGridSearch, charges_to_elements
+from .utility import convert, unconvert, charges_to_elements
 
 from .dataset import Dataset, Subset, load_dataset
 register(Dataset, Subset)

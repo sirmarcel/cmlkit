@@ -9,7 +9,7 @@ import shutil
 
 from cmlkit import get_scratch, quippy_pythonpath, quippy_python_exe
 from cmlkit.engine import compute_hash, parse_config
-from cmlkit.core import charges_to_elements
+from cmlkit.utility import charges_to_elements
 
 
 quippy_execute = Path(__file__).parents[0] / "quippy_execute.py"
