@@ -132,14 +132,14 @@ class Hyperopt(Component):
 
         return deepcopy(suggested_config)
 
-    def submit(self, tid, loss=None, error=None, var=None):
+    def submit(self, tid, error=False, loss=None, var=None):
         # Inform hyperopt about the results
 
         ho_trial = self._get_hyperopt_trial(tid)
 
         ho_trial["refresh_time"] = hpo.utils.coarse_utcnow()
 
-        if error is not None:
+        if error:
             if self.errors_ok:
                 ho_trial["state"] = hpo.base.JOB_STATE_DONE
                 ho_trial["result"] = self._to_hyperopt_result(float("inf"), None)
