@@ -1,3 +1,6 @@
+# this is not a place of honour
+
+
 def convert_sequence(s):
     """Convert arguments to qmmlpack format"""
 
