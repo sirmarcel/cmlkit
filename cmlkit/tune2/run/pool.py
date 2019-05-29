@@ -7,6 +7,8 @@ import traceback
 from cmlkit import from_config, logger
 from cmlkit.engine import compute_hash
 
+from .resultdb import ResultDB
+
 
 class EvaluationPool:
     """Wrapper around ProcessPool.
@@ -61,18 +63,19 @@ class EvaluationPool:
         )
 
         self.evals = evals  # database of evaluations, acting as cache
+        self.evalsdb = ResultDB(self.evals)
         self.caught_exceptions = caught_exceptions
 
-    def schedule(self, config):
-        """Schedule evaluation of a config."""
+    def schedule(self, suggestion):
+        """Schedule evaluation of a suggestion."""
 
-        eid = compute_hash(config)
+        eid = compute_hash(suggestion)
         future = self.pool.schedule(
-            evaluate, args=(eid, config), timeout=self.trial_timeout
+            evaluate, args=(eid, suggestion), timeout=self.trial_timeout
         )
 
         future.eid = eid  # annotate with hash key in evals
-        future.config = config
+        future.suggestion = suggestion
 
         return future
 
@@ -87,20 +90,18 @@ class EvaluationPool:
             return result
         except self.caught_exceptions as e:
             trace = traceback.format_exc()
-            result = {
-                "error": {
-                    "error": e.__class__.__name__,
-                    "error_text": str(e),
-                    "traceback": trace,
-                    "config": future.config,
-                }
+            outcome = {
+                "error": e.__class__.__name__,
+                "error_text": str(e),
+                "traceback": trace,
+                "suggestion": future.suggestion,
             }
-            self.evals[future.eid] = result
-            return result
+            self.evalsdb.submit(future.eid, "error", outcome)
+            return {"error": outcome}
         except:
-            # uncaught exception, print config and exit
+            # uncaught exception, print suggestion and exit
             logger.error(
-                f"Unexpected error evaluating a trial. Here is the config:\n{future.config}"
+                f"Unexpected error evaluating a trial. Here is the suggestion:\n{future.suggestion}"
             )
             raise
 
@@ -108,18 +109,17 @@ class EvaluationPool:
 def initializer(evaluator_config, evaluator_context, index_evals):
     global evaluator
     global evals
-    evals = index_evals
+    evals = ResultDB(db=index_evals)
     evaluator = from_config(evaluator_config, evaluator_context)
 
 
-def evaluate(eid, config):
+def evaluate(eid, suggestion):
 
     if eid in evals:
-        return evals[eid]
+        return evals.get_result(eid)
     else:
-        eval_result = evaluator(config)
-        eval_result["config"] = config
-        result = {"ok": eval_result}
+        eval_result = evaluator(suggestion)
+        eval_result["suggestion"] = suggestion
 
-        evals[eid] = result
-        return result
+        evals.submit(eid, "ok", eval_result)
+        return {"ok": eval_result}

@@ -49,13 +49,17 @@ class TestEvaluationPool(TestCase):
         )
 
         future = pool.schedule({})
-        self.assertEqual(pool.finish(future), {"ok": {"loss": "hello", "config": {}}})
-        self.assertEqual(pool.evals[future.eid], {"ok": {"loss": "hello", "config": {}}})
+        self.assertEqual(pool.finish(future), {"ok": {"loss": "hello", "suggestion": {}}})
+        self.assertEqual(
+            pool.evals[future.eid], ["ok", {"loss": "hello", "suggestion": {}}]
+        )
 
         # again!
         future = pool.schedule({})
-        self.assertEqual(pool.finish(future), {"ok": {"loss": "hello", "config": {}}})
-        self.assertEqual(pool.evals[future.eid], {"ok": {"loss": "hello", "config": {}}})
+        self.assertEqual(pool.finish(future), {"ok": {"loss": "hello", "suggestion": {}}})
+        self.assertEqual(
+            pool.evals[future.eid], ["ok", {"loss": "hello", "suggestion": {}}]
+        )
 
     def test_raises_error_if_uncaught(self):
         pool = EvaluationPool(
@@ -90,7 +94,7 @@ class TestEvaluationPool(TestCase):
         self.assertTrue("traceback" in inner)
 
         # is the same found in the cache?
-        state2, inner2 = parse_config(pool.evals[future.eid])
+        state2, inner2 = pool.evals[future.eid]
         self.assertEqual(state2, "error")
         self.assertEqual(inner2, inner)
 
@@ -98,7 +102,7 @@ class TestEvaluationPool(TestCase):
         future = pool.schedule("raise")
         result = pool.finish(future)
 
-        state3, inner3 = parse_config(pool.evals[future.eid])
+        state3, inner3 = pool.evals[future.eid]
         self.assertEqual(state3, "error")
         self.assertEqual(inner3, inner)
 
@@ -122,7 +126,7 @@ class TestEvaluationPool(TestCase):
         self.assertTrue("traceback" in inner)
 
         # is the same found in the cache?
-        state2, inner2 = parse_config(pool.evals[future.eid])
+        state2, inner2 = pool.evals[future.eid]
         self.assertEqual(state2, "error")
         self.assertEqual(inner2, inner)
 
@@ -130,7 +134,7 @@ class TestEvaluationPool(TestCase):
         future = pool.schedule("wait")
         result = pool.finish(future)
 
-        state3, inner3 = parse_config(pool.evals[future.eid])
+        state3, inner3 = pool.evals[future.eid]
         self.assertEqual(state3, "error")
         self.assertEqual(inner3, inner)
 
