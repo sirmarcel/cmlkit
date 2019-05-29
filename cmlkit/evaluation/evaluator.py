@@ -2,6 +2,7 @@
 
 from cmlkit.engine import Component
 from cmlkit import from_config
+from cmlkit.utility import timed
 
 
 class Evaluator(Component):
@@ -22,13 +23,10 @@ class Evaluator(Component):
     ***
 
     One important use for Evaluators is during hyper-parameter tuning.
-    In this particular case, we the return dict to at least contain
-    a key matching the name of a loss function.
 
-    In addition, in *may* contain:
-        "lossname_var": The variance for a given loss (when doing CV for instance)
-        "refined_config": If the model is refined during evaluation, a configuration
-            that will take precedence over the evaluated original config in the search.
+    In this particular case, there are some expectations on what an
+    Evaluator should do. Please check the docstring of `cmlkit.tune`
+    for details.
 
     """
 
@@ -37,7 +35,10 @@ class Evaluator(Component):
     def __call__(self, model):
         model = from_config(model, context=self.context)
 
-        return self.evaluate(model)
+        result, duration = timed(self.evaluate)(model)
+        result["duration"] = duration
+
+        return result
 
     def evaluate(self, model):
         raise NotImplementedError
