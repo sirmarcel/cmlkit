@@ -2,9 +2,21 @@
 import numpy as np
 from copy import deepcopy
 
+from cmlkit.engine import parse_config
+
 
 class ResultDB:
-    """A database of key -> evaluation result mappings."""
+    """A database of key -> evaluation result mappings.
+
+    Any backend that behaves roughly like a dict is fine,
+    for instance a diskcache `Index` or a plain `dict`.
+
+    Results are stored as key -> [state, outcome], i.e. the
+    list version of the standard result format. I found it
+    necessary to have state separated out to make searching
+    by state slightly less tedious.
+
+    """
 
     def __init__(self, db=None):
         super().__init__()
@@ -19,10 +31,15 @@ class ResultDB:
     def __setitem__(self, key, value):
         self.submit(key, *value)
 
-    def submit(self, key, state, inner):
-        inner = deepcopy(inner)
+    def submit(self, key, state, outcome):
+        outcome = deepcopy(outcome)
 
-        self.db[key] = [state, inner]
+        self.db[key] = [state, outcome]
+
+    def submit_result(self, key, result):
+        state, outcome = parse_config(result)
+
+        self.submit(key, state, outcome)
 
     def where_state(self, state):
         """Return only keys where state."""
@@ -32,14 +49,18 @@ class ResultDB:
 
         return list(filter(is_state, self.keys()))
 
-    def get_result(self, key):
+    def get_outcome(self, key):
         return self[key][1]
+
+    def get_result(self, key):
+        state, outcome = self[key]
+        return {state: outcome}
 
     def losses(self):
         """Keys, losses in order of insertion."""
 
         keys = self.where_state("ok")
-        losses = [self.get_result(k)["loss"] for k in keys]
+        losses = [self.get_outcome(k)["loss"] for k in keys]
 
         return keys, losses
 
@@ -59,7 +80,7 @@ class ResultDB:
         errors = {}
 
         for k in self.where_state("error"):
-            error = self.get_result(k).get("error", "UnknownError")
+            error = self.get_outcome(k).get("error", "UnknownError")
 
             if error in errors:
                 errors[error] += 1
@@ -67,8 +88,6 @@ class ResultDB:
                 errors[error] = 1
 
         return errors
-
-    # probably not needed!
 
     def __getitem__(self, key):
         return self.db[key]

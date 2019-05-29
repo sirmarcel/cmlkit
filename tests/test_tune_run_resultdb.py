@@ -4,15 +4,15 @@ from unittest import TestCase
 from cmlkit.tune2.run.resultdb import ResultDB
 
 
-class TestStateTrials(TestCase):
+class TestResultDB(TestCase):
     def setUp(self):
         self.results_no_errors = {
-            i: ["ok", {"loss": np.random.random(), "config": {}}] for i in range(25)
+            i: ["ok", {"loss": np.random.random(), "suggestion": {}}] for i in range(25)
         }
 
         self.states = [np.random.choice(["ok", "error"]) for i in range(25)]
         self.results_with_errors = {
-            i: [state, {"loss": np.random.random(), "config": {}}]
+            i: [state, {"loss": np.random.random(), "suggestion": {}}]
             for i, state in enumerate(self.states)
         }
 
@@ -29,7 +29,7 @@ class TestStateTrials(TestCase):
         real_losses = [v[1]["loss"] for v in self.results_no_errors.values()]
 
         self.assertEqual(losses, real_losses)
-        self.assertEqual([resultdb.get_result(k)["loss"] for k in tids], real_losses)
+        self.assertEqual([resultdb.get_outcome(k)["loss"] for k in tids], real_losses)
 
         # can we obtain sorted losses?
         sorted_tids, sorted_losses = resultdb.sorted_losses()
@@ -37,7 +37,7 @@ class TestStateTrials(TestCase):
 
         # are the keys also sorted?
         np.testing.assert_array_equal(
-            [resultdb.get_result(k)["loss"] for k in sorted_tids], np.sort(real_losses)
+            [resultdb.get_outcome(k)["loss"] for k in sorted_tids], np.sort(real_losses)
         )
 
     def test_basics_with_errors(self):
