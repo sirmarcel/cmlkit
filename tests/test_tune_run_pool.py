@@ -49,13 +49,13 @@ class TestEvaluationPool(TestCase):
         )
 
         future = pool.schedule({})
-        self.assertEqual(pool.finish(future), {"ok": {"loss": "hello"}})
-        self.assertEqual(pool.evals[future.eid], {"ok": {"loss": "hello"}})
+        self.assertEqual(pool.finish(future), {"ok": {"loss": "hello", "config": {}}})
+        self.assertEqual(pool.evals[future.eid], {"ok": {"loss": "hello", "config": {}}})
 
         # again!
         future = pool.schedule({})
-        self.assertEqual(pool.finish(future), {"ok": {"loss": "hello"}})
-        self.assertEqual(pool.evals[future.eid], {"ok": {"loss": "hello"}})
+        self.assertEqual(pool.finish(future), {"ok": {"loss": "hello", "config": {}}})
+        self.assertEqual(pool.evals[future.eid], {"ok": {"loss": "hello", "config": {}}})
 
     def test_raises_error_if_uncaught(self):
         pool = EvaluationPool(

@@ -4,7 +4,7 @@ from pebble import ProcessPool
 from diskcache import Index
 import traceback
 
-from cmlkit import from_config
+from cmlkit import from_config, logger
 from cmlkit.engine import compute_hash
 
 
@@ -72,6 +72,7 @@ class EvaluationPool:
         )
 
         future.eid = eid  # annotate with hash key in evals
+        future.config = config
 
         return future
 
@@ -83,6 +84,7 @@ class EvaluationPool:
 
         try:
             result = future.result()
+            return result
         except self.caught_exceptions as e:
             trace = traceback.format_exc()
             result = {
@@ -90,11 +92,17 @@ class EvaluationPool:
                     "error": e.__class__.__name__,
                     "error_text": str(e),
                     "traceback": trace,
+                    "config": future.config,
                 }
             }
             self.evals[future.eid] = result
-
-        return result
+            return result
+        except:
+            # uncaught exception, print config and exit
+            logger.error(
+                f"Unexpected error evaluating a trial. Here is the config:\n{future.config}"
+            )
+            raise
 
 
 def initializer(evaluator_config, evaluator_context, index_evals):
@@ -110,6 +118,7 @@ def evaluate(eid, config):
         return evals[eid]
     else:
         eval_result = evaluator(config)
+        eval_result["config"] = config
         result = {"ok": eval_result}
 
         evals[eid] = result
