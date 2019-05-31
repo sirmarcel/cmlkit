@@ -8,4 +8,3 @@ from .hashing import compute_hash
 from .caching import diskcached, memcached
 from .errors import CmlTimeout
 from .external import wrap_external
-from .humanhash import humanize
