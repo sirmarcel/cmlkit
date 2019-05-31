@@ -63,7 +63,6 @@ class EvaluationPool:
         )
 
         self.evals = evals  # database of evaluations, acting as cache
-        self.evalsdb = ResultDB(self.evals)
         self.caught_exceptions = caught_exceptions
 
     def schedule(self, suggestion):
@@ -96,7 +95,7 @@ class EvaluationPool:
                 "traceback": trace,
                 "suggestion": future.suggestion,
             }
-            self.evalsdb.submit(future.eid, "error", outcome)
+            self.evals.submit(future.eid, "error", outcome)
             return {"error": outcome}
         except:
             # uncaught exception, print suggestion and exit
@@ -106,10 +105,10 @@ class EvaluationPool:
             raise
 
 
-def initializer(evaluator_config, evaluator_context, index_evals):
+def initializer(evaluator_config, evaluator_context, evalsdb):
     global evaluator
     global evals
-    evals = ResultDB(db=index_evals)
+    evals = evalsdb
     evaluator = from_config(evaluator_config, evaluator_context)
 
 

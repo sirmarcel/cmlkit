@@ -2,15 +2,17 @@ from unittest import TestCase
 import time
 import shutil
 import pathlib
+import numpy as np
 
 from diskcache import Index
-from concurrent.futures import TimeoutError
+from concurrent.futures import TimeoutError, wait
 
 import cmlkit
 from cmlkit.engine import Component, parse_config
 from cmlkit.utility import timed
 
 from cmlkit.tune2.run.pool import EvaluationPool
+from cmlkit.tune2.run.resultdb import ResultDB
 
 
 class MockEvaluator(Component):
@@ -24,6 +26,9 @@ class MockEvaluator(Component):
         elif model == "wait":
             time.sleep(0.2)
             return {"loss": "waited"}
+        else:
+            time.sleep(model["wait_for"])
+            return {"loss": model["wait_for"]}
 
     def _get_config(self):
         return {}
@@ -45,7 +50,9 @@ class TestEvaluationPool(TestCase):
             max_workers=10,
             evaluator_config={"mock_eval": {}},
             caught_exceptions=(ValueError,),
-            evals=Index(str(self.tmpdir / "test_returns_correct_results_and_sets_cache")),
+            evals=ResultDB(
+                Index(str(self.tmpdir / "test_returns_correct_results_and_sets_cache"))
+            ),
         )
 
         future = pool.schedule({})
@@ -65,7 +72,7 @@ class TestEvaluationPool(TestCase):
         pool = EvaluationPool(
             max_workers=10,
             evaluator_config={"mock_eval": {}},
-            evals=Index(str(self.tmpdir / "test_raises_error_if_uncaught")),
+            evals=ResultDB(Index(str(self.tmpdir / "test_raises_error_if_uncaught"))),
         )
 
         future = pool.schedule("raise")
@@ -81,7 +88,7 @@ class TestEvaluationPool(TestCase):
             max_workers=10,
             evaluator_config={"mock_eval": {}},
             caught_exceptions=(ValueError,),
-            evals=Index(str(self.tmpdir / "test_catches_exceptions")),
+            evals=ResultDB(Index(str(self.tmpdir / "test_catches_exceptions"))),
         )
 
         future = pool.schedule("raise")
@@ -113,7 +120,7 @@ class TestEvaluationPool(TestCase):
             max_workers=10,
             evaluator_config={"mock_eval": {}},
             caught_exceptions=(TimeoutError,),
-            evals=Index(str(self.tmpdir / "test_catches_timeout")),
+            evals=ResultDB(Index(str(self.tmpdir / "test_catches_timeout"))),
             trial_timeout=0.01,
         )
 
@@ -142,7 +149,7 @@ class TestEvaluationPool(TestCase):
         pool = EvaluationPool(
             max_workers=10,
             evaluator_config={"mock_eval": {}},
-            evals=Index(str(self.tmpdir / "test_basic_caching")),
+            evals=ResultDB(Index(str(self.tmpdir / "test_basic_caching"))),
         )
 
         @timed
@@ -156,3 +163,26 @@ class TestEvaluationPool(TestCase):
 
         self.assertGreater(duration1, duration2)
         self.assertEqual(res1, res2)
+
+    def test_parallel_caching(self):
+        # verify that the evalsdb can be written in parallel,
+        # and that results are available in the end!
+        pool = EvaluationPool(
+            max_workers=10,
+            evaluator_config={"mock_eval": {}},
+            evals=ResultDB(Index(str(self.tmpdir / "test_parallel_caching"))),
+        )
+
+        times = np.random.random(20)
+        futures = [pool.schedule({"wait_for": t}) for t in times]
+
+        @timed
+        def wait_for_finished():
+            return wait(futures)
+
+        res, duration = wait_for_finished()
+        done, undone = res
+
+        self.assertEqual(len(done), len(times))
+        self.assertLess(duration, np.sum(times))  # did we achieve a speedup?
+        self.assertEqual(len(pool.evals), len(times))
