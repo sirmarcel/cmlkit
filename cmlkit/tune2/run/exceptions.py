@@ -27,7 +27,7 @@ def get_exceptions(args):
                 f"cmlkit.tune can currently not catch {a}. Please file an issue."
             )
 
-    return result
+    return tuple(result)  # except expects a tuple, not a list
 
 
 def get_exceptions_spec(args):

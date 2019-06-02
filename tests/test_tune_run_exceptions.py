@@ -9,7 +9,7 @@ class TestRunExceptions(TestCase):
     def test_deserialisation(self):
         result = get_exceptions(["TimeoutError", "ValueError"])
 
-        self.assertEqual(result, [TimeoutError, ValueError])
+        self.assertEqual(result, (TimeoutError, ValueError))
 
         with self.assertRaises(ValueError):
             get_exceptions([OSError])
@@ -17,5 +17,5 @@ class TestRunExceptions(TestCase):
     def test_roundtrip(self):
         self.assertEqual(
             get_exceptions(get_exceptions_spec(list(exceptions.values()))),
-            list(exceptions.values()),
+            tuple(exceptions.values()),
         )
