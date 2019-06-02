@@ -119,6 +119,17 @@ class ResultDB:
 
         return [self.get_outcome(tids[i]).get("refined_suggestion", {}) for i in range(n)]
 
+    def top_losses(self, n=5):
+        """Return top n losses."""
+        losses = self.sorted_losses()
+
+        if len(losses) == 0:
+            return []
+        else:
+            # so we don't get an error if we request this
+            # at an early run stage
+            return losses[0:min(n, len(losses))]
+
     # housekeeping; forward various magic methods to the underlying db
 
     def __getitem__(self, key):

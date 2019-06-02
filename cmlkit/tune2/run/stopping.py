@@ -29,15 +29,24 @@ class StopMax(Configurable):
         self.use = use
 
     def done(self, state):
+        return self.compute_count(state) >= self.count
+
+    def compute_count(self, state):
         if self.use == "evals":
             results = state.evals
         elif self.use == "trials":
             results = state.trials
 
         if self.errors:
-            return len(results) >= self.count
+            return len(results)
         else:
-            return len(results.where_state("ok")) >= self.count
+            return len(results.where_state("ok"))
+
+    def short_report(self, state):
+        return f"Counted {self.use}: {self.compute_count(state)}/{self.count}."
 
     def _get_config(self):
         return {"count": self.count, "errors": self.errors, "use": self.use}
+
+
+classes = {StopMax.kind: StopMax}

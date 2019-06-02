@@ -101,6 +101,21 @@ class State:
         eid = compute_hash(outcome["suggestion"])
         self.evals.submit_result(eid, result)
 
+    def short_report(self):
+        """Return a short overview of current state."""
+        loss = "Best 3:"
+        for l in self.evals.top_losses(3):
+            loss += f" {l:.4f}"
+        loss += "."
+        counts = f"Live: {len(self.live_trials)}/T: {len(self.trials)} ({len(self.trials.where_state('ok'))})/E: {len(self.evals)} ({len(self.evals.where_state('ok'))})."
+        state = " ".join([loss, counts])
+
+        errors = str(self.trials.count_by_error())
+        if errors != {}:
+            state = "\n".join([state, errors])
+
+        return state
+
 
 def check_result(result):
     """Enforce the run-internal result format."""
