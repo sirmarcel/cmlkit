@@ -29,14 +29,18 @@ class State:
 
     """
 
-    def __init__(self, search, evals=None):
+    def __init__(self, search, evals=None, tape=None):
         self.search = search
 
         if evals is None:
             self.evals = ResultDB()  # evaluations cache, see pool for more
             # only really here because we need to repopulate it when replaying.
+        else:
+            self.evals = evals
 
-        self.tape = []  # to be replaced by son, maybe
+        if tape is None:
+            tape = []
+        self.tape = tape
         self.trials = ResultDB()  # where we store results of trials
 
         self.live_trials = {}  # needed to restart!
@@ -92,6 +96,7 @@ class State:
         result = payload["result"]
         self.submit(tid, result)
 
+        # refilling the evals...! (since the pool can't do it)
         state, outcome = parse_config(result)
         eid = compute_hash(outcome["suggestion"])
         self.evals.submit_result(eid, result)
