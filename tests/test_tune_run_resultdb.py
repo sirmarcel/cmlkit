@@ -25,15 +25,17 @@ class TestResultDB(TestCase):
         self.assertEqual(resultdb.db, self.results_no_errors)
 
         # can we correctly obtain losses?
-        tids, losses = resultdb.losses()
+        tids, losses = resultdb.tids_losses()
         real_losses = [v[1]["loss"] for v in self.results_no_errors.values()]
 
         self.assertEqual(losses, real_losses)
+        self.assertEqual(resultdb.losses(), real_losses)
         self.assertEqual([resultdb.get_outcome(k)["loss"] for k in tids], real_losses)
 
         # can we obtain sorted losses?
-        sorted_tids, sorted_losses = resultdb.sorted_losses()
+        sorted_tids, sorted_losses = resultdb.sorted_tids_losses()
         np.testing.assert_array_equal(sorted_losses, np.sort(real_losses))
+        np.testing.assert_array_equal(resultdb.sorted_losses(), np.sort(real_losses))
 
         # are the keys also sorted?
         np.testing.assert_array_equal(
@@ -49,7 +51,9 @@ class TestResultDB(TestCase):
         self.assertEqual(resultdb.db, self.results_with_errors)
 
         # can we correctly obtain losses, leaving out errors?
-        tids, losses = resultdb.losses()
+        tids, losses = resultdb.tids_losses()
+        self.assertEqual(losses, resultdb.losses())
+
         real_losses = []
         for v in self.results_with_errors.values():
             if v[0] == "ok":

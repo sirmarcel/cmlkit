@@ -28,6 +28,9 @@ class ResultDB:
 
         self.db = db
 
+    # submission
+    # using set is discouraged
+
     def __setitem__(self, key, value):
         self.submit(key, *value)
 
@@ -41,8 +44,10 @@ class ResultDB:
 
         self.submit(key, state, outcome)
 
+    # user interface
+
     def where_state(self, state):
-        """Return only keys where state."""
+        """Return only keys whose state field matches state."""
 
         def is_state(x):
             return self[x][0] == state
@@ -50,13 +55,26 @@ class ResultDB:
         return list(filter(is_state, self.keys()))
 
     def get_outcome(self, key):
+        """Return the naked result, not including the status."""
         return self[key][1]
 
     def get_result(self, key):
+        """Return a standard result dict, {"status": {#outcome}}."""
         state, outcome = self[key]
         return {state: outcome}
 
     def losses(self):
+        """Losses in order of insertion."""
+
+        keys = self.where_state("ok")
+        return [self.get_outcome(k)["loss"] for k in keys]
+
+    def sorted_losses(self):
+        """Losses sorted ascending."""
+
+        return list(sorted(self.losses()))
+
+    def tids_losses(self):
         """Keys, losses in order of insertion."""
 
         keys = self.where_state("ok")
@@ -64,10 +82,10 @@ class ResultDB:
 
         return keys, losses
 
-    def sorted_losses(self):
-        """Keys, losses in ascending order."""
+    def sorted_tids_losses(self):
+        """Keys, losses in sorted ascending."""
 
-        keys, losses = self.losses()
+        keys, losses = self.tids_losses()
         sorted_losses = sorted(losses)
 
         sorted_keys = [keys[losses.index(l)] for l in sorted_losses]
@@ -88,6 +106,20 @@ class ResultDB:
                 errors[error] = 1
 
         return errors
+
+    def top_suggestions(self, n=5):
+        """Return n suggestions sorted by loss."""
+        tids, losses = self.sorted_losses()
+
+        return [self.get_outcome(tids[i])["suggestion"] for i in range(n)]
+
+    def top_refined_suggestions(self, n=5):
+        """Return n refined suggestions sorted by loss, or {} if not available."""
+        tids, losses = self.sorted_losses()
+
+        return [self.get_outcome(tids[i]).get("refined_suggestion", {}) for i in range(n)]
+
+    # housekeeping; forward various magic methods to the underlying db
 
     def __getitem__(self, key):
         return self.db[key]
