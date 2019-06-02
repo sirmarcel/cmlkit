@@ -109,13 +109,13 @@ class ResultDB:
 
     def top_suggestions(self, n=5):
         """Return n suggestions sorted by loss."""
-        tids, losses = self.sorted_losses()
+        tids, losses = self.sorted_tids_losses()
 
         return [self.get_outcome(tids[i])["suggestion"] for i in range(n)]
 
     def top_refined_suggestions(self, n=5):
         """Return n refined suggestions sorted by loss, or {} if not available."""
-        tids, losses = self.sorted_losses()
+        tids, losses = self.sorted_tids_losses()
 
         return [self.get_outcome(tids[i]).get("refined_suggestion", {}) for i in range(n)]
 
