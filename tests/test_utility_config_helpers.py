@@ -1,5 +1,5 @@
 from unittest import TestCase
-from cmlkit.helpers import *
+from cmlkit.utility.config_helpers import *
 
 
 class TestSequenceHandling(TestCase):

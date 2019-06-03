@@ -7,7 +7,7 @@ import logging
 from itertools import count
 
 from cmlkit.engine import Component
-from cmlkit.helpers import find_pattern_apply_f, find_pattern
+from cmlkit.utility.config_helpers import find_pattern_apply_f, find_pattern
 
 
 class Hyperopt(Component):
