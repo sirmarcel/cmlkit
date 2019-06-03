@@ -20,3 +20,7 @@ qmmlpack = { git = "https://gitlab.com/qmml/qmmlpack.git", branch = "development
 [tool.poetry.dev-dependencies]
 nose = "*"
 black = ">=18"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
