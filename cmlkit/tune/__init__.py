@@ -40,6 +40,6 @@ re-run optimisations for different losses for essentially free.
 # from .search_grid import SearchGrid
 # from .search_hyperopt import SearchHyperopt
 # from .search_fixed import SearchFixed
-from .opt_lgs import OptimizerLGS
+# from .opt_lgs import OptimizerLGS
 
-components = [OptimizerLGS]
+components = []
