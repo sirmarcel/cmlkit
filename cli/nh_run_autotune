@@ -1,3 +1,0 @@
-#!/bin/bash
-
-nohup run_autotune $1 > logs/$1.out &

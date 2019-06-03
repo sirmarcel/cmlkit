@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "cmlkit"
+version = "2.0.0-alpha1"
+description = "Machine learning tools for computational chemistry and condensed matter physics"
+authors = ["Marcel Langer <dev@sirmarcel.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/sirmarcel/cmlkit"
+keywords = ["machine learning", "physics", "optimization", "chemistry"]
+
+[tools.poetry.dependencies]
+python = ">=3.7"
+hyperopt = "^0.1.2"
+numpy = "^1.16"
+ase = "^3.17"
+PyYAML = "^5.1"
+joblib = "^0.13"
+qmmlpack = { git = "https://gitlab.com/qmml/qmmlpack.git", branch = "development" }
+
+[tool.poetry.dev-dependencies]
+nose = "*"
+black = ">=18"

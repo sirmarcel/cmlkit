@@ -1,3 +1,0 @@
-#!/bin/bash
-
-nohup mongod --config $1 > logs/$1.out &
