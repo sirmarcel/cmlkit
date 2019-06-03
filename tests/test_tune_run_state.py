@@ -3,8 +3,8 @@ import random
 import copy
 
 
-from cmlkit.tune2.run.state import State
-from cmlkit.tune2.search.hyperopt import Hyperopt
+from cmlkit.tune.run.state import State
+from cmlkit.tune.search.hyperopt import Hyperopt
 
 
 def target(d):

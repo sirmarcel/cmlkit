@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from cmlkit.tune2.run.state import State
-from cmlkit.tune2.search.hyperopt import Hyperopt
-from cmlkit.tune2.run.stopping import StopMax
+from cmlkit.tune.run.state import State
+from cmlkit.tune.search.hyperopt import Hyperopt
+from cmlkit.tune.run.stopping import StopMax
 
 
 def target(d):

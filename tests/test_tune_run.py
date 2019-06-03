@@ -8,8 +8,8 @@ import cmlkit
 from cmlkit.engine import Component
 from cmlkit.utility import timed
 
-from cmlkit.tune2.run import Run
-from cmlkit.tune2.search.hyperopt import Hyperopt
+from cmlkit.tune.run import Run
+from cmlkit.tune.search.hyperopt import Hyperopt
 
 
 class MockEvaluator(Component):

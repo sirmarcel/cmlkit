@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from concurrent.futures import TimeoutError
 
-from cmlkit.tune2.run.exceptions import get_exceptions, get_exceptions_spec, exceptions
+from cmlkit.tune.run.exceptions import get_exceptions, get_exceptions_spec, exceptions
 
 
 class TestRunExceptions(TestCase):

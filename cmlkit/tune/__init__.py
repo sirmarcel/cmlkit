@@ -81,3 +81,6 @@ Evaluator:
         exceptions must be raised, not caught.
 
 """
+
+from .search import Hyperopt
+from .run import Run

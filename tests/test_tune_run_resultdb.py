@@ -1,7 +1,7 @@
 import numpy as np
 from unittest import TestCase
 
-from cmlkit.tune2.run.resultdb import ResultDB
+from cmlkit.tune.run.resultdb import ResultDB
 
 
 class TestResultDB(TestCase):

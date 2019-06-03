@@ -11,9 +11,9 @@ import cmlkit
 from cmlkit.engine import Component, parse_config
 from cmlkit.utility import timed
 
-from cmlkit.tune2.run.pool import EvaluationPool
-from cmlkit.tune2.run.resultdb import ResultDB
-from cmlkit.tune2.search.hyperopt import Hyperopt
+from cmlkit.tune.run.pool import EvaluationPool
+from cmlkit.tune.run.resultdb import ResultDB
+from cmlkit.tune.search.hyperopt import Hyperopt
 
 
 class MockEvaluator(Component):

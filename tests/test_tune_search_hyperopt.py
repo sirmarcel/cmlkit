@@ -1,7 +1,7 @@
 import numpy as np
 from unittest import TestCase
 
-from cmlkit.tune2.search.hyperopt import Hyperopt
+from cmlkit.tune.search.hyperopt import Hyperopt
 
 
 def target(d):

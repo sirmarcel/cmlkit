@@ -18,3 +18,5 @@ Nomenclature:
 
 
 """
+
+from .hyperopt import Hyperopt
