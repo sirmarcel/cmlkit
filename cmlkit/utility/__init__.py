@@ -12,3 +12,4 @@ from .timing import timed, time_repeat
 from .conversion import convert, unconvert
 from .indices import fourway_split, threeway_split, twoway_split
 from .humanhash import humanize
+from .opt_lgs import OptimizerLGS
