@@ -1,7 +1,7 @@
 from unittest import TestCase
 import numpy as np
 
-from cmlkit.tune import OptimizerLGS
+from cmlkit.utility import OptimizerLGS
 
 
 def f(x, y):
