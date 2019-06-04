@@ -4,7 +4,7 @@
 
 🐫🧰🐫🧰🐫🧰🐫🧰🐫🧰🐫🧰🐫🧰🐫🧰🐫🧰🐫🧰🐫🧰🐫🧰🐫🧰🐫🧰🐫🧰
 
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cmlkit.svg) ![PyPI](https://img.shields.io/pypi/v/cmlkit.svg) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cmlkit.svg) [![PyPI](https://img.shields.io/pypi/v/cmlkit.svg)](https://pypi.org/project/cmlkit/) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 
 `cmlkit` provides a clean and concise way to specify, tune, and evaluate machine learning models for computational chemistry and condensed matter physics, particularly for atomistic predictions.
 
