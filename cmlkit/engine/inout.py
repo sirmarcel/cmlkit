@@ -47,7 +47,7 @@ def safe_save_npy(filename, d):
 def read_npy(filename):
     """Load numpy data stored in filename."""
 
-    d = np.load(normalize_extension(filename, ".npy"))
+    d = np.load(normalize_extension(filename, ".npy"), allow_pickle=True)
 
     if d.size == 1:
         return d.item()

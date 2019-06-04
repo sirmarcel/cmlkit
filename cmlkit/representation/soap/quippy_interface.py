@@ -137,4 +137,6 @@ def run_task(folder, timeout=None):
 
 
 def read_result(folder):
-    return np.load(folder / "out.npy", fix_imports=True, encoding="bytes")
+    return np.load(
+        folder / "out.npy", fix_imports=True, encoding="bytes", allow_pickle=True
+    )
