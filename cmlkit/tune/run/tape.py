@@ -22,6 +22,7 @@ class Tape:
     Under the hood, this boils down to two cases: either we have a file backend,
     or we do everything with a plain list.
     """
+
     def __init__(self, backend, tape, metadata):
         self.backend = backend
         self.tape = tape
@@ -54,6 +55,14 @@ class Tape:
             self.tape.append(item)
         else:
             save_son(self.tape, item)
+
+    @property
+    def raw(self):
+        if self.backend == "list":
+            return self.tape
+        else:
+            meta, data = load_son(self.tape)
+            return data
 
     def __iter__(self):
         if self.backend == "list":

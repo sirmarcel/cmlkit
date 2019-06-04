@@ -4,6 +4,7 @@ from copy import deepcopy
 from cmlkit.engine import parse_config, compute_hash
 
 from .resultdb import ResultDB
+from .tape import Tape
 
 
 class State:
@@ -39,7 +40,7 @@ class State:
             self.evals = evals
 
         if tape is None:
-            tape = []
+            tape = Tape.new()
         self.tape = tape
         self.trials = ResultDB()  # where we store results of trials
 
@@ -67,8 +68,8 @@ class State:
         del self.live_trials[tid]
 
     @classmethod
-    def from_tape(cls, tape, search, evals=None):
-        state = cls(search=search, evals=evals)
+    def from_tape(cls, tape, search, evals=None, new_tape=None):
+        state = cls(search=search, evals=evals, tape=new_tape)
         state.replay(tape)
 
         return state
