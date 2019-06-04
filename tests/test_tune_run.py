@@ -50,7 +50,7 @@ class TestRun(TestCase):
             "a": ["hp_loggrid", "a", -2.0, 2.0, 161],
             "b": ["hp_loggrid", "b", -2.0, 2.0, 161],
             "c": ["hp_loggrid", "c", -2.0, 2.0, 161],
-            "wait": ["hp_choice", "wait", [0.0, 0.05, 0.1, 1.0]],
+            "wait": ["hp_choice", "wait", [0.0, 0.005, 0.01, 0.1]],
         }
 
         search = Hyperopt(space=space)
@@ -58,9 +58,12 @@ class TestRun(TestCase):
         run = Run(
             search=search,
             evaluator=MockEvaluator(),
-            stop={"stop_max": {"count": 100}},
+            stop={"stop_max": {"count": 50}},
             context={"max_workers": 25},
-            trial_timeout=0.8,
+            trial_timeout=0.08,
         )
         run.prepare(directory=self.tmpdir)
         run()
+
+        run2 = Run.restore(directory=run.work_directory, new_stop={"stop_max": {"count": 100}})
+        run2.run()

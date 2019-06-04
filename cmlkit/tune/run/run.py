@@ -22,6 +22,7 @@ from pathlib import Path
 import numpy as np
 from datetime import datetime
 from logging import FileHandler, INFO
+from textwrap import TextWrapper
 
 from cmlkit.engine import Component, compute_hash
 from cmlkit import from_config, logger
@@ -69,6 +70,8 @@ class Run(Component):
 
         if name is None:
             self.name = humanize(self.id, words=2)
+        else:
+            self.name = name
 
         self.ready = False  # run is not ready until prepared
 
@@ -83,13 +86,18 @@ class Run(Component):
         }
 
     def prepare(self, directory=Path(".")):
-        self.work_directory = directory / f"run_{self.name}"
-        makedir(self.work_directory)
+        work_directory = directory / f"run_{self.name}"
+        makedir(work_directory)
 
         evals = ResultDB()
-        tape = Tape.new(
-            metadata=self.get_config(), filename=self.work_directory / "tape.son"
-        )
+        tape = Tape.new(metadata=self.get_config(), filename=work_directory / "tape.son")
+
+        state = State(search=self.search, evals=evals, tape=tape)
+
+        self._prepare(work_directory, evals, state)
+
+    def _prepare(self, work_directory, evals, state, msg="Prepared"):
+        self.work_directory = work_directory
 
         self.pool = EvaluationPool(
             evals=evals,
@@ -99,13 +107,37 @@ class Run(Component):
             trial_timeout=self.trial_timeout,
             caught_exceptions=self.caught_exceptions,
         )
-        self.state = State(search=self.search, evals=evals, tape=tape)
+        self.state = state
 
         logger.addHandler(FileHandler(f"{self.work_directory}/log.log"))
         logger.setLevel(INFO)
-        logger.info(f"Prepared runner {self.name} in folder {self.work_directory}.")
+        logger.info(f"{msg} runner {self.name} in folder {self.work_directory}.")
 
         self.ready = True
+
+    @classmethod
+    def restore(cls, directory, new_stop=None, context={}):
+        logger.info("Starting run restore...")
+        backup_tape = directory / "bak-tape.son"
+        (directory / "tape.son").rename(backup_tape)
+        old_tape = Tape.restore(backup_tape)
+
+        runner_config = old_tape.metadata["run"]
+        if new_stop is not None:
+            runner_config["stop"] = to_config(new_stop)
+
+        run = Run.from_config(runner_config, context=context)
+
+        new_tape = Tape.new(metadata=run.get_config(), filename=directory / "tape.son")
+
+        evals = ResultDB()
+        state = State.from_tape(
+            search=run.search, tape=old_tape, evals=evals, new_tape=new_tape
+        )  # now we have successfully replayed the optimisation so far
+
+        run._prepare(directory, evals, state, msg="Recovered")
+
+        return run
 
     def __call__(self, duration=float("inf")):
         return self.run()
@@ -118,9 +150,18 @@ class Run(Component):
 
         futures = {}
 
+        # when recovering, first re-submit the running trials
+        if len(self.state.live_trials) > 0:
+            logger.info(
+                f"Re-submitting {len(self.state.live_trials)} trials to the pool."
+            )
+            for tid, suggestion in self.state.live_trials.items():
+                f = self.pool.schedule(suggestion)
+                futures[f] = tid
+
         while time.monotonic() < end and not self.stop.done(self.state):
-            self.write_status("Running.", len(futures), time.monotonic() - start)
-            logger.info(f"Run {self.name} is alive. State: {self.state.short_report()}")
+            status = self.write_status("Running.", len(futures), time.monotonic() - start)
+            logger.info(status)
 
             done, running = wait(
                 futures,
@@ -168,6 +209,9 @@ class Run(Component):
         component_status = "\n".join(
             [self.stop.short_report(self.state), self.state.short_report()]
         )
+        full_status = TextWrapper(subsequent_indent=" ").fill(status + component_status)
 
         with open(self.work_directory / "status.txt", "w+") as f:
-            f.write(status + component_status)
+            f.write(full_status)
+
+        return full_status
