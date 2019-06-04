@@ -4,7 +4,6 @@ import shutil
 import pathlib
 import numpy as np
 
-from diskcache import Index
 from concurrent.futures import TimeoutError, wait
 
 import cmlkit

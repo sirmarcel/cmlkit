@@ -1,7 +1,6 @@
 """Wrapper for the pebble ProcessPool."""
 
 from pebble import ProcessPool
-from diskcache import Index
 import traceback
 from concurrent.futures import TimeoutError
 import platform
