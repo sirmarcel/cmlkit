@@ -6,7 +6,7 @@
 
 ![PyPI](https://img.shields.io/pypi/v/cmlkit.svg) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 
-`cmlkit` provides a clean and concise way to specify, tune, and evaluate machine learning models for computational chemistry and condensed matter physics, particular for atomistic predictions.
+`cmlkit` provides a clean and concise way to specify, tune, and evaluate machine learning models for computational chemistry and condensed matter physics, particularly for atomistic predictions.
 
 WARNINGS: 
 - `cmlkit` depends on [`qmmlpack`](https://gitlab.com/qmml/qmmlpack), which is *not* yet publicly available.
@@ -41,7 +41,7 @@ Regression methods:
 
 The hyperparameter optimisation (`cmlkit.tune`) boasts:
 - Robust multi-core support (i.e. it can automatically kill timed out external code, even if it ignores `SIGTERM`)
-- No `mongodb` required (important for *cough* certain comuting environments *cough*)
+- No `mongodb` required (important for *cough* certain computing environments *cough*)
 - Extensions to the `hyperopt` spaces (`log` grids)
 - Possibility to implement multi-step optimisation (experimental at the moment)
 - Resumable/recoverable runs backed by a readable, atomically written history of the optimisation (backed by [`son`](https://github.com/flokno/son))
