@@ -1,7 +1,33 @@
 import numpy as np
 import yaml
+import son
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
+
+
+# register some custom dumpers for yaml
+# weird that this can only be done at module level!
+
+# Define representer for lists/tuples
+def sequence_representer(dumper, data):
+    return dumper.represent_sequence(u"tag:yaml.org,2002:seq", data, flow_style=True)
+
+
+# Define representer for numpy floats
+def float_representer(dumper, data):
+    return dumper.represent_float(data)
+
+
+# Define representer for numpy ints
+def int_representer(dumper, data):
+    return dumper.represent_int(data)
+
+
+# Register the above representers
+yaml.add_representer(tuple, sequence_representer)
+yaml.add_representer(list, sequence_representer)
+yaml.add_representer(np.float64, float_representer)
+yaml.add_representer(np.int64, int_representer)
 
 
 def normalize_extension(path, extension):
@@ -68,24 +94,6 @@ def save_yaml(filename, d):
 
     """
 
-    # Define representer for lists/tuples
-    def sequence_representer(dumper, data):
-        return dumper.represent_sequence(u"tag:yaml.org,2002:seq", data, flow_style=True)
-
-    # Define representer for numpy floats
-    def float_representer(dumper, data):
-        return dumper.represent_float(data)
-
-    # Define representer for numpy ints
-    def int_representer(dumper, data):
-        return dumper.represent_int(data)
-
-    # Register the above representers
-    yaml.add_representer(tuple, sequence_representer)
-    yaml.add_representer(list, sequence_representer)
-    yaml.add_representer(np.float64, float_representer)
-    yaml.add_representer(np.int64, int_representer)
-
     with open(normalize_extension(filename, ".yml"), "w") as outfile:
         yaml.dump(d, outfile, default_flow_style=False)
 
@@ -97,3 +105,17 @@ def read_yaml(filename):
         d = yaml.safe_load(stream)
 
     return d
+
+
+def save_son(filename, d, is_metadata=False):
+    """Save object into a SON file."""
+
+    son.dump(
+        d, normalize_extension(filename, ".son"), is_metadata=is_metadata, dumper=yaml.dump
+    )
+
+
+def load_son(filename):
+    """Load from a SON file."""
+
+    return son.load(normalize_extension(filename, ".son"), loader=yaml.safe_load)

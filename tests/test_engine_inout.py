@@ -11,6 +11,8 @@ from cmlkit.engine import (
     read_npy,
     save_yaml,
     read_yaml,
+    save_son,
+    load_son,
 )
 
 
@@ -52,3 +54,15 @@ class TestInout(TestCase):
         result = read_npy(self.tmpdir / "safenpytest.npy")
 
         self.assertEqual(self.data, result)
+
+    def test_son(self):
+        payloads = [{"ok": {"loss": 123}}, {"error": {"error": "LolWhat"}}]
+        meta = {"name": "it is a test"}
+
+        save_son(self.tmpdir / "sontest", meta, is_metadata=True)
+        save_son(self.tmpdir / "sontest", payloads[0], is_metadata=False)
+        save_son(self.tmpdir / "sontest", payloads[1], is_metadata=False)
+        post_meta, post_payloads = load_son(self.tmpdir / "sontest")
+
+        self.assertEqual(post_meta, meta)
+        self.assertEqual(post_payloads, payloads)
