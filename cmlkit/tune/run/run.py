@@ -87,7 +87,9 @@ class Run(Component):
         makedir(self.work_directory)
 
         evals = ResultDB()
-        tape = Tape.new(metadata=self.get_config(), filename=self.work_directory / "tape.son")
+        tape = Tape.new(
+            metadata=self.get_config(), filename=self.work_directory / "tape.son"
+        )
 
         self.pool = EvaluationPool(
             evals=evals,
@@ -117,7 +119,7 @@ class Run(Component):
         futures = {}
 
         while time.monotonic() < end and not self.stop.done(self.state):
-            self.write_status("Running.", len(futures), time.monotonic()-start)
+            self.write_status("Running.", len(futures), time.monotonic() - start)
             logger.info(f"Run {self.name} is alive. State: {self.state.short_report()}")
 
             done, running = wait(
