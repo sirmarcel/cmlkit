@@ -32,12 +32,6 @@ class TuneEvaluatorHoldout(Evaluator):
         self.target = target
         self.per = per
 
-        # precompute relevant quantities
-        # self.train.info
-        # self.test.info
-        self.train.hash
-        self.test.hash
-
     def _get_config(self):
         return {
             "train": self.train.name,

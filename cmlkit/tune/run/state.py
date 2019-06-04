@@ -111,9 +111,9 @@ class State:
         counts = f"Live: {len(self.live_trials)}/T: {len(self.trials)} ({len(self.trials.where_state('ok'))})/E: {len(self.evals)} ({len(self.evals.where_state('ok'))})."
         state = " ".join([loss, counts])
 
-        errors = str(self.trials.count_by_error())
+        errors = self.trials.count_by_error()
         if errors != {}:
-            state = "\n".join([state, errors])
+            state = "\n".join([state, str(errors)])
 
         return state
 

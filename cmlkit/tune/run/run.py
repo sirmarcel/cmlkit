@@ -22,7 +22,7 @@ from pathlib import Path
 import numpy as np
 from datetime import datetime
 from logging import FileHandler, INFO
-from textwrap import TextWrapper
+import textwrap
 
 from cmlkit.engine import Component, compute_hash
 from cmlkit import from_config, logger
@@ -204,12 +204,12 @@ class Run(Component):
 
     def write_status(self, message, n_futures, duration):
         timestr = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        status = f"### Status of run {self.name} at {timestr} ###\n"
-        status += f"{message} Runtime: {duration:.1f}. Active evaluations: {n_futures}.\n"
-        component_status = "\n".join(
-            [self.stop.short_report(self.state), self.state.short_report()]
+        header = f"### Status of run {self.name} at {timestr} ###\n"
+        status = f"{message} Runtime: {duration:.1f}. Active evaluations: {n_futures}."
+        body = "\n".join(
+            [status, self.stop.short_report(self.state), self.state.short_report()]
         )
-        full_status = TextWrapper(subsequent_indent=" ").fill(status + component_status)
+        full_status = header + textwrap.indent(body, " ")
 
         with open(self.work_directory / "status.txt", "w+") as f:
             f.write(full_status)
