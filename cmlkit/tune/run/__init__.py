@@ -9,6 +9,7 @@ Let's inventorise:
 - run: actual run class
 - state: keeps track of optimisation state
 - stopping: stopping methods
+- tape: how we save steps
 
 Conventions:
 - A *result* is a dict {"status": {# outcome}} where "status" is either "ok" or "error",

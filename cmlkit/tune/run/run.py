@@ -34,6 +34,7 @@ from .exceptions import get_exceptions, get_exceptions_spec
 from .pool import EvaluationPool
 from .resultdb import ResultDB
 from .state import State
+from .tape import Tape
 
 
 class Run(Component):
@@ -84,10 +85,9 @@ class Run(Component):
     def prepare(self, directory=Path(".")):
         self.work_directory = directory / f"run_{self.name}"
         makedir(self.work_directory)
-        save_yaml(self.work_directory / "run.yml", self.get_config())
 
         evals = ResultDB()
-        tape = []  # to be replaced by a file-backed SON tape
+        tape = Tape.new(metadata=self.get_config(), filename=self.work_directory / "tape.son")
 
         self.pool = EvaluationPool(
             evals=evals,
@@ -119,6 +119,7 @@ class Run(Component):
         while time.monotonic() < end and not self.stop.done(self.state):
             self.write_status("Running.", len(futures), time.monotonic()-start)
             logger.info(f"Run {self.name} is alive. State: {self.state.short_report()}")
+
             done, running = wait(
                 futures,
                 timeout=self.context["wait_per_loop"],
@@ -148,8 +149,6 @@ class Run(Component):
         self.write_status(f"{self.name}: Done. Have a good day!", 0, duration)
 
     def write_results(self):
-        save_yaml(self.work_directory / "tape", self.state.tape)
-
         for i, config in enumerate(self.state.evals.top_suggestions()):
             save_yaml(self.work_directory / f"suggestion-{i}", config)
         logger.info(f"Saved top 5 suggestions into {self.work_directory}.")
