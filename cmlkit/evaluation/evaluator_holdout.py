@@ -29,6 +29,8 @@ class EvaluatorHoldout(Evaluator):
         self.train = load_dataset(train)
         self.test = load_dataset(test)
         self.loss = get_loss(loss)
+        self.target = target
+        self.per = per
 
     def _get_config(self):
         return {
