@@ -99,7 +99,19 @@ class Dataset(Configurable):
 
     kind = "dataset"
 
-    def __init__(self, z, r, b=None, p={}, name=None, desc="", splits=[]):
+    def __init__(
+        self,
+        z,
+        r,
+        b=None,
+        p={},
+        name=None,
+        desc="",
+        splits=[],
+        _info=None,
+        _hash=None,
+        _geom_hash=None,
+    ):
         super().__init__()
 
         # Sanity checks
@@ -128,11 +140,29 @@ class Dataset(Configurable):
 
         self.n = len(self.z)
 
-        # lazily computed attributes
-        self._report = None
-        self._info = None
-        self._hash = None
-        self._geom_hash = None
+        # perform some consistency checks;
+        # if these every fail there Is Trouble
+        # (these are supposed to only be written once and never change,
+        # so if they mismatch most likely the hashing method is not as stable
+        # as I thought...)
+        if _hash is not None:
+            this_hash = self.get_hash()
+            assert _hash == this_hash, "Hashes of dataset are not matching!"
+            self.hash = _hash
+        else:
+            self.hash = self.get_hash()
+
+        if _geom_hash is not None:
+            this_hash = self.get_geom_hash()
+            assert _geom_hash == this_hash, "Geometry Hashes of dataset are not matching!"
+            self.geom_hash = _geom_hash
+        else:
+            self.geom_hash = self.get_geom_hash()
+
+        if _info is not None:
+            self.info = _info
+        else:
+            self.info = self.get_info()
 
         # compute auxiliary info that we need to convert properties
         self.aux = {}
@@ -158,6 +188,9 @@ class Dataset(Configurable):
             "b": self.b,
             "p": self.p,
             "splits": self.splits,
+            "_info": self.info,
+            "_hash": self.hash,
+            "_geom_hash": self.geom_hash,
         }
 
     def save(self, directory="", filename=None):
@@ -173,152 +206,120 @@ class Dataset(Configurable):
     def __getitem__(self, idx):
         return View(self, idx)
 
-    def prepare(self):
-        """Compute all lazily computed properties."""
+    def get_info(self):
+        """Compute information on dataset."""
+        return compute_dataset_info(self)
 
-        return self.info, self.report, self.hash, self.geom_hash
-
-    @property
-    def info(self):
-        if self._info is not None:
-            return self._info
-        else:
-            self._info = compute_dataset_info(self)
-            return self._info
-
-    @property
-    def hash(self):
+    def get_hash(self):
         """Hash of dataset, ignoring name and description."""
-        if self._hash is None:
-            self._hash = compute_hash(self.z, self.r, self.b, self.p)
-            return self._hash
-        else:
-            return self._hash
+        return compute_hash(self.z, self.r, self.b, self.p)
 
-    @property
-    def geom_hash(self):
+    def get_geom_hash(self):
         """Hash of only the geometries, ignoring properties etc."""
-        if self._geom_hash is None:
-            self._geom_hash = compute_hash(self.z, self.r, self.b)
-            return self._geom_hash
-        else:
-            return self._geom_hash
+        return compute_hash(self.z, self.r, self.b)
 
     def pp(self, target, per="None"):
         return convert(self, self.p[target], per=per)
 
     @property
     def report(self):
+        i = self.info
+        general = (
+            "# {}: {} #\n\n".format(self.__class__.kind, self.name) + self.desc + "\n"
+        )
 
-        if self._report is None:
-            i = self.info
-            general = (
-                "# {}: {} #\n\n".format(self.__class__.kind, self.name) + self.desc + "\n"
-            )
+        over = "\n## Overview ##\n"
+        if self.b is None:
+            over += " {} finite systems (molecules)".format(i["number_systems"]) + "\n"
+        else:
+            over += " {} periodic systems (materials)".format(i["number_systems"]) + "\n"
+        keys = [str(k) for k in self.p.keys()]
+        over += " {} different properties: {}\n".format(len(self.p.keys()), keys)
 
-            over = "\n## Overview ##\n"
-            if self.b is None:
-                over += (
-                    " {} finite systems (molecules)".format(i["number_systems"]) + "\n"
-                )
-            else:
-                over += (
-                    " {} periodic systems (materials)".format(i["number_systems"]) + "\n"
-                )
-            keys = [str(k) for k in self.p.keys()]
-            over += " {} different properties: {}\n".format(len(self.p.keys()), keys)
+        elems = (
+            " elements: {} ({})".format(
+                " ".join([qmml.element_data(el, "abbreviation") for el in i["elements"]]),
+                len(i["elements"]),
+            )
+            + "\n"
+        )
+        elems = " elements by charge: {}".format(i["elements"]) + "\n"
+        elems += (
+            " max #els/system: {};  max same #el/system: {};  max #atoms/system: {}".format(
+                i["max_elements_per_system"],
+                i["max_same_element_per_system"],
+                i["max_atoms_per_system"],
+            )
+            + "\n"
+        )
 
-            elems = (
-                " elements: {} ({})".format(
-                    " ".join(
-                        [qmml.element_data(el, "abbreviation") for el in i["elements"]]
-                    ),
-                    len(i["elements"]),
-                )
-                + "\n"
+        dist = (
+            " min dist: {:3.2f};  max dist: {:3.2f}".format(
+                i["min_distance"], i["max_distance"]
             )
-            elems = " elements by charge: {}".format(i["elements"]) + "\n"
-            elems += (
-                " max #els/system: {};  max same #el/system: {};  max #atoms/system: {}".format(
-                    i["max_elements_per_system"],
-                    i["max_same_element_per_system"],
-                    i["max_atoms_per_system"],
-                )
-                + "\n"
-            )
+            + "\n"
+        )
 
-            dist = (
-                " min dist: {:3.2f};  max dist: {:3.2f}".format(
-                    i["min_distance"], i["max_distance"]
-                )
-                + "\n"
+        g = i["geometry"]
+        geom = "\n## Geometry ##"
+        geom += "\n### Ranges ###\n"
+        geom += " These are the ranges for various geometry properties.\n"
+        geom += " count   : {} to {}".format(g["min_count"], g["max_count"]) + "\n"
+        geom += (
+            " dist    : {:4.4f} to {:4.4f}".format(g["min_dist"], g["max_dist"]) + "\n"
+        )
+        geom += (
+            " 1/dist  : {:4.4f} to {:4.4f}".format(g["min_1/dist"], g["max_1/dist"])
+            + "\n"
+        )
+        geom += (
+            " 1/dist^2: {:4.4f} to {:4.4f}".format(g["min_1/dist^2"], g["max_1/dist^2"])
+            + "\n"
+        )
+        geom += "\n### Recommendations for d ###\n"
+        geom += " We recommend using the intervals (-0.05*max, 1.05*max) for the parametrisation of the MBTR, i.e. a 5% padding. "
+        geom += " In the following, n is the number of bins.\n"
+        geom += " k=1 MBTR:\n"
+        geom += (
+            " count     : ({:4.2f}, {:4.2f}/n, n)".format(
+                -0.05 * g["max_count"], 1.1 * g["max_count"]
             )
+            + "\n"
+        )
+        geom += " k=2 MBTR:\n"
+        geom += (
+            " 1/dist    : ({:4.2f}, {:4.2f}/n, n)".format(
+                -0.05 * g["max_1/dist"], 1.1 * g["max_1/dist"]
+            )
+            + "\n"
+        )
+        geom += (
+            " 1/dot     : ({:4.2f}, {:4.2f}/n, n)".format(
+                -0.05 * g["max_1/dist^2"], 1.1 * g["max_1/dist^2"]
+            )
+            + "\n"
+        )
+        geom += " k=3 MBTR (experimental):\n"
+        geom += (
+            " angle     : ({:4.2f}, {:4.2f}/n, n)".format(-0.05 * np.pi, 1.1 * np.pi)
+            + "\n"
+        )
+        geom += " cos_angle : ({:4.2f}, {:4.2f}/n, n)".format(-1.05 * 1, 2.1) + "\n"
+        geom += (
+            " dot/dotdot: ({:4.2f}, {:4.2f}/n, n)".format(
+                -0.05 * g["max_1/dist^2"], 1.1 * g["max_1/dist^2"]
+            )
+            + "\n"
+        )
+        geom += " It is still prudent to experiment with these settings!\n"
 
-            g = i["geometry"]
-            geom = "\n## Geometry ##"
-            geom += "\n### Ranges ###\n"
-            geom += " These are the ranges for various geometry properties.\n"
-            geom += " count   : {} to {}".format(g["min_count"], g["max_count"]) + "\n"
-            geom += (
-                " dist    : {:4.4f} to {:4.4f}".format(g["min_dist"], g["max_dist"])
-                + "\n"
-            )
-            geom += (
-                " 1/dist  : {:4.4f} to {:4.4f}".format(g["min_1/dist"], g["max_1/dist"])
-                + "\n"
-            )
-            geom += (
-                " 1/dist^2: {:4.4f} to {:4.4f}".format(
-                    g["min_1/dist^2"], g["max_1/dist^2"]
-                )
-                + "\n"
-            )
-            geom += "\n### Recommendations for d ###\n"
-            geom += " We recommend using the intervals (-0.05*max, 1.05*max) for the parametrisation of the MBTR, i.e. a 5% padding. "
-            geom += " In the following, n is the number of bins.\n"
-            geom += " k=1 MBTR:\n"
-            geom += (
-                " count     : ({:4.2f}, {:4.2f}/n, n)".format(
-                    -0.05 * g["max_count"], 1.1 * g["max_count"]
-                )
-                + "\n"
-            )
-            geom += " k=2 MBTR:\n"
-            geom += (
-                " 1/dist    : ({:4.2f}, {:4.2f}/n, n)".format(
-                    -0.05 * g["max_1/dist"], 1.1 * g["max_1/dist"]
-                )
-                + "\n"
-            )
-            geom += (
-                " 1/dot     : ({:4.2f}, {:4.2f}/n, n)".format(
-                    -0.05 * g["max_1/dist^2"], 1.1 * g["max_1/dist^2"]
-                )
-                + "\n"
-            )
-            geom += " k=3 MBTR (experimental):\n"
-            geom += (
-                " angle     : ({:4.2f}, {:4.2f}/n, n)".format(-0.05 * np.pi, 1.1 * np.pi)
-                + "\n"
-            )
-            geom += " cos_angle : ({:4.2f}, {:4.2f}/n, n)".format(-1.05 * 1, 2.1) + "\n"
-            geom += (
-                " dot/dotdot: ({:4.2f}, {:4.2f}/n, n)".format(
-                    -0.05 * g["max_1/dist^2"], 1.1 * g["max_1/dist^2"]
-                )
-                + "\n"
-            )
-            geom += " It is still prudent to experiment with these settings!\n"
+        p = i["properties"]
+        prop = "\n## Properties ##\n"
+        prop += " Mean and standard deviation of properties:\n"
+        for k, v in p.items():
+            prop += " {}: {:4.4f} ({:4.4f})\n".format(k, v[0], v[1])
 
-            p = i["properties"]
-            prop = "\n## Properties ##\n"
-            prop += " Mean and standard deviation of properties:\n"
-            for k, v in p.items():
-                prop += " {}: {:4.4f} ({:4.4f})\n".format(k, v[0], v[1])
-
-            self._report = general + over + elems + dist + geom + prop
-
-        return self._report
+        return general + over + elems + dist + geom + prop
 
 
 class Subset(Dataset):
@@ -327,10 +328,33 @@ class Subset(Dataset):
     kind = "subset"
 
     def __init__(
-        self, z, r, b=None, p={}, name=None, desc="", idx=None, parent_info={}, splits=[]
+        self,
+        z,
+        r,
+        b=None,
+        p={},
+        name=None,
+        desc="",
+        idx=None,
+        parent_info={},
+        splits=[],
+        _info=None,
+        _hash=None,
+        _geom_hash=None,
     ):
         # you probably want to use from_dataset in 99% of cases
-        super().__init__(z, r, b, p, name=name, desc=desc, splits=splits)
+        super().__init__(
+            z,
+            r,
+            b,
+            p,
+            name=name,
+            desc=desc,
+            splits=splits,
+            _info=_info,
+            _hash=_hash,
+            _geom_hash=_geom_hash,
+        )
 
         self.idx = idx
         self.parent_info = parent_info
@@ -385,6 +409,9 @@ class Subset(Dataset):
             "idx": self.idx,
             "parent_info": self.parent_info,
             "splits": self.splits,
+            "_info": self.info,
+            "_hash": self.hash,
+            "_geom_hash": self.geom_hash,
         }
 
 
