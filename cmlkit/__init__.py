@@ -44,8 +44,8 @@ register(OptimizerLGS)
 from .dataset import Dataset, Subset, load_dataset
 register(Dataset, Subset)
 
-from .tune import Run, Hyperopt
-register(Run, Hyperopt)
+from .tune import components as components_tune
+register(*components_tune)
 
 from .evaluation import components as components_evaluation
 register(*components_evaluation)
