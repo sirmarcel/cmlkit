@@ -16,6 +16,7 @@ def rmse(true, pred):
 
 class TestKRR(TestCase):
     def setUp(self):
+        np.random.seed(123)
         self.x_train = 4 * np.random.random((160, 1)) - 2
         self.x_test = 4 * np.random.random((40, 1)) - 2
 
