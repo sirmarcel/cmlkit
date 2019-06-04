@@ -4,6 +4,7 @@ import copy
 
 
 from cmlkit.tune.run.state import State
+from cmlkit.tune.run.tape import Tape
 from cmlkit.tune.search.hyperopt import Hyperopt
 
 
@@ -55,7 +56,7 @@ class TestState(TestCase):
             self.assertEqual(next_suggestion2, next_suggestion)
             self.assertEqual(next_tid2, next_tid)
 
-        self.assertEqual(state2.tape, state.tape)
+        self.assertEqual(state2.tape.raw, state.tape.raw)
         self.assertEqual(state2.live_trials, state.live_trials)
         self.assertEqual(state2.trials.db, state.trials.db)
 
@@ -86,7 +87,9 @@ class TestState(TestCase):
 
         # entry missing fails
         with self.assertRaises(AssertionError):
-            tape = copy.copy(state.tape)
-            del tape[21]
+            raw_tape = copy.copy(state.tape.raw)
+            del raw_tape[21]
             hpo2 = Hyperopt(space=space, method="tpe")
-            State.from_tape(search=hpo2, tape=tape)
+            State.from_tape(
+                search=hpo2, tape=Tape(metadata={}, backend="list", tape=raw_tape)
+            )
