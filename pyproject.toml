@@ -15,10 +15,12 @@ numpy = "^1.16"
 ase = "^3.17"
 PyYAML = "^5.1"
 joblib = "^0.13"
+pebble = "^4.3"
+dill = "^0.2"
 
 [tool.poetry.dev-dependencies]
 nose = "*"
-black = ">=18"
+black = "19.3b0"
 
 [build-system]
 requires = ["poetry>=0.12"]
