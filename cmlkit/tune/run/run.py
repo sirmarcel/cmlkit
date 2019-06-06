@@ -212,6 +212,6 @@ class Run(Component):
         full_status = header + textwrap.indent(body, " ")
 
         with open(self.work_directory / "status.txt", "w+") as f:
-            f.write(full_status)
+            f.write(full_status + "\n")
 
         return full_status
