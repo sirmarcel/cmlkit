@@ -140,13 +140,15 @@ class Run(Component):
         return run
 
     def __call__(self, duration=float("inf")):
-        return self.run()
+        return self.run(duration=duration)
 
     def run(self, duration=float("inf")):
         assert self.ready, "prepare() must be called before starting run."
 
+        duration = duration - self.context["shutdown_duration"]
+
         start = time.monotonic()
-        end = start + duration - self.context["shutdown_duration"]
+        end = start + duration
 
         futures = {}
 
@@ -160,7 +162,9 @@ class Run(Component):
                 futures[f] = tid
 
         while time.monotonic() < end and not self.stop.done(self.state):
-            status = self.write_status("Running.", len(futures), time.monotonic() - start)
+            status = self.write_status(
+                "Running.", len(futures), time.monotonic() - start, duration
+            )
             logger.info(status)
 
             done, running = wait(
@@ -183,13 +187,15 @@ class Run(Component):
 
                     futures[f] = tid
 
-        duration = time.monotonic() - start
-        logger.info(f"Finished run {self.name} in {duration:.2f}s. Starting shutdown...")
-        self.write_status(f"{self.name}: Done, saving results.", 0, duration)
+        runtime = time.monotonic() - start
+        logger.info(f"Finished run {self.name} in {runtime:.2f}s. Starting shutdown...")
+        self.write_status(f"{self.name}: Done, saving results.", 0, runtime, duration)
         self.write_results()
-        self.write_status(f"{self.name}: Done, initiating shutdown.", 0, duration)
+        self.write_status(
+            f"{self.name}: Done, initiating shutdown.", 0, runtime, duration
+        )
         self.pool.shutdown()
-        self.write_status(f"{self.name}: Done. Have a good day!", 0, duration)
+        self.write_status(f"{self.name}: Done. Have a good day!", 0, runtime, duration)
 
     def write_results(self):
         for i, config in enumerate(self.state.evals.top_suggestions()):
@@ -202,10 +208,10 @@ class Run(Component):
                 save_yaml(self.work_directory / f"refined_suggestion-{i}", config)
             logger.info(f"Saved top 5 refined suggestions into {self.work_directory}.")
 
-    def write_status(self, message, n_futures, duration):
+    def write_status(self, message, n_futures, runtime, duration):
         timestr = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         header = f"### Status of run {self.name} at {timestr} ###\n"
-        status = f"{message} Runtime: {duration:.1f}. Active evaluations: {n_futures}."
+        status = f"{message} Runtime: {runtime:.1f}/{duration:.1f}. Active evaluations: {n_futures}."
         body = "\n".join(
             [status, self.stop.short_report(self.state), self.state.short_report()]
         )
