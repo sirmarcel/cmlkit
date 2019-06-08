@@ -140,12 +140,16 @@ class Run(Component):
         return run
 
     def __call__(self, duration=float("inf")):
+        """Run for duration minutes."""
+
         return self.run(duration=duration)
 
     def run(self, duration=float("inf")):
+        """Run for duration minutes."""
+
         assert self.ready, "prepare() must be called before starting run."
 
-        duration = duration - self.context["shutdown_duration"]
+        duration = (duration * 60.0) - self.context["shutdown_duration"]
 
         start = time.monotonic()
         end = start + duration
