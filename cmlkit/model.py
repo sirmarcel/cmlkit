@@ -26,7 +26,7 @@ case no conversion is ever done!
 from cmlkit.engine import Component
 from cmlkit import from_config
 from cmlkit.representation import Composed
-from .utility import convert
+from .utility import convert, unconvert
 
 
 class Model(Component):
@@ -108,5 +108,5 @@ class Model(Component):
         """
         z = self.representation(data)
         pred = self.regression.predict(z)
-
+        pred = unconvert(data, pred, from_per=self.per)
         return convert(data, pred, per)
