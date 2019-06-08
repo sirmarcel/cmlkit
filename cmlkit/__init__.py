@@ -4,7 +4,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
-default_context = {"cache_type": "mem", "min_duration": 0.5}
+default_context = {}
 
 from .engine import save_yaml, read_yaml, _from_config, _from_npy, _from_yaml
 

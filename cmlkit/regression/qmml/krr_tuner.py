@@ -14,6 +14,8 @@ class KRRTunerCV(Component):
 
     kind = "krr_tuner_cv"
 
+    default_context = {"cache": None}
+
     def __init__(
         self,
         kind_kernel,
@@ -41,7 +43,7 @@ class KRRTunerCV(Component):
             actual_kernel = _make_kernel(ls, self.kind_kernel, self.kind_kernelf)
             return actual_kernel(x)
 
-        # kernel = memcached(kernel)
+        # TODO: Insert caching here
 
         def target(nl, ls):
 
