@@ -208,7 +208,7 @@ class Run(Component):
 
         refined = self.state.evals.top_refined_suggestions()
         if any([r != {} for r in refined]):
-            for i, config in enumerate(self.state.evals.top_suggestions()):
+            for i, config in enumerate(self.state.evals.top_refined_suggestions()):
                 save_yaml(self.work_directory / f"refined_suggestion-{i}", config)
             logger.info(f"Saved top 5 refined suggestions into {self.work_directory}.")
 
