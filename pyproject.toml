@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cmlkit"
-version = "2.0.0-alpha5"
+version = "2.0.0-alpha6"
 description = "Machine learning tools for computational chemistry and condensed matter physics"
 authors = ["Marcel Langer <dev@sirmarcel.com>"]
 license = "MIT"
