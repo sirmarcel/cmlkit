@@ -19,18 +19,18 @@ def get_scratch():
 
 
 if "CML_DATASET_PATH" in os.environ:
-    dataset_path = [
-        Path(p) for p in str(os.environ["CML_DATASET_PATH"]).split(":")
-    ]
+    dataset_path = [Path(p) for p in str(os.environ["CML_DATASET_PATH"]).split(":")]
 else:
     dataset_path = []
 
 dataset_path.append(Path.cwd())
 
-if "CML_PLUGINS" in os.environ:
-    plugins = os.environ["CML_PLUGINS"].split(",")
-else:
-    plugins = []
+
+def get_plugins():
+    if "CML_PLUGINS" in os.environ:
+        return os.environ["CML_PLUGINS"].split(",")
+    else:
+        return []
 
 
 if "CML2_CACHE" in os.environ:
