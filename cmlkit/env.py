@@ -27,6 +27,12 @@ else:
 
 dataset_path.append(Path.cwd())
 
+if "CML_PLUGINS" in os.environ:
+    plugins = os.environ["CML_PLUGINS"].split(",")
+else:
+    plugins = []
+
+
 if "CML2_CACHE" in os.environ:
     cache_location = str(os.environ["CML2_CACHE"])
     makedir(cache_location)

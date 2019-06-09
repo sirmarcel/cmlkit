@@ -37,6 +37,7 @@ from .env import (
     runner_path,
     quippy_pythonpath,
     quippy_python_exe,
+    plugins
 )
 from .utility import convert, unconvert, charges_to_elements, OptimizerLGS
 register(OptimizerLGS)
@@ -58,3 +59,10 @@ register(*components_regression)
 
 from .model import Model
 register(Model)
+
+from importlib import import_module
+
+for plugin in plugins:
+    p = import_module(plugin)
+    components = getattr(p, "components", [])
+    register(*components)
