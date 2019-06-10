@@ -7,7 +7,11 @@ import logging
 from itertools import count
 
 from cmlkit.engine import Component
-from cmlkit.utility.config_helpers import find_pattern_apply_f, find_pattern
+from cmlkit.utility.config_helpers import (
+    find_pattern_apply_f,
+    find_pattern,
+    tuples_to_lists,
+)
 
 
 class Hyperopt(Component):
@@ -130,7 +134,15 @@ class Hyperopt(Component):
             print_node_on_error=self.domain.rec_eval_print_node_on_error,
         )
 
-        return deepcopy(suggested_config)
+        suggested_config = deepcopy(suggested_config)
+
+        # hyperopt internally converts tuples to lists
+        # but we treat *everything* as list in cmlkit
+        # (background: yaml doesn't distinguish them,
+        # and everything has to be able to go through yaml)
+        tuples_to_lists(suggested_config)
+
+        return suggested_config
 
     def submit(self, tid, error=False, loss=None, var=None):
         # Inform hyperopt about the results
