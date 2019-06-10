@@ -118,6 +118,8 @@ class Run(Component):
     @classmethod
     def restore(cls, directory, new_stop=None, context={}):
         logger.info("Starting run restore...")
+
+        directory = Path(directory)
         backup_tape = directory / "bak-tape.son"
         (directory / "tape.son").rename(backup_tape)
         old_tape = Tape.restore(backup_tape)
