@@ -278,35 +278,35 @@ class Dataset(Configurable):
         )
         geom += "\n### Recommendations for d ###\n"
         geom += " We recommend using the intervals (-0.05*max, 1.05*max) for the parametrisation of the MBTR, i.e. a 5% padding. "
-        geom += " In the following, n is the number of bins.\n"
+        geom += " In the following, we give (start, stop, n).\n"
         geom += " k=1 MBTR:\n"
         geom += (
-            " count     : ({:4.2f}, {:4.2f}/n, n)".format(
+            " count     : ({:4.2f}, {:4.2f}, n)".format(
                 -0.05 * g["max_count"], 1.1 * g["max_count"]
             )
             + "\n"
         )
         geom += " k=2 MBTR:\n"
         geom += (
-            " 1/dist    : ({:4.2f}, {:4.2f}/n, n)".format(
+            " 1/dist    : ({:4.2f}, {:4.2f}, n)".format(
                 -0.05 * g["max_1/dist"], 1.1 * g["max_1/dist"]
             )
             + "\n"
         )
         geom += (
-            " 1/dot     : ({:4.2f}, {:4.2f}/n, n)".format(
+            " 1/dot     : ({:4.2f}, {:4.2f}, n)".format(
                 -0.05 * g["max_1/dist^2"], 1.1 * g["max_1/dist^2"]
             )
             + "\n"
         )
         geom += " k=3 MBTR (experimental):\n"
         geom += (
-            " angle     : ({:4.2f}, {:4.2f}/n, n)".format(-0.05 * np.pi, 1.1 * np.pi)
+            " angle     : ({:4.2f}, {:4.2f}, n)".format(-0.05 * np.pi, 1.1 * np.pi)
             + "\n"
         )
-        geom += " cos_angle : ({:4.2f}, {:4.2f}/n, n)".format(-1.05 * 1, 2.1) + "\n"
+        geom += " cos_angle : ({:4.2f}, {:4.2f}, n)".format(-1.05 * 1, 2.1) + "\n"
         geom += (
-            " dot/dotdot: ({:4.2f}, {:4.2f}/n, n)".format(
+            " dot/dotdot: ({:4.2f}, {:4.2f}, n)".format(
                 -0.05 * g["max_1/dist^2"], 1.1 * g["max_1/dist^2"]
             )
             + "\n"
