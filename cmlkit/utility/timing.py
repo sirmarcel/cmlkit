@@ -19,17 +19,20 @@ def timed(f):
 
 
 def time_repeat(f, repeats=3):
-    """Time a function multiple times and return statistics.
+    """Time a function multiple times and return results and statistics.
 
     Expects a function without arguments.
     """
 
+    results = []
+
     times = np.zeros(repeats, dtype=float)
     for i in range(repeats):
         start = time.monotonic()
-        f()
+        res = f()
+        results.append(res)
         end = time.monotonic()
 
         times[i] = end - start
 
-    return times, np.mean(times), np.min(times), np.max(times)
+    return results, [times, np.mean(times), np.min(times), np.max(times)]
