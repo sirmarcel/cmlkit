@@ -246,6 +246,10 @@ def to_hyperopt(x):
 
 def make_grid(label, start, stop, num, base=2.0):
 
-    choices = np.logspace(start, stop, num=num, base=base)
+    # it's very important to convert to a plain list here; otherwise
+    # we carry numpy floats through the computation, which don't hash
+    # to the same values as their plain float counterparts, which in
+    # turn makes evaluation ids not match after a roundtrip through yaml.
+    choices = np.logspace(start, stop, num=num, base=base).tolist()
 
     return (label, choices)
