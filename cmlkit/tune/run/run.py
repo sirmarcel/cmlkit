@@ -74,6 +74,9 @@ class Run(Component):
             self.name = name
 
         self.ready = False  # run is not ready until prepared
+        self.readonly = False  # only True if instance is obtained through Run.checkout()
+        # (which is the "inspect result of run" mode, and not intended to yield something
+        # that can be continued)
 
     def _get_config(self):
         return {
@@ -86,6 +89,8 @@ class Run(Component):
         }
 
     def prepare(self, directory=Path(".")):
+        assert not self.readonly, "Run cannot be prepared in read only mode."
+
         work_directory = directory / f"run_{self.name}"
         makedir(work_directory)
 
@@ -138,6 +143,29 @@ class Run(Component):
         )  # now we have successfully replayed the optimisation so far
 
         run._prepare(directory, evals, state, msg="Recovered")
+
+        return run
+
+    @classmethod
+    def checkout(cls, directory):
+        """Get read-only run from directory.
+
+        This is the canonical way of obtaining the results of a
+        finished (or, inadvisably, an ongoing) run. It returns a
+        Run instance that cannot be run(), but is otherwise in the
+        same state as the run that is being checked out.
+
+        """
+        directory = Path(directory)
+
+        logger.info("Starting run checkout... (this will not yield a runnable instance).")
+
+        original_tape = Tape.restore(directory / "tape.son")
+        run = Run.from_config(original_tape.metadata["run"])
+        state = State.from_tape(search=run.search, tape=original_tape)
+
+        run.state = state
+        run.readonly = True
 
         return run
 

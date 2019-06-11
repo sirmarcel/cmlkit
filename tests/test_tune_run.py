@@ -65,5 +65,11 @@ class TestRun(TestCase):
         run.prepare(directory=self.tmpdir)
         run()
 
-        run2 = Run.restore(directory=run.work_directory, new_stop={"stop_max": {"count": 100}})
+        run2 = Run.restore(
+            directory=run.work_directory, new_stop={"stop_max": {"count": 100}}
+        )
         run2.run()
+
+        run3 = Run.checkout(directory=run.work_directory)
+
+        self.assertEqual(run2.state.evals.db, run2.state.evals.db)
