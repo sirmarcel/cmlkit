@@ -9,4 +9,4 @@ from .soap import components as components_soap
 from .mbtr import components as components_mbtr
 from .sf import components as components_sf
 
-components = [CoulombMatrix, *components_sf, *components_mbtr, *components_soap]
+components = [Composed, CoulombMatrix, *components_sf, *components_mbtr, *components_soap]
