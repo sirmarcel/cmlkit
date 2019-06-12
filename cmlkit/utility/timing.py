@@ -38,9 +38,9 @@ def time_repeat(f, repeats=3):
     return (
         results,
         {
-            "times": times,
-            "mean": np.mean(times),
-            "min": np.min(times),
-            "max": np.max(times),
+            "times": times.tolist(),
+            "mean": np.mean(times).item(),
+            "min": np.min(times).item(),
+            "max": np.max(times).item(),
         },
     )
