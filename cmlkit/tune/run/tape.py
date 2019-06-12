@@ -6,7 +6,7 @@ for the tape.
 
 """
 
-from cmlkit.engine.inout import load_son, save_son
+from cmlkit.engine.inout import read_son, save_son
 
 
 class Tape:
@@ -46,7 +46,7 @@ class Tape:
     @classmethod
     def restore(cls, filename):
         backend = "list"
-        metadata, tape = load_son(filename)
+        metadata, tape = read_son(filename)
 
         return cls(backend, tape, metadata)
 
@@ -61,7 +61,7 @@ class Tape:
         if self.backend == "list":
             return self.tape
         else:
-            meta, data = load_son(self.tape)
+            meta, data = read_son(self.tape)
             return data
 
     def __iter__(self):
@@ -69,5 +69,5 @@ class Tape:
             return iter(self.tape)
 
         else:
-            meta, data = load_son(self.tape)
+            meta, data = read_son(self.tape)
             return iter(data)

@@ -115,7 +115,7 @@ def save_son(filename, d, is_metadata=False):
     )
 
 
-def load_son(filename):
+def read_son(filename):
     """Load from a SON file."""
 
     return son.load(normalize_extension(filename, ".son"), loader=yaml.safe_load)

@@ -12,7 +12,7 @@ from cmlkit.engine import (
     save_yaml,
     read_yaml,
     save_son,
-    load_son,
+    read_son,
 )
 
 
@@ -62,7 +62,7 @@ class TestInout(TestCase):
         save_son(self.tmpdir / "sontest", meta, is_metadata=True)
         save_son(self.tmpdir / "sontest", payloads[0], is_metadata=False)
         save_son(self.tmpdir / "sontest", payloads[1], is_metadata=False)
-        post_meta, post_payloads = load_son(self.tmpdir / "sontest")
+        post_meta, post_payloads = read_son(self.tmpdir / "sontest")
 
         self.assertEqual(post_meta, meta)
         self.assertEqual(post_payloads, payloads)
