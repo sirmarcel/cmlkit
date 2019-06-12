@@ -35,4 +35,12 @@ def time_repeat(f, repeats=3):
 
         times[i] = end - start
 
-    return results, [times, np.mean(times), np.min(times), np.max(times)]
+    return (
+        results,
+        {
+            "times": times,
+            "mean": np.mean(times),
+            "min": np.min(times),
+            "max": np.max(times),
+        },
+    )
