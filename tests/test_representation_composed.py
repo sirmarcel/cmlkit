@@ -1,6 +1,5 @@
 from unittest import TestCase
 import numpy as np
-import unittest.mock
 
 from cmlkit import Dataset
 from cmlkit.representation.composed import Composed
