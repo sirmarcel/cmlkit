@@ -80,7 +80,7 @@ def make_quippy_config(config):
     elems = config["elems"]
 
     species = " ".join(map(str, elems))
-    quippy_config = f"soap cutoff={[cutoff]} l_max={[l_max]} n_max={[n_max]} atom_sigma={[sigma]} n_Z={len(elems)} Z={{{species}}} n_species={len(elems)} species_Z={{{species}}}"
+    quippy_config = f"soap cutoff={cutoff} l_max={l_max} n_max={n_max} atom_sigma={sigma} n_Z={len(elems)} Z={{{species}}} n_species={len(elems)} species_Z={{{species}}}"
 
     return quippy_config
 
