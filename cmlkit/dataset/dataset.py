@@ -221,6 +221,25 @@ class Dataset(Configurable):
     def pp(self, target, per="None"):
         return convert(self, self.p[target], per=per)
 
+    def in_chunks(self, size):
+        """Return subsets in chunks.
+
+        The last chunk might be smaller than the chunk size,
+        if the dataset size is not evenly divisible.
+
+        Args:
+            size: chunksize (last chunk may be smaller)
+
+        Returns:
+            Iterator over chunks, each item being a Subset.
+        """
+
+        all_idx = np.arange(self.n, dtype=int)
+
+        for i in range(0, self.n, size):
+            yield Subset.from_dataset(self, idx=all_idx[i:i + size])
+
+
     @property
     def report(self):
         i = self.info

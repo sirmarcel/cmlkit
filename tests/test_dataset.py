@@ -26,13 +26,16 @@ class TestDataset(TestCase):
         self.b = np.random.random((self.n, 3, 3))
         self.p1 = np.random.random(self.n)
         self.p2 = np.random.random(self.n)
-        self.splits = np.array([
-                    [
-                        np.random.randint(0, high=self.n, size=80),
-                        np.random.randint(0, high=self.n, size=80),
-                    ]
-                    for i in range(3)
-                ], dtype=object)
+        self.splits = np.array(
+            [
+                [
+                    np.random.randint(0, high=self.n, size=80),
+                    np.random.randint(0, high=self.n, size=80),
+                ]
+                for i in range(3)
+            ],
+            dtype=object,
+        )
 
         self.data = Dataset(
             z=self.z,
@@ -127,3 +130,18 @@ class TestDataset(TestCase):
 
         # hash stability test
         self.assertEqual(subset.hash, "935443472f34bd24aa11d691f365c105")
+
+    def test_chunking(self):
+        for i, s in enumerate(self.data.in_chunks(size=30)):
+            if i == 0:
+                self.assertEqual(s.n, 30)
+                np.testing.assert_array_equal(s.b, self.data.b[0:30])
+            elif i == 1:
+                self.assertEqual(s.n, 30)
+                np.testing.assert_array_equal(s.b, self.data.b[30:60])
+            elif i == 2:
+                self.assertEqual(s.n, 30)
+                np.testing.assert_array_equal(s.b, self.data.b[60:90])
+            else:
+                self.assertEqual(s.n, 10)
+                np.testing.assert_array_equal(s.b, self.data.b[90:100])
