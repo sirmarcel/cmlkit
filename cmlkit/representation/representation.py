@@ -1,5 +1,7 @@
 """Define representation base class."""
 
+import numpy as np
+
 from cmlkit.engine import Component
 
 
@@ -40,9 +42,21 @@ class Representation(Component):
 
     """
 
+    def __init__(self, context={}):
+        # can't use default_context because subclasses overwrite it
+        context = {"chunk_size": None, **context}
+        super().__init__(context=context)
+
     def __call__(self, data):
         """Compute this representation."""
-        return self.compute(data)
+        if self.context["chunk_size"] is None:
+            return self.compute(data)
+        else:
+            chunks = [
+                self.compute(chunk)
+                for chunk in data.in_chunks(size=self.context["chunk_size"])
+            ]
+            return np.concatenate(chunks, axis=0)
 
     def compute(self, data):
         raise NotImplementedError("Representations must implement a compute method.")

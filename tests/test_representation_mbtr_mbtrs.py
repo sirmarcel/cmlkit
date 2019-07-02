@@ -68,6 +68,43 @@ class TestMBTR2(TestCase):
         self.assertEqual(computed[0][1], 1.0)
         self.assertEqual(computed[0][2], 0.0)
 
+    def test_mbtr2_chunked(self):
+        # naughty -- this is testing functionality that is common
+        # to ALL representations!
+        data = Dataset(
+            z=np.array([[0, 0], [0, 0], [0, 0]]), r=np.array([[[0.0, 0.0, 0.0], [2.0, 0.0, 0.0]], [[0.0, 0.0, 0.0], [2.0, 2.0, 3.0]], [[0.0, 3.0, 0.0], [2.0, 1.0, 0.0]]])
+        )
+
+        mbtr_chunked = MBTR2(
+            start=0,
+            stop=1,
+            num=3,
+            geomf="1/distance",
+            weightf="unity",
+            broadening=0.001,
+            eindexf="noreversals",
+            aindexf="noreversals",
+            elems=[0],
+            flatten=True,
+            context={"chunk_size": 2}
+        )
+        mbtr = MBTR2(
+            start=0,
+            stop=1,
+            num=3,
+            geomf="1/distance",
+            weightf="unity",
+            broadening=0.001,
+            eindexf="noreversals",
+            aindexf="noreversals",
+            elems=[0],
+            flatten=True,
+            context={"chunk_size": None}
+        )
+
+        np.testing.assert_array_equal(mbtr_chunked(data), mbtr(data))
+
+
     def test_mbtr_2_with_parametrized_weightf(self):
         # just make sure things don't explode
         mbtr = MBTR2(
