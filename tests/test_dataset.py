@@ -47,6 +47,15 @@ class TestDataset(TestCase):
             splits=self.splits,
         )
 
+        self.data_nocell = Dataset(
+            z=self.z,
+            r=self.r,
+            p={"p1": self.p1, "p2": self.p2},
+            name="test",
+            desc="test",
+            splits=self.splits,
+        )
+
         self.data2 = Dataset(
             z=self.z,
             r=self.r,
@@ -145,3 +154,17 @@ class TestDataset(TestCase):
             else:
                 self.assertEqual(s.n, 10)
                 np.testing.assert_array_equal(s.b, self.data.b[90:100])
+
+    def test_ase(self):
+        atoms = self.data.as_Atoms()
+
+        for i, a in enumerate(atoms):
+            np.testing.assert_array_equal(a.get_cell(), self.data.b[i])
+            np.testing.assert_array_equal(a.get_positions(), self.data.r[i])
+            np.testing.assert_array_equal(a.get_atomic_numbers(), self.data.z[i])
+
+        atoms = self.data_nocell.as_Atoms()
+
+        for i, a in enumerate(atoms):
+            np.testing.assert_array_equal(a.get_positions(), self.data_nocell.r[i])
+            np.testing.assert_array_equal(a.get_atomic_numbers(), self.data_nocell.z[i])

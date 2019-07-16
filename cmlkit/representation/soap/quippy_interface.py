@@ -99,15 +99,7 @@ def prepare_task(data, quippy_config):
 
 
 def write_data(data, folder):
-    if data.b is None:
-        a = [ase.Atoms(positions=data.r[i], numbers=data.z[i]) for i in range(data.n)]
-    else:
-        a = [
-            ase.Atoms(positions=data.r[i], numbers=data.z[i], cell=data.b[i])
-            for i in range(data.n)
-        ]
-
-    ase.io.write(str(folder / "data.traj"), a, format="traj", parallel=False)
+    ase.io.write(str(folder / "data.traj"), data.as_Atoms(), format="traj", parallel=False)
 
 
 def run_task(folder, timeout=None):

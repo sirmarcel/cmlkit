@@ -3,6 +3,7 @@
 from pathlib import Path
 import numpy as np
 import qmmlpack as qmml
+from ase import Atoms
 
 from cmlkit.engine import compute_hash, Configurable, save_npy
 from cmlkit.utility import convert
@@ -237,8 +238,20 @@ class Dataset(Configurable):
         all_idx = np.arange(self.n, dtype=int)
 
         for i in range(0, self.n, size):
-            yield Subset.from_dataset(self, idx=all_idx[i:i + size])
+            yield Subset.from_dataset(self, idx=all_idx[i : i + size])
 
+    def as_Atoms(self):
+        """Dataset as list of ase.Atoms"""
+
+        if self.b is None:
+            return [
+                Atoms(positions=self.r[i], numbers=self.z[i]) for i in range(self.n)
+            ]
+        else:
+            return [
+                Atoms(positions=self.r[i], numbers=self.z[i], cell=self.b[i])
+                for i in range(self.n)
+            ]
 
     @property
     def report(self):
@@ -320,8 +333,7 @@ class Dataset(Configurable):
         )
         geom += " k=3 MBTR (experimental):\n"
         geom += (
-            " angle     : ({:4.2f}, {:4.2f}, n)".format(-0.05 * np.pi, 1.1 * np.pi)
-            + "\n"
+            " angle     : ({:4.2f}, {:4.2f}, n)".format(-0.05 * np.pi, 1.1 * np.pi) + "\n"
         )
         geom += " cos_angle : ({:4.2f}, {:4.2f}, n)".format(-1.05 * 1, 2.1) + "\n"
         geom += (
