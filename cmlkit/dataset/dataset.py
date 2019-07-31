@@ -335,7 +335,7 @@ class Dataset(Configurable):
         geom += (
             " angle     : ({:4.2f}, {:4.2f}, n)".format(-0.05 * np.pi, 1.1 * np.pi) + "\n"
         )
-        geom += " cos_angle : ({:4.2f}, {:4.2f}, n)".format(-1.05 * 1, 2.1) + "\n"
+        geom += " cos_angle : ({:4.2f}, {:4.2f}, n)".format(-1.05 * 1, 1.05) + "\n"
         geom += (
             " dot/dotdot: ({:4.2f}, {:4.2f}, n)".format(
                 -0.05 * g["max_1/dist^2"], 1.1 * g["max_1/dist^2"]
