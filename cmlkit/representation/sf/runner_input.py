@@ -10,7 +10,7 @@ from cmlkit.utility import charges_to_elements
 
 
 def prepare_task(data, config):
-    tid = compute_hash(time.time() + np.random.rand())
+    tid = compute_hash(time.time(), np.random.rand(), data.geom_hash, config)
 
     folder = get_scratch() / f"runner_{tid}"
     folder.mkdir(parents=True)  # will raise error if already exists!

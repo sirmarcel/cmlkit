@@ -86,7 +86,7 @@ def make_quippy_config(config):
 
 
 def prepare_task(data, quippy_config):
-    tid = compute_hash(time.time() + np.random.rand())
+    tid = compute_hash(time.time(), np.random.rand(), data.geom_hash, quippy_config)
     folder = get_scratch() / f"soap_{tid}"
     folder.mkdir(parents=True)
 
