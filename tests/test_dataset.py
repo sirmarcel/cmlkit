@@ -4,6 +4,7 @@ from unittest import TestCase
 import unittest.mock
 import shutil
 import pathlib
+from copy import copy
 
 from cmlkit.dataset import Dataset, Subset, load_dataset
 
@@ -100,6 +101,13 @@ class TestDataset(TestCase):
         np.testing.assert_array_equal(self.data.p["p2"], self.p2)
         np.testing.assert_array_equal(self.data.splits, self.splits)
 
+    def test_wrong_creation(self):
+        with self.assertRaises(AssertionError):
+            Dataset(z=self.data.z, r=self.data.r, p={"lol": [1]})
+
+        with self.assertRaises(AssertionError):
+            Dataset(z=[np.zeros(len(self.data.r[0]))], r=self.data.r)
+
     def test_hash_stable(self):
         # is the dataset hash stable across restarts?
         self.assertEqual(self.data.hash, "97e4cdce3be9851e9c109c3509bc65e1")
@@ -163,8 +171,24 @@ class TestDataset(TestCase):
             np.testing.assert_array_equal(a.get_positions(), self.data.r[i])
             np.testing.assert_array_equal(a.get_atomic_numbers(), self.data.z[i])
 
+        dataset = Dataset.from_Atoms(atoms)
+        self.assertEqual(dataset.geom_hash, self.data.geom_hash)
+
+        with self.assertRaises(AssertionError):
+            atoms2 = copy(atoms)
+            atoms2[0].set_pbc(False)
+            Dataset.from_Atoms(atoms2)
+
+        with self.assertRaises(AssertionError):
+            atoms3 = copy(atoms)
+            atoms3[0].set_pbc([False, True, False])
+            Dataset.from_Atoms(atoms3)
+
         atoms = self.data_nocell.as_Atoms()
 
         for i, a in enumerate(atoms):
             np.testing.assert_array_equal(a.get_positions(), self.data_nocell.r[i])
             np.testing.assert_array_equal(a.get_atomic_numbers(), self.data_nocell.z[i])
+
+        dataset = Dataset.from_Atoms(atoms)
+        self.assertEqual(dataset.geom_hash, self.data_nocell.geom_hash)

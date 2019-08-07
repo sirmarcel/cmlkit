@@ -128,6 +128,12 @@ class Dataset(Configurable):
         )
         assert len(r) > 0, "Attempted to create dataset, r has 0 length!"
 
+        if p != {}:
+            for pname, values in p.items():
+                assert len(values) == len(
+                    z
+                ), f"Attempted to create dataset, but z and property {pname} are not of the same size ({len(z)} vs {len(values)})!"
+
         self.desc = desc
         self.z = z
         self.r = r
@@ -237,16 +243,51 @@ class Dataset(Configurable):
         for i in range(0, self.n, size):
             yield Subset.from_dataset(self, idx=all_idx[i : i + size])
 
+    @classmethod
+    def from_Atoms(cls, atoms, p={}, name=None, desc="", splits=[]):
+        """Create Dataset from ase.Atoms
+
+        For detals, check Dataset class.
+
+        Args:
+            atoms: iteratble of ase.Atoms objects
+            p: dict of properties, keys are strings and values are (scalar) ndarrays
+            name: Name of dataset (should be unique)
+            desc: Description
+            splits: List of [index_train, index_test] splits (experimental)
+
+        Returns:
+            Dataset instance.
+
+        """
+
+        atoms = list(atoms)  # can't use an iterator since we iterate multiple times
+
+        if any([any(a.get_pbc()) for a in atoms]):
+            assert all(
+                [all(a.get_pbc()) for a in atoms]
+            ), f"In a Dataset, either all or no structures must have periodic boundary conditions in all directions."
+            b = np.array([a.get_cell() for a in atoms])
+        else:
+            b = None
+
+        return cls(
+            z=np.array([a.get_atomic_numbers() for a in atoms], dtype=object),
+            r=np.array([a.get_positions() for a in atoms]),
+            b=b,
+            name=name,
+            desc=desc,
+            splits=splits,
+        )
+
     def as_Atoms(self):
         """Dataset as list of ase.Atoms"""
 
         if self.b is None:
-            return [
-                Atoms(positions=self.r[i], numbers=self.z[i]) for i in range(self.n)
-            ]
+            return [Atoms(positions=self.r[i], numbers=self.z[i]) for i in range(self.n)]
         else:
             return [
-                Atoms(positions=self.r[i], numbers=self.z[i], cell=self.b[i])
+                Atoms(positions=self.r[i], numbers=self.z[i], cell=self.b[i], pbc=True)
                 for i in range(self.n)
             ]
 
