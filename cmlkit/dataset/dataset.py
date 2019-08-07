@@ -204,9 +204,6 @@ class Dataset(Configurable):
 
         save_npy(directory / filename, self.get_config())
 
-    def __getitem__(self, idx):
-        return View(self, idx)
-
     def get_info(self):
         """Compute information on dataset."""
         return compute_dataset_info(self)
