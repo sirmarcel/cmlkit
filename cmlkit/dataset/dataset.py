@@ -245,7 +245,7 @@ class Dataset(Configurable):
 
     @classmethod
     def from_Atoms(cls, atoms, p={}, name=None, desc="", splits=[]):
-        """Create Dataset from ase.Atoms
+        """Create Dataset from iterable of ase.Atoms
 
         For detals, check Dataset class.
 
@@ -267,13 +267,13 @@ class Dataset(Configurable):
             assert all(
                 [all(a.get_pbc()) for a in atoms]
             ), f"In a Dataset, either all or no structures must have periodic boundary conditions in all directions."
-            b = np.array([a.get_cell() for a in atoms])
+            b = np.array([np.asarray(a.get_cell()) for a in atoms])
         else:
             b = None
 
         return cls(
             z=np.array([a.get_atomic_numbers() for a in atoms], dtype=object),
-            r=np.array([a.get_positions() for a in atoms]),
+            r=np.array([a.get_positions() for a in atoms], dtype=object),
             b=b,
             name=name,
             desc=desc,

@@ -12,7 +12,7 @@ keywords = ["machine learning", "physics", "optimization", "chemistry"]
 python = ">=3.7"
 hyperopt = "^0.1.2"
 numpy = "^1.16"
-ase = "^3.17"
+ase = ">=3.18"
 PyYAML = "^5.1"
 joblib = "^0.13"
 pebble = "^4.3"
