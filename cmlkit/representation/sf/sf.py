@@ -31,23 +31,51 @@ class SymmetryFunctions(Representation):
         eta: Width of Gaussian.
         zeta: Roughly, the width of the angular distribution.
         lambd: "Direction" of angular distribution. (Only +-1.)
-            (not that `lambda` is a keyword, so it's lambd)
+            (note that `lambda` is a keyword, so it's lambd)
 
     For each of these, there is a "universal" version, which is applied
     to all element combinations with the same parameters, and a more
     specific "elemental" version, where the elements can be specified
-    by hand.
+    by hand. In the latter case, the additional parameters "z1", "z2"
+    and for "ang" also "z3" with the atomic numbers need to be added.
 
-    This implementation allows you to specify both, individual
-    symmetry functions (i.e. with all parameters set already),
-    or to just give a parametrisation scheme that sets (some) of the
-    parameters automatically. (See `parametrization.py`.)
+    Typically, "universal" SFs are sufficient. Please note that elemental
+    symmetry functions are currently not tested in this framework.
+
+    Individual symmetry functions are specified in the default
+    `cmlkit` config format, i.e. one radial symmetry function is
+
+    `{"rad": {"cutoff": 1.0, "eta": 1.0, "mu": 0.0}}`.
+
+    The elemental equivalent for "H" and "O" is:
+
+    `{"rad": {"cutoff": 1.0, "eta": 1.0, "mu": 0.0, "z1": 1, "z2": 8}}`.
+
+    ***
+
+    Additionally, parametrization schemes are available for the radial
+    universal symmetry functions.
+
+    They are:
+        "shifted": With arguments "cutoff" and "n", the n symmetry functions
+            are distributed so their mean is on a regular grid between 0 and cutoff.
+        "centered": Same as shifted, but all SFs are centered on 0, with
+            widths on a grid up to the cutoff.
+
+    Both schemes are also specified as configs, for instance:
+
+    `{"shifted": {"n": 10, "cutoff": 3.0}}`
+
+    (See `parametrization.py` for details.)
+
+    Parametrisation schemes can be combined, and augmented with hand-defined SFs.
+
+    ***
 
     Parameters:
         elems: List of elements for which SFs are supposed to be computed
         elemental: List of configs of elemental SFs
-        universal: List of configs of universal SFs or configs of parametrization
-            schemes (for options, see `parametriziation.py`.
+        universal: List of configs of universal SFs or configs of parametrization schemes
         dim: Dimensionality of resulting descriptor (will be inferred if None given)
 
     """
