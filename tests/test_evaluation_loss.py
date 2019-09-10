@@ -8,6 +8,7 @@ from cmlkit.evaluation.loss.loss import Loss, get_loss
 class TestLossfs(TestCase):
     def test_vs_qmmlpack(self):
         from qmmlpack import loss
+
         for i in range(5):
             true = np.random.random(100)
             pred = np.random.random(100)
@@ -17,6 +18,22 @@ class TestLossfs(TestCase):
             self.assertEqual(maxae(true, pred), loss(true, pred, lossf="maxae"))
             self.assertEqual(medianae(true, pred), loss(true, pred, lossf="medianae"))
             np.testing.assert_almost_equal(r2(true, pred), loss(true, pred, lossf="r2"))
+
+    def test_rmsle(self):
+        true = np.random.random(100)
+        pred = np.random.random(100)
+
+        np.testing.assert_almost_equal(
+            rmsle(true, pred), np.sqrt(np.mean(np.log((pred + 1) / (true + 1)) ** 2))
+        )
+
+    def test_cod(self):
+        true = np.random.random(100)
+        pred = np.random.random(100)
+
+        manual = 1.0 - np.sum((true - pred) ** 2) / np.sum((true - np.mean(true)) ** 2)
+
+        np.testing.assert_almost_equal(cod(true, pred), manual)
 
     def test_get_lossf(self):
         self.assertEqual(rmse, get_lossf("rmse"))
