@@ -272,8 +272,12 @@ class Dataset(Configurable):
             b = None
 
         return cls(
-            z=np.array([a.get_atomic_numbers() for a in atoms], dtype=object),
-            r=np.array([a.get_positions() for a in atoms], dtype=object),
+            z=np.array(
+                [np.array(a.get_atomic_numbers(), dtype=int) for a in atoms]
+            ),  # this will implicitly get dtype=object, UNLESS all Atoms have the same number of atoms
+            r=np.array(
+                [np.array(a.get_positions(), dtype=float) for a in atoms]
+            ),  # this will implicitly get dtype=object, UNLESS all Atoms have the same number of atoms
             b=b,
             name=name,
             desc=desc,
@@ -515,6 +519,7 @@ def compute_dataset_info(dataset):
         np.asarray([a for s in z for a in s], dtype=np.int)
     )  # note that this is always sorted
     i["total_elements"] = len(i["elements"])
+
     i["max_elements_per_system"] = max([np.nonzero(np.bincount(s))[0].size for s in z])
     i["max_same_element_per_system"] = max([max(np.bincount(s)) for s in z])
     i["min_same_element_per_system"] = min([min(np.bincount(s)) for s in z])
