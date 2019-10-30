@@ -171,8 +171,10 @@ class TestDataset(TestCase):
             np.testing.assert_array_equal(a.get_positions(), self.data.r[i])
             np.testing.assert_array_equal(a.get_atomic_numbers(), self.data.z[i])
 
-        dataset = Dataset.from_Atoms(atoms)
+        dataset = Dataset.from_Atoms(atoms, p=self.data.p)
         self.assertEqual(dataset.geom_hash, self.data.geom_hash)
+        for p in self.data.p.keys():
+            np.testing.assert_array_equal(self.data.p[p], dataset.p[p])
 
         with self.assertRaises(AssertionError):
             atoms2 = copy(atoms)

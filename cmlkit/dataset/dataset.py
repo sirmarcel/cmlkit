@@ -279,6 +279,7 @@ class Dataset(Configurable):
                 [np.array(a.get_positions(), dtype=float) for a in atoms]
             ),  # this will implicitly get dtype=object, UNLESS all Atoms have the same number of atoms
             b=b,
+            p=p,
             name=name,
             desc=desc,
             splits=splits,
