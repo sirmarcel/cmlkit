@@ -32,7 +32,7 @@ class MBTR(Representation):
         num: Number of bins
         geomf: String specifying the geometry function
             (for options, see class docstring)
-        weightf: String specifying the geometry function
+        weightf: String specifying the weighting function (effectively setting the cutoff)
             (for options, see class docstring)
         broadening: Value of exponential broadening.
             (smaller values -> smaller width)
