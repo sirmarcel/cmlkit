@@ -30,6 +30,27 @@ class SimpleNorm(Component):
         return {"scale": self.scale}
 
 
+class L2Norm(Component):
+    """Normalise by l2 norm."""
+
+    kind = "l2"
+
+    def __init__(self, scale=1.0, context={}):
+        super().__init__(context=context)
+
+        self.scale = scale
+
+    def __call__(self, mbtr, data=None):
+        with np.errstate(divide="ignore"):
+            mbtr /= np.linalg.norm(mbtr, axis=1, keepdims=True, ord=2)
+            mbtr *= self.scale
+
+        return mbtr
+
+    def _get_config(self):
+        return {"scale": self.scale}
+
+
 class NoneNorm(Component):
 
     kind = "none"
@@ -41,4 +62,4 @@ class NoneNorm(Component):
         return {}
 
 
-classes = {SimpleNorm.kind: SimpleNorm, NoneNorm.kind: NoneNorm}
+classes = {SimpleNorm.kind: SimpleNorm, NoneNorm.kind: NoneNorm, L2Norm.kind: L2Norm}
