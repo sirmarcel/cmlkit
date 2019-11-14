@@ -177,6 +177,8 @@ class Run(Component):
     def run(self, duration=float("inf")):
         """Run for duration minutes."""
 
+        self.all_tasks = {}
+
         assert self.ready, "prepare() must be called before starting run."
 
         duration = (duration * 60.0) - self.context["shutdown_duration"]
@@ -211,6 +213,8 @@ class Run(Component):
                 for f in done:
                     tid = futures[f]
                     result = self.pool.finish(f)
+                    self.all_tasks[tid]["stop"] = time.time()
+                    self.all_tasks[tid]["rank"] = result["ok"]["rank"]
                     self.state.submit(tid, result)
                     del futures[f]
 
@@ -218,6 +222,7 @@ class Run(Component):
                 for i in range(n_new_trials):
                     tid, suggestion = self.state.suggest()
                     f = self.pool.schedule(suggestion)
+                    self.all_tasks[tid] = {"start": time.time()}
 
                     futures[f] = tid
 
@@ -230,6 +235,11 @@ class Run(Component):
         )
         self.pool.shutdown()
         self.write_status(f"{self.name}: Done. Have a good day!", 0, runtime, duration)
+
+        for tid, info in self.all_tasks.items():
+            print(
+                f"{tid}, {info.get('rank', None)}: {info.get('stop', 0)-info['start']:.2f}"
+            )
 
     def write_results(self):
         for i, config in enumerate(self.state.evals.top_suggestions()):

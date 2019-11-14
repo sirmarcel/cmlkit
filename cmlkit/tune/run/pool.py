@@ -10,6 +10,7 @@ from cmlkit.engine import compute_hash
 
 from .resultdb import ResultDB
 
+from mpi4py import MPI
 
 class EvaluationPool:
     """Wrapper around ProcessPool.
@@ -171,6 +172,7 @@ def evaluate(eid, suggestion, evaluator_config, evaluator_context):
 
     eval_result = evaluator(suggestion)
     eval_result["suggestion"] = suggestion
+    eval_result["rank"] = MPI.COMM_WORLD.Get_rank()
 
     return {"ok": eval_result}
 

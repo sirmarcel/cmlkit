@@ -28,7 +28,7 @@ class OptimizerLGS(Component):
         start = time.monotonic()
 
         logger.info(
-            "Starting local grid search with {} variables.".format(len(variables))
+            f"Rank {MPI.COMM_WORLD.Get_rank()}: Starting local grid search with {len(variables)} variables."
         )
 
         result = qmmlpack.local_grid_search(
@@ -44,10 +44,8 @@ class OptimizerLGS(Component):
         result["duration"] = end - start
         result["best"] = result["best_valpow"]
 
-        rank = MPI.COMM_WORLD.Get_rank()
-
         logger.info(
-            f"Rank {rank} Ended local grid search with loss {result['best_f']} at {result['best']}."
+            f"Rank {MPI.COMM_WORLD.Get_rank()} Ended local grid search with loss {result['best_f']} at {result['best']}."
         )
 
         return result
