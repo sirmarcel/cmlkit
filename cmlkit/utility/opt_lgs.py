@@ -6,6 +6,8 @@ import time
 from cmlkit import logger
 from cmlkit.engine import Component
 
+from mpi4py import MPI
+
 
 class OptimizerLGS(Component):
     """Wraps the qmmlpack.local_grid_search method."""
@@ -42,8 +44,10 @@ class OptimizerLGS(Component):
         result["duration"] = end - start
         result["best"] = result["best_valpow"]
 
+        rank = MPI.COMM_WORLD.Get_rank()
+
         logger.info(
-            f"Ended local grid search with loss {result['best_f']} at {result['best']}."
+            f"Rank {rank} Ended local grid search with loss {result['best_f']} at {result['best']}."
         )
 
         return result
