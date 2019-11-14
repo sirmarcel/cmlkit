@@ -1,6 +1,6 @@
 """Wrapper for the pebble ProcessPool."""
 
-from pebble import ProcessPool
+from mpi4py.futures import MPIPoolExecutor as ProcessPool
 import traceback
 from concurrent.futures import TimeoutError
 import platform
@@ -68,13 +68,18 @@ class EvaluationPool:
 
         self.trial_timeout = trial_timeout
         self.pool = ProcessPool(
-            initializer=initializer,
-            initargs=(evaluator_config, evaluator_context),
-            max_workers=max_workers,
+            # initializer=initializer,
+            # initargs=(evaluator_config, evaluator_context),
+            max_workers=max_workers
         )
 
+        self.evaluator_config = evaluator_config
+        self.evaluator_context = evaluator_context
+
         if platform.system() == "Darwin" and max_workers > 1:
-            logger.warning("Parallel support on macOS is a bit wonky. Proceed with caution.")
+            logger.warning(
+                "Parallel support on macOS is a bit wonky. Proceed with caution."
+            )
 
         if evals is None:
             evals = ResultDB()
@@ -97,10 +102,12 @@ class EvaluationPool:
 
         if eid in self.evals:
             result = self.evals.get_result(eid)
-            future = self.pool.schedule(passthrough, args=(result,))
+            future = self.pool.submit(passthrough, result)
         else:
-            future = self.pool.schedule(
-                evaluate, args=(eid, suggestion), timeout=self.trial_timeout
+            future = self.pool.submit(
+                evaluate,
+                eid, suggestion, self.evaluator_config, self.evaluator_context,
+                # , timeout=self.trial_timeout
             )
 
         future.eid = eid  # annotate with hash key in evals
@@ -144,22 +151,24 @@ class EvaluationPool:
             raise e
 
     def shutdown(self):
-        self.pool.stop()  # no point in waiting for things
-        try:
-            self.pool.join(timeout=1.0)
-            logger.info("Successfully and peacefully shut down pool.")
-        except TimeoutError:
-            logger.info("Failed to peacefully shut down pool... but no worries.")
+        self.pool.shutdown()
+        # try:
+        #     self.pool.join(timeout=1.0)
+        #     logger.info("Successfully and peacefully shut down pool.")
+        # except TimeoutError:
+        #     logger.info("Failed to peacefully shut down pool... but no worries.")
 
 
-def initializer(evaluator_config, evaluator_context):
-    """Instantiate the evaluator once."""
-    global evaluator
+# def initializer(evaluator_config, evaluator_context):
+#     """Instantiate the evaluator once."""
+#     global evaluator
+#     evaluator = from_config(evaluator_config, evaluator_context)
+
+
+def evaluate(eid, suggestion, evaluator_config, evaluator_context):
+    """Actually perform the evaluation."""
     evaluator = from_config(evaluator_config, evaluator_context)
 
-
-def evaluate(eid, suggestion):
-    """Actually perform the evaluation."""
     eval_result = evaluator(suggestion)
     eval_result["suggestion"] = suggestion
 
