@@ -7,7 +7,17 @@ from cmlkit import from_config
 
 
 class KRR(Component):
-    """Kernel Ridge Regression with qmmlpack backend."""
+    """Kernel Ridge Regression with qmmlpack backend.
+
+    Parameters:
+        kernel: Component (or config) with signature f(x, z=None) -> ndarray that
+            computes kernel matrices between local and global reps
+            (either square for x (making use of symmetry), or between x and z)
+        nl: Regularisation strength, equivalent to `sigma**2` in Rasmussen & Williams
+            (this is the factor that is added to the diagonal elements of the kernel matrix)
+        centering: Optional, if True, labels and kernel matrices are centered to mean=0
+
+    """
 
     kind = "krr"
     default_context = {"print_timings": False}
