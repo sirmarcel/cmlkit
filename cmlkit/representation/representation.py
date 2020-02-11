@@ -2,6 +2,7 @@
 
 import numpy as np
 
+from cmlkit import hypercache
 from cmlkit.engine import Component
 
 
@@ -44,11 +45,35 @@ class Representation(Component):
 
     def __init__(self, context={}):
         # can't use default_context because subclasses overwrite it
-        context = {"chunk_size": None, **context}
+        context = {"chunk_size": None, "cache": "no", **context}
         super().__init__(context=context)
+
+        # cache registration can't happen during parent init,
+        # since subclasses set their config during their subsequent
+        # init, and cache registration needs the config
+        # so we implement this (unwieldy) pattern here, rather than
+        # having to patch every sub-class manually
+        self.cache = None
+
+    def register_cache(self):
+        self.cache = hypercache.register(self)
 
     def __call__(self, data):
         """Compute this representation."""
+        if self.cache is None:
+            self.register_cache()
+
+        cache_result = self.cache.get_if_cached(data.geom_hash)
+
+        if cache_result is not None:
+            return cache_result
+        else:
+            result = self._compute(data)
+            self.cache.submit(data.geom_hash, result)
+
+            return result
+
+    def _compute(self, data):
         if self.context["chunk_size"] is None:
             return self.compute(data)
         else:

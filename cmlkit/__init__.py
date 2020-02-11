@@ -39,6 +39,11 @@ from .env import (
     quippy_python_exe,
     get_plugins
 )
+
+
+from .engine.cache import HyperCache
+hypercache = HyperCache(location=cache_location)
+
 from .utility import convert, unconvert, charges_to_elements, OptimizerLGS
 register(OptimizerLGS)
 

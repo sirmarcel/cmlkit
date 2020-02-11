@@ -33,15 +33,12 @@ def get_plugins():
         return []
 
 
-if "CML2_CACHE" in os.environ:
-    cache_location = str(os.environ["CML2_CACHE"])
-    makedir(cache_location)
+if "CML_CACHE" in os.environ:
+    cache_location = Path(str(os.environ["CML_CACHE"]))
 else:
     # default to current running path of the script + /cml_cache/
     current = os.environ["PWD"]
-    cache_location = os.path.join(current, "cml_cache")
-
-cache_location = os.path.normpath(cache_location)
+    cache_location = Path(current) / "cml_cache"
 
 
 # path of ruNNer binary (needed for symmetry functions)

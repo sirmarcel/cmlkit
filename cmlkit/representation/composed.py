@@ -15,6 +15,10 @@ class Composed(Representation):
 
         self.reps = [from_config(rep, context=self.context) for rep in reps]
 
+        # it makes more sense to cache individual component reps,
+        # so we disable it here to avoid double caching
+        self.context["cache"] = "no"
+
     @classmethod
     def _from_config(cls, config, context={}):
         return cls(*config["reps"], context=context)
