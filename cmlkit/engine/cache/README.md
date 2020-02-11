@@ -10,7 +10,7 @@ The first step is done by the `Component` on initialisation, and the second step
 
 From a technical standpoint, a centralised `cmlkit` module level "hyper cache" (or cache manager) is responsible for keeping track of all the caches. `Components` register themselves with this manager, and get their "own" cache in return, which they can query directly with respect to inputs. This ensures that multiple instance of the same (in the sense of "same config") `Component` can use the *same* cache.
 
-This whole charade is done in order to be able to avoid awkwardness that arises with `lru_cache`-style function wrappers: They typically are required to wrap module-level functions, which then means that the configuration of the cache needs to be set at import time. This is annoying, since we want to be able to decide on caching via the `context` of `Components`, which is not available on import! Alternatively, you could wrap theh function upon instantiation, but then you lose the ability to share memory caches across instances.
+This whole charade is done in order to be able to avoid awkwardness that arises with `lru_cache`-style function wrappers: They typically are required to wrap module-level functions, which then means that the configuration of the cache needs to be set at import time. This is annoying, since we want to be able to decide on caching via the `context` of `Components`, which is not available on import! Alternatively, you could wrap the function upon instantiation, but then you lose the ability to share memory caches across instances.
 
 ## Usage (User)
 
