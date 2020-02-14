@@ -29,13 +29,17 @@ class DummyComponent(Component):
         return {"a": self.a}
 
     def __call__(self, x):
-        key = compute_hash(x)
 
-        result = self.cache.get_if_cached(key)
+        if self.cache:
+            key = compute_hash(x)
+            result = self.cache.get_if_cached(key)
 
-        if result is None:
+            if result is None:
+                result = self.compute(x)
+                self.cache.submit(key, result)
+
+        else:
             result = self.compute(x)
-            self.cache.submit(key, result)
 
         return result
 

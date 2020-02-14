@@ -45,7 +45,7 @@ class Representation(Component):
 
     def __init__(self, context={}):
         # can't use default_context because subclasses overwrite it
-        context = {"chunk_size": None, "cache": "no", **context}
+        context = {"chunk_size": None, **context}
         super().__init__(context=context)
 
         # cache registration can't happen during parent init,
@@ -53,25 +53,30 @@ class Representation(Component):
         # init, and cache registration needs the config
         # so we implement this (unwieldy) pattern here, rather than
         # having to patch every sub-class manually
-        self.cache = None
+        self.cache_registered = False
 
     def register_cache(self):
         self.cache = hypercache.register(self)
+        self.cache_registered = True
 
     def __call__(self, data):
         """Compute this representation."""
-        if self.cache is None:
+        if not self.cache_registered:
             self.register_cache()
 
-        cache_result = self.cache.get_if_cached(data.geom_hash)
+        if self.cache:
+            cache_result = self.cache.get_if_cached(data.geom_hash)
 
-        if cache_result is not None:
-            return cache_result
-        else:
-            result = self._compute(data)
-            self.cache.submit(data.geom_hash, result)
+            if cache_result is None:
+                result = self._compute(data)
+                self.cache.submit(data.geom_hash, result)
+            else:
+                result = cache_result
 
             return result
+
+        else:
+            return self._compute(data)
 
     def _compute(self, data):
         if self.context["chunk_size"] is None:

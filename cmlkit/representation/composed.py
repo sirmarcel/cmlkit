@@ -17,7 +17,7 @@ class Composed(Representation):
 
         # it makes more sense to cache individual component reps,
         # so we disable it here to avoid double caching
-        self.context["cache"] = "no"
+        self.context["cache"] = None
 
     @classmethod
     def _from_config(cls, config, context={}):

@@ -18,13 +18,13 @@ As a user, you mainly interact with the caches through `context` dictionaries, t
 
 In the future, you will also be able to pass a full `config` to have more fine-grained control over the cache.
 
-Caching always defaults to `"no"`. In case you need to at some point turn it off manually, pass `{"cache": "no"}`.
+`cache` always defaults to `None`. In case you need to at some point turn it off manually, pass `{"cache": None}`.
 
 Please see the caveats below!
 
 ## Usage (Developer)
 
-After instantiation, you need to call `cmlkit.hypercache.register(self)`. This will return a `Cache` object that you can use. If caching is not turned on, you will get a dummy cache that never caches anything.
+After instantiation, you need to call `cmlkit.hypercache.register(self)`. This will return a `Cache` object that you can use. If caching is not turned on, you will get None. You have to deal with this. (The reason we don't just return a non-operational cache is so you can avoid having to compute hashes when they're not needed.)
 
 The API to interact with a `Cache` is defined in `cache.py`. It essentially mandates using `if key in cache` for checking, `cache.get(key)` for retrieval and `cache.submit(key, value)` for submitting results. There is also `cache.get_if_cached(key)` which either returns `None` or the cached result. (See `disk.py` for the reasoning behind this.)
 
@@ -32,7 +32,7 @@ There is no automatic function caching. This forces the "if not in cache then co
 
 It is highly recommended to make sure that computing the keys is stable across restarts of the runtime, and not too slow. If you're caching `Datasets`, this is guaranteed by using `.geom_hash` or `.hash` as needed. The `cmlkit.engine.compute_hash()` function (backed by `joblib`) is generally stable, but slow for large `numpy` arrays.
 
-If you implement caching for a parent class, you need to implement a mechanism to register the cache at the end of running the child class `__init__`, since otherwise you probably won't have the `config` ready.
+If you implement caching for a parent class, you need to implement a mechanism to register the cache at the end of running the child class `__init__`, since otherwise you probably won't have the `config` ready. Check `representation/representation.py` for an example of this!
 
 
 ## Caveats
