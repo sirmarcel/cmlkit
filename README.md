@@ -6,9 +6,9 @@
 
 Publications: [Langer, Gößmann, Rupp (2020)](marcel.science/repbench)
 
-Plugins: [`cscribe` 🐫🖋️](https://github.com/sirmarcel/cscribe) | [`mortimer` 🎩⏰](https://gitlab.com/sirmarcel/mortimer) | [`skrrt 🚗💨`](https://gitlab.com/sirmarcel/skrrt)
+Plugins: [`cscribe 🐫🖋️`](https://github.com/sirmarcel/cscribe) | [`mortimer 🎩⏰`](https://gitlab.com/sirmarcel/mortimer) | [`skrrt 🚗💨`](https://gitlab.com/sirmarcel/skrrt)
 
-`cmlkit` is an extensible `python` package providing clean and concise infrastructure to specify, tune, and evaluate machine learning models for computational chemistry and condensed matter physics. It is intended as a common foundation for more specialised systems, not a monolithic user-facing tool. Instead, it wants to help you build your own tools! ✨
+`cmlkit` is an extensible `python` package providing clean and concise infrastructure to specify, tune, and evaluate machine learning models for computational chemistry and condensed matter physics. Intended as a common foundation for more specialised systems, not a monolithic user-facing tool, it wants to help you build your own tools! ✨
 
 *If you use this code in any scientific work, please mention it in the publication and let me know. Thanks! 🐫*
 
@@ -26,13 +26,13 @@ Plugins: [`cscribe` 🐫🖋️](https://github.com/sirmarcel/cscribe) | [`morti
 
 `cmlkit` provides a unified interface for:
 
-- Many-Body Tensor Representation (MBTR) by [Huo, Rupp (2017)](https://arxiv.org/abs/1704.06439) (`qmmlpack` and `dscribe` implementation)
-- Smooth Overlap of Atomic Positions (SOAP) representaton by [Bartók, Kondor, Csányi (2013)](https://doi.org/10.1103/PhysRevB.87.184115) (`quippy` and `dscribe` implementations)
-- Symmetry Functions (SF) representation by [Behler (2011)](https://doi.org/10.1063/1.3553717) (`RuNNer` and `dscribe` implementation), with a semi-automatic parametrisation scheme taken from [Gastegger et al. (2018)](https://doi.org/10.1063/1.5019667).
+- Many-Body Tensor Representation by [Huo, Rupp (2017)](https://arxiv.org/abs/1704.06439) (`qmmlpack` and `dscribe` implementation)
+- Smooth Overlap of Atomic Positions representaton by [Bartók, Kondor, Csányi (2013)](https://doi.org/10.1103/PhysRevB.87.184115) (`quippy` and `dscribe` implementations)
+- Symmetry Functions representation by [Behler (2011)](https://doi.org/10.1063/1.3553717) (`RuNNer` and `dscribe` implementation), with a semi-automatic parametrisation scheme taken from [Gastegger et al. (2018)](https://doi.org/10.1063/1.5019667).
 
 #### Regression methods
 
-- Kernel Ridge Regression (KRR) as implemented in [`qmmlpack`](https://gitlab.com/qmml/qmmlpack) (supporting both global and local/atomic representations)
+- Kernel Ridge Regression as implemented in [`qmmlpack`](https://gitlab.com/qmml/qmmlpack) (supporting both global and local/atomic representations)
 
 #### Hyper-parameter tuning
 
@@ -122,7 +122,7 @@ For details on environment variables and such things, please consult the readme 
 
 ### Where is the documentation?
 
-At the moment, I don't think it's feasible for me to maintain separate written docs, and I believe that auto-generated docs are basically a worse version of just looking at the formatted source on Github or in your text editor. So I *highly* encourage to take a look there!
+At the moment, I don't think it's feasible for me to maintain separate written docs, and I believe that purely auto-generated docs are basically a worse version of just looking at the formatted source on Github or in your text editor. So I *highly* encourage to take a look there!
 
 Most submodules in `cmlkit` have their own `README.md` documenting what's going on in them, and all "outside facing" classes have extensive docstrings. I hope that's sufficient! Please feel free to file an issue if you have any questions.
 
