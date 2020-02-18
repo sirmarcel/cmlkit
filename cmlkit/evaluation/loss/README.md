@@ -1,5 +1,3 @@
-# `cmlkit.evaluation.loss`
-
 A loss function (`lossf`) in `cmlkit` is a function that
 takes in ground truth values (`true`), predicted values (`pred`)
 and optionally an uncertainty value (`pv`) and produces a single output.
@@ -15,3 +13,6 @@ On the user-facing side, the typical interface to compute losses is provided
 by `get_loss`. In situations where only a single loss function is needed (for instance
 optimisation, the `get_lossf` interface should be used instead.) You can rely on
 a `loss` always returning a dict, and a `lossf` always either a float or an array.
+
+The `pv` parts of the loss functions can, for now, be safely ignored. It serves as insurance
+of future compatibility with models that have a predictive variance.

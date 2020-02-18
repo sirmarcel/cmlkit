@@ -1,4 +1,4 @@
-# Evaluation 🏫
+## Evaluation 🏫
 
 The main interest here is in the `loss` module, which provides loss functions and infrastructure for "generalised loss functions".
 

@@ -1,5 +1,3 @@
-# Datasets
-
 In `cmlkit`, structures and their properties are stored
 in objects of the `Dataset` class, which provides a neat
 package to contain all the related arrays that make up

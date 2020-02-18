@@ -1,8 +1,8 @@
-# `cmlkit` backend
+## `cmlkit` backend
 
 This is the beating heart of `cmlkit`. Welcome! ⚙️
 
-## The building blocks: `Component`, `config`
+### The building blocks: `Component`, `config`
 
 The main objects in `cmlkit` follow a pattern similar to Keras models:
 
@@ -40,7 +40,7 @@ Why am I doing things this way? Here are some reasons:
 `config.py` implements the "de/serialise to dictionary" part of this. (`configparse.py` does the parsing.)
 `component.py` adds the `context` bit, and provides the general base class for `cmlkit` components.
 
-## Caching
+### Caching
 
 The architecture above is very well-suited for caching, but it is not yet implemented. 
 The main reason for this is that while `Components` are easy to hash, their inputs and outputs are not. 

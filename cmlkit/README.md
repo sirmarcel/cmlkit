@@ -22,9 +22,7 @@ This can wait a bit:
 
 ## Plugin system 🧩
 
-Ah yes, you remember. 
-
-Well, the plugin system is very simple:
+The plugin system is very simple:
 
 - Write a python package, let's say `drmdrkit`
 - Classes in that Python package must inherit from `cmlkit.engine.Component`
