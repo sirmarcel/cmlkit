@@ -3,7 +3,9 @@
 ***Note: I'm preparing this for release, some links below are placeholders and/or wishful thinking. Proceed at your own risk!***
 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cmlkit.svg) [![PyPI](https://img.shields.io/pypi/v/cmlkit.svg)](https://pypi.org/project/cmlkit/) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black) 
-Publications: [Exact representations of molecules and materials for accurate interpolation of quantum-mechanical simulations via machine learning](marcel.science/repbench)
+
+Publications: [Langer, Gößmann, Rupp (2020)](marcel.science/repbench)
+
 Plugins: [`cscribe` 🐫🖋️](https://github.com/sirmarcel/cscribe) | [`mortimer` 🎩⏰](https://gitlab.com/sirmarcel/mortimer) | [`skrrt 🚗💨`](https://gitlab.com/sirmarcel/skrrt)
 
 `cmlkit` is an extensible `python` package providing clean and concise infrastructure to specify, tune, and evaluate machine learning models for computational chemistry and condensed matter physics. It is intended as a common foundation for more specialised systems, not a monolithic user-facing tool. Instead, it wants to help you build your own tools! ✨
