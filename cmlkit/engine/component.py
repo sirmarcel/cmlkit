@@ -1,37 +1,4 @@
-"""Base class.
-
-The main objects in cmlkit follow a pattern similar to Keras models:
-
-They can be serialised into and instantiated from `config` dictionaries.
-Their syntax is specified in the `engine.config` module.
-
-The underlying idea is that these objects are essentially convenience wrappers
-around functions with lots of arguments (for instance a regression method or
-a representation), and don't have a lot of state (ideall they'd have none), so
-once instantiated, they simply do some computation on inputs.
-
-The config dict then simply specifies what kind of computation is done.
-
-Since sometimes it is necessary to specify some arguments that do not influence
-the outcome of the computation, but determinse how it's executed (for instance
-how many cores to use, or cache settings), cmlkit objects also have a `context`,
-another dictionary that is passed to the constructor as optional keyword argument.
-
-So when implementing custom classes, the rules are:
-
-a) The config must fully determine the output,
-b) Everything else goes in the context.
-
-Why am I doing things this way? Here are some reasons:
-
-- This gives a consistent way to share model architectures as plaintext (yaml)
-- This makes hashing and caching a breeze (no trying to hash a complex object)
-- It gives full control over serialisation (I don't understand pickling at all)
-
-Also, in the future, this will make it relatively easy to provide a fully functional
-interface that avoids side effects.
-
-"""
+"""Component."""
 
 from cmlkit import logger
 from .config import Configurable
@@ -40,8 +7,8 @@ from .config import Configurable
 class Component(Configurable):
     """Base class for cmlkit components.
 
-    Provides the mechanism for passing context (see explanation above)
-    to objects.
+    Provides the mechanism for passing context to objects.
+    (See explanation in readme!)
 
     All context variables must have a default value set in the `default_context`
     of the class. This is to ensure that passing an empty context will never

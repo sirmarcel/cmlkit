@@ -1,3 +1,5 @@
+"""I/o. Talk to the disk!"""
+
 import numpy as np
 import yaml
 import son

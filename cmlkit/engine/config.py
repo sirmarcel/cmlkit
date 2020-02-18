@@ -1,6 +1,6 @@
 """The infrastructure for de/serialisation.
 
-See base_component for reasoning.
+See readme for reasoning.
 
 This module provides:
     - Functions to turn configs into objects
