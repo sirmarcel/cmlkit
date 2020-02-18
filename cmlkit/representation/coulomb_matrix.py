@@ -1,12 +1,13 @@
-import qmmlpack
-
 from .representation import Representation
+
+from cmlkit.utility import import_qmmlpack
 
 
 def compute_cm(data, config):
 
     assert data.b is None, "Coulomb matrix cannot handle periodic systems!"
 
+    qmmlpack = import_qmmlpack("compute coulomb matrix")
     return qmmlpack.coulomb_matrix(
         data.z,
         data.r,

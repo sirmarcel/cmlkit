@@ -5,11 +5,11 @@ MBTR-computing parts of `qmmlpack`.
 
 """
 
-import qmmlpack
-
 from cmlkit.representation import Representation
 from cmlkit.engine import _from_config, parse_config
 from .norm import classes as norms
+
+from cmlkit.utility import import_qmmlpack
 
 
 class MBTR(Representation):
@@ -118,7 +118,7 @@ def compute_mbtr_all_k(k, data, mbtr_config):
 
     # todo: insert dispatch to wrapped call
     # in subprocess here.
-
+    qmmlpack = import_qmmlpack("compute MBTR (not using dscribe)")
     mbtr = qmmlpack.many_body_tensor(
         data.z,
         data.r,

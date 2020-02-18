@@ -1,9 +1,10 @@
 """Regressor implementing KRR."""
 
-import qmmlpack
 
 from cmlkit.engine import Component
 from cmlkit import from_config
+
+from cmlkit.utility import import_qmmlpack
 
 
 class KRR(Component):
@@ -50,6 +51,7 @@ class KRR(Component):
 
         kernel = self.kernel(self.x_train)
 
+        qmmlpack = import_qmmlpack("use cmlkit.regression.qmml")
         self.krr = qmmlpack.KernelRidgeRegression(
             kernel, y, theta=(self.nl,), centering=self.centering
         )

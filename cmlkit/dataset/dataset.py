@@ -2,11 +2,10 @@
 
 from pathlib import Path
 import numpy as np
-import qmmlpack as qmml
 from ase import Atoms
 
 from cmlkit.engine import compute_hash, Configurable, save_npy
-from cmlkit.utility import convert
+from cmlkit.utility import convert, import_qmmlpack
 
 # Yes, this is a bit of a nightmare -- it is really a very very overloaded class.
 # Note that we're using the Configurable infrastructure here, but it really is
@@ -148,7 +147,7 @@ class Dataset(Configurable):
         self.n = len(self.z)
 
         # perform some consistency checks;
-        # if these every fail there Is Trouble
+        # if these ever fail there Is Trouble
         # (these are supposed to only be written once and never change,
         # so if they mismatch most likely the hashing method is not as stable
         # as I thought...)
@@ -313,7 +312,9 @@ class Dataset(Configurable):
 
         elems = (
             " elements: {} ({})".format(
-                " ".join([qmml.element_data(el, "abbreviation") for el in i["elements"]]),
+                " ".join(
+                    [cmlkit.utility.charges_to_elements[el] for el in i["elements"]]
+                ),
                 len(i["elements"]),
             )
             + "\n"
@@ -507,6 +508,8 @@ def compute_dataset_info(dataset):
           max_distance: maximum distance between atoms in a system
           geometry: additional detailed info about geometries (see below)
     """
+    qmmlpack = import_qmmlpack("generate new datasets")
+
     z = dataset.z
     r = dataset.r
     p = dataset.p
@@ -536,7 +539,9 @@ def compute_dataset_info(dataset):
     i["total_atoms"] = np.sum(i["atoms_by_system"])
 
     # distances
-    dists = [qmml.lower_triangular_part(qmml.distance_euclidean(rr), -1) for rr in r]
+    dists = [
+        qmmlpack.lower_triangular_part(qmmlpack.distance_euclidean(rr), -1) for rr in r
+    ]
     i["min_distance"] = min([min(d) for d in dists if len(d) > 0])
     i["max_distance"] = max([max(d) for d in dists if len(d) > 0])
 

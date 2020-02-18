@@ -7,6 +7,7 @@ logger.addHandler(logging.StreamHandler())
 default_context = {}
 
 from .engine import save_yaml, read_yaml, _from_config, _from_npy, _from_yaml
+from .exceptions import DependencyMissing
 
 global classes
 classes = {}

@@ -1,10 +1,10 @@
 """Interface to qmmlpack local grid search optimiser."""
 
-import qmmlpack
 import time
 
 from cmlkit import logger
 from cmlkit.engine import Component
+from .import_qmmlpack import import_qmmlpack
 
 
 class OptimizerLGS(Component):
@@ -24,6 +24,7 @@ class OptimizerLGS(Component):
 
     def __call__(self, f, variables):
         start = time.monotonic()
+        qmmlpack = import_qmmlpack("run local grid search")
 
         logger.info(
             "Starting local grid search with {} variables.".format(len(variables))

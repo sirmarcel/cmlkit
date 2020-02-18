@@ -13,11 +13,10 @@ in blocks of a given `max_size`.
 
 """
 
-import qmmlpack
-from qmmlpack.experimental import recursive_matrix_map
 import numpy as np
 
 from cmlkit.engine import Component
+from cmlkit.utility import import_qmmlpack, import_qmmlpack_experimental
 from .kernel_functions import get_kernelf
 
 
@@ -83,6 +82,8 @@ def _kernel_atomic(kernelf, x, z, symmetric=False, norm=False, max_size=256):
     the final kernel matrix.
 
     """
+    qmmlpack = import_qmmlpack("use cmlkit.regression.qmml")
+    experimental = import_qmmlpack_experimental("use cmlkit.regression.qmml")
 
     def f(range_a, range_b):
         start_a, stop_a = range_a
@@ -110,7 +111,7 @@ def _kernel_atomic(kernelf, x, z, symmetric=False, norm=False, max_size=256):
         else:
             return result
 
-    return recursive_matrix_map(
+    return experimental.recursive_matrix_map(
         f, (len(x), len(z)), max_size=max_size, out=None, symmetric=symmetric
     )
 

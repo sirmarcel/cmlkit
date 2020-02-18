@@ -15,9 +15,9 @@ There is no getattr magic because it doesn't seem needed.
 
 """
 
-import qmmlpack
 
 from cmlkit.engine import Component, _from_config
+from cmlkit.utility import import_qmmlpack
 
 
 def get_kernelf(config, context={}):
@@ -40,8 +40,10 @@ class Kernelf(Component):
         self.ls = ls
 
     def __call__(self, x, z=None, diagonal=False, distance=False):
-        kernelf = kernelfs[self.kind]
-        return kernelf(x=x, z=z, theta=self.ls, diagonal=False, distance=False)
+        qmmlpack = import_qmmlpack("use cmlkit.regression.qmml")
+        kernelf = getattr(qmmlpack, kernelfs[self.kind])
+
+        return kernelf(x=x, z=z, theta=self.ls, diagonal=False)
 
     def _get_config(self):
         return {"ls": self.ls}
@@ -88,18 +90,14 @@ class KernelfLinear(Kernelf):
     def __init__(self, context={}):
         super().__init__(ls=None, context=context)
 
-    def __call__(self, x, z=None, diagonal=False):
-        kernelf = kernelfs[self.kind]
-        return kernelf(x=x, z=z, theta=self.ls, diagonal=False)
-
     def _get_config(self):
         return {}
 
 
 kernelfs = {
-    "gaussian": qmmlpack.kernel_gaussian,
-    "laplacian": qmmlpack.kernel_laplacian,
-    "linear": qmmlpack.kernel_linear,
+    "gaussian": "kernel_gaussian",
+    "laplacian": "kernel_laplacian",
+    "linear": "kernel_linear",
 }
 
 classes = {
