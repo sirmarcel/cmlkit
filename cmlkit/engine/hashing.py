@@ -7,12 +7,11 @@ across restarts, which is doubly strange.
 
 Therefore, we now use the joblib implementation, which is slower, but stable.
 
-Further improvement in this area are needed.
+Further improvements in this area are needed.
 
 """
 
 import numpy as np
-import hashlib
 import joblib
 
 

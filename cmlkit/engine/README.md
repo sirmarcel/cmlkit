@@ -47,5 +47,5 @@ The main reason for this is that while `Components` are easy to hash, their inpu
 This can be fixed by wrapping everything in a custom class that tracks the transformations applied to an initial dataset, 
 which shouldn't be too hard, but is not done yet!
 
-The `caching.py` in here implements some run-off-the-mill function wrappers, which are nice for one-off code, 
+The `caching.py` in here implements some run-of-the-mill function wrappers, which are nice for one-off code, 
 but should not be used in any serious setting, as they will eventually run into edge cases.
