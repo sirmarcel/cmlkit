@@ -23,7 +23,7 @@ If you do not have access to `RuNNer`, do not despair. Use `dscribe` instead, vi
   | standard config interface.      |
   |                                 |
   | Check here for details on       |
-  | the parameters of SFs.			|
+  | the parameters of SFs.			    |
   |                                 |
   | Supports parametrisation schemes|
   +---+-----------------------------+
