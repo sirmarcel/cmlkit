@@ -1,150 +1,196 @@
-from unittest import TestCase
-from unittest.mock import MagicMock
-import os
-from cmlkit.dataset import *
 import numpy as np
 
-dirname = os.path.dirname(os.path.abspath(__file__))
+from unittest import TestCase
+import unittest.mock
+import shutil
+import pathlib
+from copy import copy
 
-z = np.array([[1, 2, 3], [1, 2, 3]])
-r = np.array([[[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]], [[0.0, 0.1, 0.0], [1.0, 0.0, 0.0], [0.0, 1.1, 0.0]]])
-b = None
-name = 'test'
-desc = 'just a test'
-p = {'e': np.array([1.0, 1.1])}
-info = compute_dataset_info(z, r, p)
-
-d = {
-    'name': name,
-    'desc': desc,
-    'z': z,
-    'r': r,
-    'b': b,
-    'p': p,
-    'info': info,
-    'n': 2,
-    'id': name,
-    'family': name
-}
+from cmlkit.dataset import Dataset, Subset, load_dataset
 
 
 class TestDataset(TestCase):
     def setUp(self):
-        self.d = d
+        np.random.seed(123)
 
-    def test_from_dict(self):
+        self.tmpdir = pathlib.Path(__file__).parent / "tmp_test_dataset"
+        self.tmpdir.mkdir(exist_ok=True)
 
-        dataset = Dataset.from_dict(self.d)
+        self.n = 100
+        self.n_atoms = np.random.randint(1, high=10, size=self.n)
 
-        self.assertEqual(dataset.z.all(), self.d['z'].all())
-        self.assertEqual(dataset.r.all(), self.d['r'].all())
-        self.assertEqual(dataset.b, self.d['b'])
-        self.assertEqual(dataset.p['e'].all(), self.d['p']['e'].all())
-        self.assertEqual(dataset.name, self.d['name'])
-        self.assertEqual(dataset.desc, self.d['desc'])
-        self.assertEqual(dataset.info, self.d['info'])
-        self.assertEqual(dataset.id, self.d['id'])
-        self.assertEqual(dataset.family, self.d['family'])
+        r = [2 * np.random.random((na, 3)) for na in self.n_atoms]
+        self.r = np.array(r, dtype=object)
+        self.z = np.array(
+            [np.random.randint(1, high=10, size=na) for na in self.n_atoms], dtype=object
+        )
+        self.b = np.random.random((self.n, 3, 3))
+        self.p1 = np.random.random(self.n)
+        self.p2 = np.random.random(self.n)
+        self.splits = np.array(
+            [
+                [
+                    np.random.randint(0, high=self.n, size=80),
+                    np.random.randint(0, high=self.n, size=80),
+                ]
+                for i in range(3)
+            ],
+            dtype=object,
+        )
 
+        self.data = Dataset(
+            z=self.z,
+            r=self.r,
+            b=self.b,
+            p={"p1": self.p1, "p2": self.p2},
+            name="test",
+            desc="test",
+            splits=self.splits,
+        )
 
-    def test_fails_if_different_size(self):
+        self.data_nocell = Dataset(
+            z=self.z,
+            r=self.r,
+            p={"p1": self.p1, "p2": self.p2},
+            name="test",
+            desc="test",
+            splits=self.splits,
+        )
 
-        d2 = self.d.copy()
-        d2['z'] = d['z'][1]
+        self.data2 = Dataset(
+            z=self.z,
+            r=self.r,
+            b=self.b,
+            p={"p1": self.p1, "p2": self.p2},
+            name="test2",
+            desc="test2",
+        )
 
-        self.assertRaises(Exception, Dataset.from_dict, d2)
+        self.data_nop = Dataset(
+            z=self.z, r=self.r, b=self.b, p={}, name="test", desc="test"
+        )
 
-        d2 = self.d.copy()
-        d2['b'] = d['z'][1]
+        # roll a new dataset
 
-        self.assertRaises(Exception, Dataset.from_dict, d2)
+        n = 100
+        n_atoms = np.random.randint(1, high=10, size=n)
 
-        d2 = self.d.copy()
-        d2['r'] = []
+        r = [2 * np.random.random((na, 3)) for na in n_atoms]
+        r = np.array(r, dtype=object)
+        z = np.array(
+            [np.random.randint(1, high=10, size=na) for na in n_atoms], dtype=object
+        )
+        b = np.random.random((n, 3, 3))
+        p1 = np.random.random(n)
+        p2 = np.random.random(n)
 
-        self.assertRaises(Exception, Dataset.from_dict, d2)
+        self.different = Dataset(
+            z=z, r=r, b=b, p={"p1": p1, "p2": p2}, name="test_different", desc="test!"
+        )
 
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir)
 
-    def test_from_file(self):
-        d2 = read(dirname + '/test.dat.npy')
+    def test_creation(self):
+        self.assertEqual(self.data.name, "test")
+        self.assertEqual(self.data.desc, "test")
+        np.testing.assert_array_equal(self.data.z, self.z)
+        np.testing.assert_array_equal(self.data.r, self.r)
+        np.testing.assert_array_equal(self.data.b, self.b)
+        np.testing.assert_array_equal(self.data.p["p1"], self.p1)
+        np.testing.assert_array_equal(self.data.p["p2"], self.p2)
+        np.testing.assert_array_equal(self.data.splits, self.splits)
 
-        self.assertEqual(d2.z.all(), self.d['z'].all())
-        self.assertEqual(d2.r.all(), self.d['r'].all())
-        self.assertEqual(d2.b, self.d['b'])
-        self.assertEqual(d2.p['e'].all(), self.d['p']['e'].all())
-        self.assertEqual(d2.name, self.d['name'])
-        self.assertEqual(d2.desc, self.d['desc'])
-        self.assertEqual(d2.id, self.d['id'])
-        self.assertEqual(d2.family, self.d['family'])
+    def test_wrong_creation(self):
+        with self.assertRaises(AssertionError):
+            Dataset(z=self.data.z, r=self.data.r, p={"lol": [1]})
 
-    def test_hashing_as_expected(self):
-        d = read(dirname + '/test.dat.npy')
-        print(d.hashes)
-        self.assertEqual(d.hashes['p'], '6b41fd43bf4c8b0e6251e033851b9fb7')
-        self.assertEqual(d.hashes['geom'], 'fcc255eceeed4db12d9bc411da2b497b')
+        with self.assertRaises(AssertionError):
+            Dataset(z=[np.zeros(len(self.data.r[0]))], r=self.data.r)
 
+    def test_hash_stable(self):
+        # is the dataset hash stable across restarts?
+        self.assertEqual(self.data.hash, "97e4cdce3be9851e9c109c3509bc65e1")
 
+    def test_hash_equal(self):
+        self.assertEqual(self.data.hash, self.data2.hash)
+        self.assertEqual(self.data.geom_hash, self.data2.geom_hash)
+        self.assertEqual(self.data.geom_hash, self.data_nop.geom_hash)
+        self.assertTrue(self.data.hash is not None)
+        self.assertTrue(self.data.geom_hash is not None)
 
-class TestSubset(TestCase):
+        self.assertNotEqual(self.data.hash, self.different.hash)
 
-    def setUp(self):
-        dataset = Dataset.from_dict(d)
-        self.sub = Subset(dataset, [1], name='sub', desc='test subset')
+    def test_roundtrip(self):
+        self.data.save(directory=self.tmpdir)
+        data3 = load_dataset("test", other_paths=[self.tmpdir])
+        print(self.tmpdir)
+        self.assertEqual(self.data.hash, data3.hash)
+        self.assertEqual(self.data.name, data3.name)
+        self.assertEqual(self.data.desc, data3.desc)
+        np.testing.assert_array_equal(data3.splits, self.splits)
 
-    def test_works_as_expected(self):
-        self.assertEqual(self.sub.z.all(), np.array([[[1, 2, 3]]]).all())
-        self.assertEqual(self.sub.r.all(), np.array([[[0.0, 0.1, 0.0], [1.0, 0.0, 0.0], [0.0, 1.1, 0.0]]]).all())
-        self.assertEqual(self.sub.p['e'].all(), np.array([1.1]).all())
-        self.assertEqual(self.sub.n, 1)
-        self.assertEqual(self.sub.name, 'sub')
-        self.assertEqual(self.sub.id, 'test-sub')
+    def test_subset(self):
+        idx = np.array([3, 1, 5, 6, 28, 32, 11], dtype=int)
+        subset = Subset.from_dataset(self.data, idx=idx, name="subset")
 
-    def test_from_dict(self):
-        d2 = {
-            'name': self.sub.name,
-            'desc': self.sub.desc,
-            'id': self.sub.id,
-            'z': self.sub.z,
-            'r': self.sub.r,
-            'b': self.sub.b,
-            'p': self.sub.p,
-            'info': self.sub.info,
-            'parent_info': self.sub.parent_info,
-            'n': 1,
-            'idx': [1],
-            'family': 'test'
-        }
+        for i, index in enumerate(idx):
+            np.testing.assert_array_equal(subset.z[i], self.data.z[index])
+            np.testing.assert_array_equal(subset.b[i], self.data.b[index])
+            np.testing.assert_array_equal(subset.r[i], self.data.r[index])
+        self.assertEqual(subset.n, len(idx))
 
-        sub2 = Subset.from_dict(d2)
+        # saving roundtrip test
+        subset.save(directory=self.tmpdir)
+        subset2 = load_dataset("subset", other_paths=[self.tmpdir])
+        self.assertEqual(subset.hash, subset2.hash)
 
-        self.assertEqual(sub2.z.all(), d2['z'].all())
-        self.assertEqual(sub2.r.all(), d2['r'].all())
-        self.assertEqual(sub2.b, d2['b'])
-        self.assertEqual(sub2.p['e'].all(), d2['p']['e'].all())
-        self.assertEqual(sub2.name, d2['name'])
-        self.assertEqual(sub2.desc, d2['desc'])
-        self.assertEqual(sub2.parent_info['name'], d2['parent_info']['name'])
-        self.assertEqual(sub2.idx, d2['idx'])
+        # hash stability test
+        self.assertEqual(subset.hash, "935443472f34bd24aa11d691f365c105")
 
-    def test_from_file(self):
-        sub = read(dirname + '/test-sub.dat.npy')
-        print(sub.id)
-        self.assertEqual(sub.z.all(), self.sub.z.all())
-        self.assertEqual(sub.r.all(), self.sub.r.all())
-        self.assertEqual(sub.b, self.sub.b)
-        self.assertEqual(sub.p['e'].all(), self.sub.p['e'].all())
-        self.assertEqual(sub.name, self.sub.name)
-        self.assertEqual(sub.desc, self.sub.desc)
-        self.assertEqual(sub.id, self.sub.id)
-        self.assertEqual(sub.idx, self.sub.idx)
+    def test_chunking(self):
+        for i, s in enumerate(self.data.in_chunks(size=30)):
+            if i == 0:
+                self.assertEqual(s.n, 30)
+                np.testing.assert_array_equal(s.b, self.data.b[0:30])
+            elif i == 1:
+                self.assertEqual(s.n, 30)
+                np.testing.assert_array_equal(s.b, self.data.b[30:60])
+            elif i == 2:
+                self.assertEqual(s.n, 30)
+                np.testing.assert_array_equal(s.b, self.data.b[60:90])
+            else:
+                self.assertEqual(s.n, 10)
+                np.testing.assert_array_equal(s.b, self.data.b[90:100])
 
+    def test_ase(self):
+        atoms = self.data.as_Atoms()
 
-class TestView(TestCase):
+        for i, a in enumerate(atoms):
+            np.testing.assert_array_equal(a.get_cell(), self.data.b[i])
+            np.testing.assert_array_equal(a.get_positions(), self.data.r[i])
+            np.testing.assert_array_equal(a.get_atomic_numbers(), self.data.z[i])
 
-    def test_works_as_expected(self):
-        dataset = Dataset.from_dict(d)
-        v = dataset[np.arange(1)]
+        dataset = Dataset.from_Atoms(atoms, p=self.data.p)
+        self.assertEqual(dataset.geom_hash, self.data.geom_hash)
+        for p in self.data.p.keys():
+            np.testing.assert_array_equal(self.data.p[p], dataset.p[p])
 
-        self.assertEqual(v.z.all(), np.array([[[1, 2, 3]]]).all())
-        self.assertEqual(v.r.all(), np.array([[[0.0, 0.1, 0.0], [1.0, 0.0, 0.0], [0.0, 1.1, 0.0]]]).all())
-        self.assertEqual(v.p['e'].all(), np.array([1.1]).all())
+        with self.assertRaises(AssertionError):
+            atoms2 = copy(atoms)
+            atoms2[0].set_pbc(False)
+            Dataset.from_Atoms(atoms2)
+
+        with self.assertRaises(AssertionError):
+            atoms3 = copy(atoms)
+            atoms3[0].set_pbc([False, True, False])
+            Dataset.from_Atoms(atoms3)
+
+        atoms = self.data_nocell.as_Atoms()
+
+        for i, a in enumerate(atoms):
+            np.testing.assert_array_equal(a.get_positions(), self.data_nocell.r[i])
+            np.testing.assert_array_equal(a.get_atomic_numbers(), self.data_nocell.z[i])
+
+        dataset = Dataset.from_Atoms(atoms)
+        self.assertEqual(dataset.geom_hash, self.data_nocell.geom_hash)

@@ -1,5 +1,6 @@
 *.cache.npy
 *.DS_Store
+poetry.lock
 
 # Sphinx
 docs/_build
