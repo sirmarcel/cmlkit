@@ -4,7 +4,7 @@
 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cmlkit.svg) [![PyPI](https://img.shields.io/pypi/v/cmlkit.svg)](https://pypi.org/project/cmlkit/) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black) 
 
-Publications: [Langer, Gößmann, Rupp (2020)](marcel.science/repbench)
+Publications: [Langer, Gößmann, Rupp (2020)](https://marcel.science/repbench)
 
 Plugins: [`cscribe 🐫🖋️`](https://github.com/sirmarcel/cscribe) | [`mortimer 🎩⏰`](https://gitlab.com/sirmarcel/mortimer) | [`skrrt 🚗💨`](https://gitlab.com/sirmarcel/skrrt)
 
@@ -27,10 +27,10 @@ Plugins: [`cscribe 🐫🖋️`](https://github.com/sirmarcel/cscribe) | [`morti
 `cmlkit` provides a unified interface for:
 
 - Many-Body Tensor Representation by [Huo, Rupp (2017)](https://arxiv.org/abs/1704.06439) (`qmmlpack` and `dscribe` implementation)
-- Smooth Overlap of Atomic Positions representaton by [Bartók, Kondor, Csányi (2013)](https://doi.org/10.1103/PhysRevB.87.184115) (`quippy`<sup>‡</sup> and `dscribe` implementations)
+- Smooth Overlap of Atomic Positions representaton by [Bartók, Kondor, Csányi (2013)](https://doi.org/10.1103/PhysRevB.87.184115) (`quippy`‡ and `dscribe` implementations)
 - Symmetry Functions representation by [Behler (2011)](https://doi.org/10.1063/1.3553717) (`RuNNer` and `dscribe` implementation), with a semi-automatic parametrisation scheme taken from [Gastegger et al. (2018)](https://doi.org/10.1063/1.5019667).
 
-<sup>‡</sup> The `quippy` interface was written for an older version that didn't support `python3`.
+‡ The `quippy` interface was written for an older version that didn't support `python3`.
 
 #### Regression methods
 

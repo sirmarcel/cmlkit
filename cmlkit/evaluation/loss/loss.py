@@ -29,7 +29,20 @@ the `lossf` module.
 
 from .lossfs import get_lossf, lossfs
 
-shortcuts = {"default": ["rmse", "mae", "r2"], "all": list(lossfs.keys())}
+shortcuts = {
+    "default": ["rmse", "mae", "r2"],
+    "all_non_pv": [
+        "rmse",
+        "rmsle",
+        "mae",
+        "medianae",
+        "maxae",
+        "r2",
+        "cod",
+        "one_minus_r2",
+    ],
+    "all": list(lossfs.keys()),
+}
 
 
 class Loss:
