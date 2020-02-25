@@ -27,8 +27,10 @@ Plugins: [`cscribe 🐫🖋️`](https://github.com/sirmarcel/cscribe) | [`morti
 `cmlkit` provides a unified interface for:
 
 - Many-Body Tensor Representation by [Huo, Rupp (2017)](https://arxiv.org/abs/1704.06439) (`qmmlpack` and `dscribe` implementation)
-- Smooth Overlap of Atomic Positions representaton by [Bartók, Kondor, Csányi (2013)](https://doi.org/10.1103/PhysRevB.87.184115) (`quippy` and `dscribe` implementations)
+- Smooth Overlap of Atomic Positions representaton by [Bartók, Kondor, Csányi (2013)](https://doi.org/10.1103/PhysRevB.87.184115) (`quippy`<sup>‡</sup> and `dscribe` implementations)
 - Symmetry Functions representation by [Behler (2011)](https://doi.org/10.1063/1.3553717) (`RuNNer` and `dscribe` implementation), with a semi-automatic parametrisation scheme taken from [Gastegger et al. (2018)](https://doi.org/10.1063/1.5019667).
+
+<sup>‡</sup> The `quippy` interface was written for an older version that didn't support `python3`.
 
 #### Regression methods
 
@@ -52,10 +54,9 @@ Plugins: [`cscribe 🐫🖋️`](https://github.com/sirmarcel/cscribe) | [`morti
 - Canonical, stable hashes of models and datasets!
 - Automatically train models and compute losses!
 
-
 ### But what... is it?
 
-At its core, `cmlkit` defines a unified `dict`-based format to specify model components, which can be straightforwardly read and written as `yaml`. Model components are implemented as pure-ish functions, which is conceptually satisfying and opens the door to easy pipelining and caching. Using this format, `cmlkit` provides interfaces to many representations (see below) and a fast kernel ridge regression implementation.
+At its core, `cmlkit` defines a unified `dict`-based format to specify model components, which can be straightforwardly read and written as `yaml`. Model components are implemented as pure-ish functions, which is conceptually satisfying and opens the door to easy pipelining and caching. Using this format, `cmlkit` provides interfaces to many representations and a fast kernel ridge regression implementation.
 
 Here is an example for a SOAP+KRR model:
 
@@ -126,7 +127,7 @@ At the moment, I don't think it's feasible for me to maintain separate written d
 
 Most submodules in `cmlkit` have their own `README.md` documenting what's going on in them, and all "outside facing" classes have extensive docstrings. I hope that's sufficient! Please feel free to file an issue if you have any questions.
 
-### I don't work in computational chemsitry/condensed matter physics. Should I care?
+### I don't work in computational chemistry/condensed matter physics. Should I care?
 
 The short answer is regrettably probably no. 
 

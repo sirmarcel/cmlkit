@@ -2,6 +2,8 @@
 
 Before you start, you need two things: A `Search` instance, and an `Evaluator`. If you don't quite know what that's supposed to mean, have a brief skim of the `README.md` file!
 
+For a more interactive and detailed tutorial, please have a look at the `cmlkit` tutorial mentioned in the main readme.
+
 ### Search
 
 The `search` module will tell you about this in detail, but in essence, you need to define a search space using `hyperopt` terminology and then pass that to the `Hyperopt` class. 
@@ -46,11 +48,11 @@ For example:
           "kernel_atomic": {
             "norm": False,
             "kernelf": {
-              "gaussian": {"ls": ["hp_quniform", "ls_start", -13, 13, 1.0]}
+              "gaussian": {"ls": ["hp_loggrid", "ls_start", -13, 13, 1.0]}
             },
           }
         },
-        "nl": ["hp_quniform", "nl_start", -18, 0, 1.0],
+        "nl": ["hp_loggrid", "nl_start", -18, 0, 1.0],
       }
     },
     "representation": {
@@ -109,7 +111,7 @@ Then, we need to prepare the run:
 run.prepare()
 ```
 
-Which will generate a folder with a random, unqiue run name. Then, we can simply run for, let's say, 5 minutes:
+Which will generate a folder with a random, unique run name. Then, we can simply run for, let's say, 5 minutes:
 
 ```python
 run.run(duration=5)

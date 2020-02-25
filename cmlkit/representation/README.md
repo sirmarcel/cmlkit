@@ -2,7 +2,7 @@
 
 This module deals with transforming molecules or crystals into an abstract vector representation, i.e. mapping to a space which is more amenable for regression. For many more details on this topic, you could read [this paper]( marcel.science/repbench )! 🤓
 
-The base class for all representations is `Representation`, defined in `representation.py`. It takes care of some housekeeping, and will later also ensure that caching is implemented in a reasonable way. **This class also clearly defines the interface you have to impelement for custom representations.**
+The base class for all representations is `Representation`, defined in `representation.py`. It takes care of some housekeeping, and will later also ensure that caching is implemented in a reasonable way. **This class also clearly defines the interface you have to implement for custom representations.**
 
 The `mbtr` submodule is the interface to the "Many Body Tensor Representation" as implemented in [`qmmlpack`](https://gitlab.com/qmml/qmmlpack/-/tree/development). `soap` is the interface to [`quippy`](https://libatoms.github.io/QUIP/quippy.html) for computing the Smooth Overlap of Atomic Positions representations. `sf` is the interface to [`RuNNer`](https://gitlab.com/TheochemGoettingen/RuNNer) to compute Symmetry Functions. (For citations please see the main readme.)
 

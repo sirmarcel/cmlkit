@@ -6,6 +6,8 @@ This module implements the interface to the reference implementation [`quippy`](
 
 ### Setup
 
+**Note: This was written when `quippy` had no `python3` support. Presumably, this is no longer necessary -- I will check on this as soon as I can.**
+
 For reasons detailed in `quippy_interface.py`, `cmlkit` cannot directly interface with `quippy`. Instead, we have to call a mini-CLI of `quippy` in a separate python 2.7 subprocess. In order for this to work, you need to:
 
 - Install `quippy` in an isolated environment with python 2.7 (we recommend using a conda environment)
