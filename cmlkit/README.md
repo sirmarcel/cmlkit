@@ -56,6 +56,7 @@ Things that would be nice, but will take some time
 
 - Make it possible to save trained `Models` (caching should take most of the pain out of retraining)
 - Possibly implement an `sklearn` interface as plugin (`cmlsci`)
+- Add real support for predictive variances, and models that give uncertainties in general
 
 ## Development practice
 
