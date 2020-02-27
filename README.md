@@ -8,9 +8,11 @@ Publications: [Langer, Gößmann, Rupp (2020)](https://marcel.science/repbench)
 
 Plugins: [`cscribe 🐫🖋️`](https://github.com/sirmarcel/cscribe) | [`mortimer 🎩⏰`](https://gitlab.com/sirmarcel/mortimer) | [`skrrt 🚗💨`](https://gitlab.com/sirmarcel/skrrt)
 
+***
+
 `cmlkit` is an extensible `python` package providing clean and concise infrastructure to specify, tune, and evaluate machine learning models for computational chemistry and condensed matter physics. Intended as a common foundation for more specialised systems, not a monolithic user-facing tool, it wants to help you build your own tools! ✨
 
-*If you use this code in any scientific work, please mention it in the publication and let me know. Thanks! 🐫*
+*If you use this code in any scientific work, please mention it in the publication, cite [the paper](https://marcel.science/repbench) and let me know. Thanks! 🐫*
 
 ## What exactly is `cmlkit`?
 
