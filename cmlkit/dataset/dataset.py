@@ -246,7 +246,7 @@ class Dataset(Configurable):
     def from_Atoms(cls, atoms, p={}, name=None, desc="", splits=[]):
         """Create Dataset from iterable of ase.Atoms
 
-        For detals, check Dataset class.
+        For details, check Dataset class.
 
         Args:
             atoms: iteratble of ase.Atoms objects
