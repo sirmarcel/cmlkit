@@ -43,7 +43,7 @@ class Kernelf(Component):
         qmmlpack = import_qmmlpack("use cmlkit.regression.qmml")
         kernelf = getattr(qmmlpack, kernelfs[self.kind])
 
-        return kernelf(x=x, z=z, theta=self.ls, diagonal=False)
+        return kernelf(x=x, z=z, theta=self.ls, diagonal=diagonal)
 
     def _get_config(self):
         return {"ls": self.ls}
