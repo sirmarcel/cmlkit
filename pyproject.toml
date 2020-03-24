@@ -15,7 +15,7 @@ numpy = "^1.16"
 ase = ">=3.18"
 PyYAML = "^5.1"
 joblib = "^0.13"
-pebble = "^4.3"
+pebble = "<=4.3.10"
 dill = "^0.2"
 son = "^0.2.1"
 
