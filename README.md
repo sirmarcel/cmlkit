@@ -1,20 +1,20 @@
 # cmlkit 🐫🧰
 
-***Note: I'm preparing this for release, some links below are placeholders and/or wishful thinking. Proceed at your own risk!***
-
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cmlkit.svg) [![PyPI](https://img.shields.io/pypi/v/cmlkit.svg)](https://pypi.org/project/cmlkit/) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black) 
 
-Publications: [Langer, Gößmann, Rupp (2020)](https://marcel.science/repbench)
+Publications: [`repbench`: Langer, Gößmann, Rupp (2020)](https://marcel.science/repbench)
 
 Plugins: [`cscribe 🐫🖋️`](https://github.com/sirmarcel/cscribe) | [`mortimer 🎩⏰`](https://gitlab.com/sirmarcel/mortimer) | [`skrrt 🚗💨`](https://gitlab.com/sirmarcel/skrrt)
 
+***
+
 `cmlkit` is an extensible `python` package providing clean and concise infrastructure to specify, tune, and evaluate machine learning models for computational chemistry and condensed matter physics. Intended as a common foundation for more specialised systems, not a monolithic user-facing tool, it wants to help you build your own tools! ✨
 
-*If you use this code in any scientific work, please mention it in the publication and let me know. Thanks! 🐫*
+*If you use this code in any scientific work, please mention it in the publication, cite [the paper](https://marcel.science/repbench) and let me know. Thanks! 🐫*
 
 ## What exactly is `cmlkit`?
 
-[💡 COMING SOON: A tutorial introduction to `cmlkit` courtesy of the Nomad Analytics Toolkit 💡](https://nomad-coe.eu)
+[💡 A tutorial introduction to `cmlkit` courtesy of the NOMAD Analytics Toolkit 💡](https://www.nomad-coe.eu/index.php?page=bigdata-analyticstoolkit)
 
 *Sidenote*: If you've come across this from outside the "ML for materials and chemistry" world, this will unfortunately be of limited use for you! However, if you're interested in ML infrastructure in general, please take a look at `engine` and `tune`, which are not specific to this domain and might be of interest.
 
@@ -82,7 +82,7 @@ model:
 
 Having a canonical model format allows `cmlkit` to provide a quite pleasant interface to `hyperopt`. The same mechanism *also* enables a simple plugin system, making `cmlkit` easily exensible, so you can isolate one-off task-specific code into separate projects without any problems, while making use of a solid, if opionated, foundation.
 
-For a gentle, detailed tour please [check out this tutorial]( nomad-coe.eu ).
+For a gentle, detailed tour please [check out the tutorial]( https://www.nomad-coe.eu/index.php?page=bigdata-analyticstoolkit ).
 
 ### Caveats 😬
 
@@ -90,7 +90,7 @@ Okay then, what are the rough parts?
 
 - `cmlkit` is very inconvenient for interactive and non-automated use: Models cannot be saved and caching is not enabled yet, so all computations (representation, kernel matrices, etc.) must be re-run from scratch upon restart. This is not a problem during HP optimisation, as there the point is to try *different* models, but it is annoying for exploring a single model in detail. Fixing this is an *active* consideration, though! After all, the code is written with caching in mind.
 - `cmlkit` is and will remain "scientific research software", i.e. it is prone to somewhat haphazard development practices and periods of hibernation. I'll do my best to avoid breaking changes and abandonement, but you know how it is!
-- `cmlkit` is currently in an "alpha" state. While it's pretty stable and well-tested for some specific usecases (like writing a [large-scale benchmarking paper](marcel.science/repbench)), it's not tested for more everyday use. There's also some internal loose ends that need to be tied up.
+- `cmlkit` is currently in an "alpha" state. While it's pretty stable and well-tested for some specific usecases (like writing a [large-scale benchmarking paper](https://marcel.science/repbench)), it's not tested for more everyday use. There's also some internal loose ends that need to be tied up.
 - `cmlkit` is not particularly user friendly at the moment, and expects its users to be python developers. See below for notes on documentation! 😀
 
 ## Installation and friends
@@ -112,6 +112,7 @@ In order to compute representations with `dscribe`, you should install the [`csc
 ```
 pip install cscribe
 ```
+You need to also export `CML_PLUGINS=cscribe`.
 
 To setup the `quippy` and `RuNNer` interface please consult the readmes in `cmlkit/representation/soap` and `cmlkit/representation/sf`.
 

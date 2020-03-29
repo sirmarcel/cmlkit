@@ -72,6 +72,8 @@ I'm doing my best to avoid making large-scale breaking changes to the core parts
 
 Tests are strongly encouraged, but when in doubt, an integration or smoke test is better than nothing. There is a fair bit of functionality that is extremely tedious to test and I don't have the time to figure it out, but will cause the entire test suite to explode if it fails.
 
-All code is formatted with `black`. Google-style docstrings are encouraged. All modules should have a `README.md` file explaining what's going on, pointing out overall architectural choices and reasoning. Nitty-gritty details can be purely documented in code, that's fine. Dependency management is done using `poetry`, for better or for worse. There are no plans to support `conda` at present.
+All code is formatted with `black`. Google-style docstrings are encouraged. All modules should have a `README.md` file explaining what's going on, pointing out overall architectural choices and reasoning. Nitty-gritty details can be purely documented in code, that's fine. Code is written in American English, all documentation and non-code text in British English.
+
+Dependency management is done using `poetry`, for better or for worse. There are no plans to support `conda` at present.
 
 At the moment, this code is developed by and for one person. If you are seriously considering working with `cmlkit`, please do absolutely not hesitate to get in touch.

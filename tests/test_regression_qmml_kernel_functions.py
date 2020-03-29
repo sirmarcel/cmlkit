@@ -43,6 +43,19 @@ class TestKernelfs(TestCase):
         np.testing.assert_allclose(kernel(self.x), np_kernel(self.x))
         np.testing.assert_allclose(kernel(self.x, z=self.z), np_kernel(self.x, z=self.z))
 
+    def test_kernel_gaussian_against_qmmlpack(self):
+        kernel = KernelfGaussian(ls=2.0)
+        from qmmlpack import kernel_gaussian as qmml_kernel
+
+        np.testing.assert_allclose(kernel(self.x), qmml_kernel(self.x, theta=2.0))
+        np.testing.assert_allclose(
+            kernel(self.x, z=self.z), qmml_kernel(self.x, z=self.z, theta=2.0)
+        )
+
+        np.testing.assert_allclose(
+            kernel(self.x, diagonal=True), qmml_kernel(self.x, diagonal=True, theta=2.0)
+        )
+
     def test_kernel_laplacian(self):
         kernel = KernelfLaplacian(ls=2.0)
         np_kernel = partial(kernel_laplacian, ls=2.0)

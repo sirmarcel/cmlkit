@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cmlkit"
-version = "2.0.0-alpha18"
+version = "2.0.0-alpha19"
 description = "Machine learning tools for computational chemistry and condensed matter physics"
 authors = ["Marcel Langer <dev@sirmarcel.com>"]
 license = "MIT"
@@ -15,7 +15,7 @@ numpy = "^1.16"
 ase = ">=3.18"
 PyYAML = "^5.1"
 joblib = "^0.13"
-pebble = "^4.3"
+pebble = "<=4.3.10"
 dill = "^0.2"
 son = "^0.2.1"
 
