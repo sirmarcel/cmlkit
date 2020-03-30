@@ -5,7 +5,7 @@ import numpy as np
 from ase import Atoms
 
 from cmlkit.engine import compute_hash, Configurable, save_npy
-from cmlkit.utility import convert, import_qmmlpack
+from cmlkit.utility import convert, import_qmmlpack, charges_to_elements
 
 # Yes, this is a bit of a nightmare -- it is really a very very overloaded class.
 # Note that we're using the Configurable infrastructure here, but it really is
@@ -313,7 +313,7 @@ class Dataset(Configurable):
         elems = (
             " elements: {} ({})".format(
                 " ".join(
-                    [cmlkit.utility.charges_to_elements[el] for el in i["elements"]]
+                    [charges_to_elements[el] for el in i["elements"]]
                 ),
                 len(i["elements"]),
             )

@@ -91,6 +91,10 @@ class TestDataset(TestCase):
     def tearDown(self):
         shutil.rmtree(self.tmpdir)
 
+    def test_report(self):
+        # smoke test
+        self.data.report
+
     def test_creation(self):
         self.assertEqual(self.data.name, "test")
         self.assertEqual(self.data.desc, "test")
