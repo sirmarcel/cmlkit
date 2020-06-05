@@ -32,7 +32,10 @@ def is_config(config):
     return False
 
 
-def parse_config(config):
+def parse_config(config, shortcut_ok=False):
+    if shortcut_ok and isinstance(config, str):
+        return config, {}
+
     if not is_config(config):
         raise ValueError("Improper config format: " + str(config))
 

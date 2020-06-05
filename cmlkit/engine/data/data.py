@@ -51,7 +51,6 @@ class Data(Configurable):
 
         write_data_npz(path, self.kind, self.data, self.info, self.meta)
 
-
     @property
     def id(self):
         return compute_hash(self.history)
