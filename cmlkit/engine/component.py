@@ -2,6 +2,7 @@
 
 from cmlkit import logger
 from .config import Configurable
+from .hashing import compute_hash
 
 
 class Component(Configurable):
@@ -43,3 +44,6 @@ class Component(Configurable):
         logger.debug(f"Context for {self.get_kind()} is {self.context}.")
 
         # you should probably also implement something more here
+
+    def get_hash(self):
+        return compute_hash(self.get_config())
