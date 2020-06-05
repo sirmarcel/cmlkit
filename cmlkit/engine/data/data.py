@@ -39,7 +39,7 @@ class Data(Configurable):
         """Create new Data instance as result of applying component to input"""
 
         new_history = input_data.history.copy()
-        new_history.append(f"{component.get_kind()}@{component.get_hash()}")
+        new_history.append(component.get_hid())
 
         return cls.create(data=data, info=info, history=new_history)
 
