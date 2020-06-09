@@ -184,6 +184,11 @@ class Dataset(Configurable):
         self.aux["n_non_O"] = n_non_O
         self.aux["n_non_H"] = n_non_H
 
+        # compatibility with Data history tracking
+        # to tide us over until this gets rewritten as
+        # a proper Data subclass
+        self.history = [f"dataset@{self.geom_hash}"]
+
     def _get_config(self):
 
         return {
