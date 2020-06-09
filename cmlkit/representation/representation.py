@@ -3,6 +3,9 @@
 import numpy as np
 
 from cmlkit.engine import Component
+from cmlkit import caches
+
+from .data import AtomicRepresentation, GlobalRepresentation
 
 
 class Representation(Component):
@@ -50,13 +53,31 @@ class Representation(Component):
     def __call__(self, data):
         """Compute this representation."""
         if self.context["chunk_size"] is None:
-            return self.compute(data)
+            computed_representation = self.compute(data)
         else:
             chunks = [
                 self.compute(chunk)
                 for chunk in data.in_chunks(size=self.context["chunk_size"])
             ]
-            return np.concatenate(chunks, axis=0)
+            computed_representation = np.concatenate(chunks, axis=0)
+
+        return self.to_data(data, computed_representation)
+
+    def to_data(self, data, computed_representation):
+        if isinstance(
+            computed_representation, GlobalRepresentation
+        ) or isinstance(computed_representation, AtomicRepresentation):
+            return computed_representation
+        elif computed_representation.dtype == object:
+            return AtomicRepresentation.from_ragged(
+                self, data, computed_representation
+            )
+        else:
+            return GlobalRepresentation.from_array(
+                self, data, computed_representation
+            )
 
     def compute(self, data):
-        raise NotImplementedError("Representations must implement a compute method.")
+        raise NotImplementedError(
+            "Representations must implement a compute method."
+        )

@@ -57,7 +57,7 @@ class TestSymmetryFunctions(TestCase):
                     [1], universal=[{"rad": {"eta": eta, "mu": mu, "cutoff": cutoff}}]
                 )
 
-                computed = sf(data)
+                computed = sf(data).ragged
 
                 np.testing.assert_almost_equal(
                     computed[0][0][0], rad_sf(2.0, eta, mu) * fc(2.0, cutoff)
@@ -86,7 +86,7 @@ class TestSymmetryFunctions(TestCase):
 
             delta = (cutoff - 1.5) / 2
 
-            computed = sf(data)
+            computed = sf(data).ragged
 
             # note that the ordering of the results is not the same as
             # the one you'd expect -- runner internally reorders.
@@ -139,7 +139,7 @@ class TestSymmetryFunctions(TestCase):
                     ],
                 )
 
-                computed = sf(data)
+                computed = sf(data).ragged
 
                 print(computed)
 
@@ -180,7 +180,7 @@ class TestSymmetryFunctions(TestCase):
                     [1, 2, 3], universal=[{"rad": {"eta": eta, "mu": mu, "cutoff": cutoff}}]
                 )
 
-                computed = sf(data)
+                computed = sf(data).ragged
 
                 print(computed)
 

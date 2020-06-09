@@ -12,7 +12,7 @@ class TestCM(TestCase):
     def test_work(self):
         cm = CoulombMatrix(padding=3, unit="BohrRadius", flatten=True)
 
-        computed = cm(self.data)
+        computed = cm(self.data).array
         print(computed)
 
         np.testing.assert_almost_equal(computed[0][0], 0.5 * 3.0 ** (2.4))
