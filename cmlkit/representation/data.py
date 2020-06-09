@@ -10,13 +10,9 @@ class GlobalRepresentation(Data):
     @classmethod
     def from_array(cls, representation, dataset, array):
         data = {"array": array}
-        info = {
-            "dataset_name": dataset.name,
-            "representation_name": representation.kind,
-        }
 
         return cls.result(
-            data=data, info=info, input_data=dataset, component=representation
+            data=data, input_data=dataset, component=representation
         )
 
     @classmethod
@@ -36,13 +32,9 @@ class AtomicRepresentation(Data):
         data = atomic_data_dict(
             dataset.info["atoms_by_system"], linear
         )
-        info = {
-            "dataset_name": dataset.name,
-            "representation_name": representation.kind,
-        }
 
         return cls.result(
-            data=data, info=info, input_data=dataset, component=representation
+            data=data, input_data=dataset, component=representation
         )
 
     @classmethod
