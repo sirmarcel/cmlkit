@@ -25,11 +25,13 @@ class DataExampleComponent(Component):
     def _get_config(self):
         return {"a": self.a}
 
-    def __call__(self, x):
-        new_data = {"x": x.data["x"]*self.a}
-
-        print(type(x))
-        return DataExample.result(self, x, data=new_data)
+    def __call__(self, x, y=None):
+        if y is None:
+            new_data = {"x": x.data["x"]*self.a}
+            return DataExample.result(self, x, data=new_data)
+        else:
+            new_data = {"x": x.data["x"]*self.a+y.data["x"]*self.a}
+            return DataExample.result(self, (x, y), data=new_data)
 
 
 cmlkit.register(DataExample, DataExampleComponent)
@@ -69,6 +71,8 @@ class TestDataTracking(TestCase):
         self.startdata = DataExample.create(data={"x": 1.0})
         self.startdata2 = DataExample.create(data={"x": 1.0})
 
+        self.other_data = DataExample.create(data={"x": 2.0})
+
     def test_same_consistent_id(self):
         new_data = self.component(self.startdata)
         new_data2 = self.component2(self.startdata2)
@@ -79,3 +83,18 @@ class TestDataTracking(TestCase):
         new_data = self.component3(self.component(self.startdata))
         new_data2 = self.component3(self.component2(self.startdata2))
         self.assertEqual(new_data.id, new_data2.id)
+
+    def test_same_consistent_id_if_combined(self):
+        new_data = self.component(self.startdata, y=self.other_data)
+        new_data2 = self.component(self.startdata2, y=self.other_data)
+
+        self.assertEqual(new_data.id, new_data2.id)
+
+        # another little smoke test to see if the hashes are
+        # really consistent. if this fails, file an issue please!
+        self.assertEqual(new_data.id, "5f97bec5fc0d84be6faf50a2a0d6d025")
+
+    def test_different_id_if_combined_in_different_order(self):
+        new_data = self.component(self.startdata, y=self.other_data)
+        new_data2 = self.component(self.other_data, y=self.startdata)
+        self.assertNotEqual(new_data.id, new_data2.id)

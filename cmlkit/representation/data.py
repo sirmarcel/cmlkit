@@ -12,7 +12,7 @@ class GlobalRepresentation(Data):
         data = {"array": array}
 
         return cls.result(
-            data=data, input_data=dataset, component=representation
+            data=data, inputs=dataset, component=representation
         )
 
     @classmethod
@@ -34,7 +34,7 @@ class AtomicRepresentation(Data):
         )
 
         return cls.result(
-            data=data, input_data=dataset, component=representation
+            data=data, inputs=dataset, component=representation
         )
 
     @classmethod

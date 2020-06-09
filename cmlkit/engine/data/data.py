@@ -35,12 +35,17 @@ class Data(Configurable):
         return cls(data, info, meta)
 
     @classmethod
-    def result(cls, component, input_data, data=None, info=None):
-        """Create new Data instance as result of applying component to input"""
+    def result(cls, component, inputs, data=None, info=None):
+        """Create new Data instance as result of applying component to input(s)"""
 
-        new_history = input_data.history.copy()
+        if isinstance(inputs, (tuple, list)):
+            new_history = [_input.history.copy() for _input in inputs]
+        elif hasattr(inputs, "history"):
+            new_history = inputs.history.copy()
+        else:
+            raise ValueError(f"Cannot make a history-tracking Data object using input {inputs}")
+
         new_history.append(component.get_hid())
-
         return cls.create(data=data, info=info, history=new_history)
 
     def _get_config(self):
