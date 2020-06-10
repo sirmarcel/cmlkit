@@ -45,8 +45,8 @@ class KernelAtomic(Kernel):
         ), "KernelAtomic only works on atomic representations."
         return _kernel_atomic(
             self.kernelf,
-            x=x.ragged,
-            z=x.ragged,
+            x=x,
+            z=x,
             symmetric=True,
             norm=self.norm,
             max_size=self.context["max_size"],
@@ -61,8 +61,8 @@ class KernelAtomic(Kernel):
         ), "KernelAtomic only works on atomic representations."
         return _kernel_atomic(
             self.kernelf,
-            x=x.ragged,
-            z=z.ragged,
+            x=x,
+            z=z,
             symmetric=False,
             norm=self.norm,
             max_size=self.context["max_size"],
@@ -73,16 +73,15 @@ class KernelAtomic(Kernel):
 
 
 def kernel_atomic(kernelf, x, z=None, norm=False, max_size=256):
-    """Compute atomic kernel within a set of structures, or between two.
+    """Compute atomic kernel within a set of atomic representations, or between two.
 
-    Assumes atomic representation of fixed length dim. Each structure
-    has n_atoms which vary across structures.
+    Convenience wrapper for lower-level functions. See _kernel_atomic
+    for implementation details.
 
     Args:
         kernelf: Callable kernelf
-        x: List (len = n_structures) of ndarrays with the atomic
-                        representation along axis 1, i.e. n_atoms x dim arrays
-        z: List, same as z. If specified, compute kernel between x and z.
+        x: AtomicRepresentation
+        z: AtomicRepresentation
         max_size: Integer, max block size for computation
         norm: Bool, if True the kernel values are normalised by n_atoms
 
@@ -100,61 +99,53 @@ def kernel_atomic(kernelf, x, z=None, norm=False, max_size=256):
 
 
 def _kernel_atomic(kernelf, x, z, symmetric=False, norm=False, max_size=256):
-    """Actual atomic kernel.
+    """Atomic kernel.
 
     Let n=len(x) and m=len(z).
 
-    Each entry of the resulting n x m kernel matric is obtained by
-    computing the kernel matrix between each atomic representation
-    in each structure and summing up.
+    Each entry of the resulting n x m kernel matric is obtained
+    as follows:
 
-    This operation is performed for max_size x max_size chunks of
+        For i in n and j in m:
+
+        K_ij = sum( kernelf(x[i], y[i]) )
+
+    In practical terms, this means the kernel matrix entry between
+    two structures is simply the sum over all entries of the kernel
+    matrix between the representations of each atom in each structures.
+
+    To avoid computing an intermediate n_atoms_x x n_atoms_z kernel
+    matrix, the computation is done in max_size x max_size chunks of
     the final kernel matrix.
+
+    The heavy lifting here is done by low-level qmmlpack functions.
+    recursive_matrix_map picks chunks of the final kernel matrix
+    to compute, respecting the chunk size. We then take out the
+    sections of the linearised atomic representations, compute the
+    "atom-atom" kernel matrix for the entire chunk (which contains
+    multiple systems!) and pass it to partial_sum_matrix_reduce, 
+    which takes care of summing up by system.
 
     """
     qmmlpack = import_qmmlpack("use cmlkit.regression.qmml")
     experimental = import_qmmlpack_experimental("use cmlkit.regression.qmml")
 
-    def f(range_a, range_b):
-        start_a, stop_a = range_a
-        start_b, stop_b = range_b
+    def f(range_x, range_z):
+        slice_x = slice(x.offsets[range_x[0]], x.offsets[range_x[1]])
+        slice_z = slice(z.offsets[range_z[0]], z.offsets[range_z[1]])
 
-        r_a = x[start_a:stop_a]
-        r_b = z[start_b:stop_b]
+        k = kernelf(x.linear[slice_x], z=z.linear[slice_z])
 
-        # Collect into contiguous chunks of memory
-        # to efficiently compute kernelf
-        x_a = np.concatenate(r_a, axis=0)
-        x_b = np.concatenate(r_b, axis=0)
-
-        k = kernelf(x_a, z=x_b)
-
-        # Offsets are used to keep track of how to sum
-        c_a, o_a = _get_counts_and_offsets(r_a)
-        c_b, o_b = _get_counts_and_offsets(r_b)
-
-        result = qmmlpack.partial_sum_matrix_reduce(k, o_a, indc=o_b)
+        result = qmmlpack.partial_sum_matrix_reduce(
+            k, x.offsets[slice_x], indc=z.offsets[slice_z]
+        )
 
         if norm:
-            norms = np.outer(c_a, c_b)
+            norms = np.outer(x.counts[slice_x], z.counts[slice_z])
             return result / norms
         else:
             return result
 
     return experimental.recursive_matrix_map(
-        f, (len(x), len(z)), max_size=max_size, out=None, symmetric=symmetric
+        f, (x.n, z.n), max_size=max_size, out=None, symmetric=symmetric
     )
-
-
-def _get_counts_and_offsets(x):
-    counts = np.array(
-        [len(s) for s in x], dtype=int
-    )  # obtain n_atoms per structure
-
-    # offsets: indices of beginning and end of representation belonging to structures
-    offsets = np.zeros(len(counts) + 1, dtype=int)
-    offsets[1::] = np.cumsum(
-        counts
-    )  # -> offsets = [0, n_atoms_1, n_atoms_1 + n_atoms_2, ...]
-
-    return counts, offsets
