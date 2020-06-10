@@ -1,4 +1,3 @@
-from cmlkit import caches
 from cmlkit.engine import Component
 
 from .data import KernelMatrix
@@ -15,9 +14,24 @@ class Kernel(Component):
     def __call__(self, x, z=None):
 
         if z is None:
-            return KernelMatrix.from_array(self, x, self.compute_symmetric(x=x))
-        else:
+            key = x.id
+            result = self.cache.get_if_cached(key)
+            if result is None:
+                result = KernelMatrix.from_array(
+                    self, x, self.compute_symmetric(x=x)
+                )
+                self.cache.submit(key, result)
 
-            return KernelMatrix.from_array(
-                self, (x, z), self.compute_asymmetric(x=x, z=z)
-            )
+            return result
+
+        else:
+            key = f"{x.id}+{z.id}"
+            result = self.cache.get_if_cached(key)
+            if result is None:
+                result = KernelMatrix.from_array(
+                    self, (x, z), self.compute_asymmetric(x=x, z=z)
+                )
+
+                self.cache.submit(key, result)
+
+            return result
