@@ -37,14 +37,11 @@ Please see the caveats below!
 
 ### Usage (Developer)
 
-After instantiation, you need to call `cmlkit.caches.register(self)`. This will return a `Cache` object that you can use.
+As long as you are writing a subclass of `Component`, `cmlkit` auto-magically does all the housework for you, and `self.cache` will always return a `Cache` object. The API to interact with a `Cache` is defined in `cache.py`. It essentially mandates using `if key in cache` for checking, `cache.get(key)` for retrieval and `cache.submit(key, value)` for submitting results. There is also `cache.get_if_cached(key)` which either returns `None` or the cached result. (See `disk.py` for the reasoning behind this.) Since there is a dummy cache when caching is turned off, you don't have to check for it, you can always use this API.
 
-The API to interact with a `Cache` is defined in `cache.py`. It essentially mandates using `if key in cache` for checking, `cache.get(key)` for retrieval and `cache.submit(key, value)` for submitting results. There is also `cache.get_if_cached(key)` which either returns `None` or the cached result. (See `disk.py` for the reasoning behind this.) Since there is a dummy cache when caching is turned off, you don't have to check for it, you can always use this API.
+You are **strongly** encouraged to make use of the caching facility.
 
 You are expected to use the `id` attribute of the input `Data` instances as key. If you end up computing a result, it must be returned as a `Data` instance, using the `Data.result` class method. You should pass the component instance and the input data instance into this function, which will take care of returning a result data object with the history properly tracked.
-
-If you implement caching for a parent class, you need to implement a mechanism to register the cache at the end of running the child class `__init__`, since otherwise you probably won't have the `config` ready. Check `representation/representation.py` for an example of this!
-
 
 ## Caveats
 

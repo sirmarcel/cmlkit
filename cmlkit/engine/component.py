@@ -3,9 +3,10 @@
 from cmlkit import logger
 from .config import Configurable
 from .hashing import compute_hash
+from .cache import Cached
 
 
-class Component(Configurable):
+class Component(Configurable, metaclass=Cached):
     """Base class for cmlkit components.
 
     See explanation in readme!
@@ -38,6 +39,11 @@ class Component(Configurable):
         logger.debug(f"Context for {self.get_kind()} is {self.context}.")
 
         # you should probably also implement something more here
+
+    def register_cache(self):
+        from cmlkit import caches
+
+        self.cache = caches.register(self)
 
     def get_hash(self):
         """Hash of this component"""

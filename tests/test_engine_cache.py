@@ -7,14 +7,11 @@ import shutil
 import pathlib
 import time
 
-from cmlkit.engine import Component, compute_hash
-from cmlkit.engine.cache import Caches
+from cmlkit.engine import Component
 from cmlkit.engine.data import Data
 
 tmpdir = pathlib.Path(__file__).parent / "tmp_test_engine_cache"
 tmpdir.mkdir(exist_ok=True)
-
-caches = Caches(location=tmpdir)
 
 
 class DummyComponent1(Component):
@@ -24,7 +21,6 @@ class DummyComponent1(Component):
         super().__init__(context=context)
 
         self.a = a
-        self.cache = caches.register(self)
 
     def _get_config(self):
         return {"a": self.a}
@@ -81,7 +77,9 @@ class TestEngineCache(TestCase):
         # does it return correct results,
         # and get faster?!
 
-        component = DummyComponent1(a=2.0, context={"cache": "disk"})
+        component = DummyComponent1(
+            a=2.0, context={"cache": {"disk": {"location": self.tmpdir}}}
+        )
 
         start = time.monotonic()
         result = component(self.input)
