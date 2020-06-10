@@ -188,6 +188,7 @@ class Dataset(Configurable):
         # to tide us over until this gets rewritten as
         # a proper Data subclass
         self.history = [f"dataset@{self.geom_hash}"]
+        self.id = self.geom_hash
 
     def _get_config(self):
 

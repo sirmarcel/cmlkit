@@ -52,6 +52,17 @@ class Representation(Component):
 
     def __call__(self, data):
         """Compute this representation."""
+
+        key = data.id
+
+        result = self.cache.get_if_cached(key)
+        if result is None:
+            result = self.__compute(data)
+            self.cache.submit(key, result)
+
+        return result
+
+    def __compute(self, data):
         if self.context["chunk_size"] is None:
             computed_representation = self.compute(data)
         else:
