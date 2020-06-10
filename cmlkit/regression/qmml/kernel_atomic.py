@@ -17,10 +17,14 @@ import numpy as np
 
 from cmlkit.engine import Component
 from cmlkit.utility import import_qmmlpack, import_qmmlpack_experimental
+from cmlkit.representation.data import AtomicRepresentation
+
+from cmlkit.regression import Kernel
+
 from .kernel_functions import get_kernelf
 
 
-class KernelAtomic(Component):
+class KernelAtomic(Kernel):
     """Compute kernels for atomic representations."""
 
     kind = "kernel_atomic"
@@ -35,9 +39,33 @@ class KernelAtomic(Component):
 
         # self.max_size = self.context["max_size"]
 
-    def __call__(self, x, z=None):
-        return kernel_atomic(
-            self.kernelf, x=x, z=z, norm=self.norm, max_size=self.context["max_size"]
+    def compute_symmetric(self, x):
+        assert isinstance(
+            x, AtomicRepresentation
+        ), "KernelAtomic only works on atomic representations."
+        return _kernel_atomic(
+            self.kernelf,
+            x=x.ragged,
+            z=x.ragged,
+            symmetric=True,
+            norm=self.norm,
+            max_size=self.context["max_size"],
+        )
+
+    def compute_asymmetric(self, x, z):
+        assert isinstance(
+            x, AtomicRepresentation
+        ), "KernelAtomic only works on atomic representations."
+        assert isinstance(
+            z, AtomicRepresentation
+        ), "KernelAtomic only works on atomic representations."
+        return _kernel_atomic(
+            self.kernelf,
+            x=x.ragged,
+            z=z.ragged,
+            symmetric=False,
+            norm=self.norm,
+            max_size=self.context["max_size"],
         )
 
     def _get_config(self):
@@ -61,7 +89,9 @@ def kernel_atomic(kernelf, x, z=None, norm=False, max_size=256):
     """
 
     if z is None:
-        return _kernel_atomic(kernelf, x, x, symmetric=True, norm=norm, max_size=max_size)
+        return _kernel_atomic(
+            kernelf, x, x, symmetric=True, norm=norm, max_size=max_size
+        )
 
     else:
         return _kernel_atomic(
@@ -117,7 +147,9 @@ def _kernel_atomic(kernelf, x, z, symmetric=False, norm=False, max_size=256):
 
 
 def _get_counts_and_offsets(x):
-    counts = np.array([len(s) for s in x], dtype=int)  # obtain n_atoms per structure
+    counts = np.array(
+        [len(s) for s in x], dtype=int
+    )  # obtain n_atoms per structure
 
     # offsets: indices of beginning and end of representation belonging to structures
     offsets = np.zeros(len(counts) + 1, dtype=int)

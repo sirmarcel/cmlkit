@@ -1,6 +1,9 @@
 from unittest import TestCase
 import numpy as np
 
+from cmlkit.regression.data import KernelMatrix
+from cmlkit.representation.data import AtomicRepresentation
+
 from cmlkit.regression.qmml import kernel_atomic, KernelAtomic
 from cmlkit.regression.qmml import KernelfGaussian
 
@@ -9,8 +12,9 @@ kernelf = KernelfGaussian(ls=3.0)
 
 class TestKernelAtomicObject(TestCase):
     def test_does_it_work(self):
-        counts_x = [5, 3, 1]
-        x = [np.random.random((i, 10)) for i in counts_x]
+        counts = [5, 3, 1]
+        x = AtomicRepresentation.mock(counts, np.random.random((9, 10)))
+
         kernel = KernelAtomic(kernelf=kernelf, norm=True)
 
         result = kernel(x)
@@ -19,14 +23,14 @@ class TestKernelAtomicObject(TestCase):
             [
                 [
                     np.sum(kernelf(x=sys, z=sys2))
-                    / (counts_x[i] * counts_x[i2])
-                    for i2, sys2 in enumerate(x)
+                    / (counts[i] * counts[i2])
+                    for i2, sys2 in enumerate(x.ragged)
                 ]
-                for i, sys in enumerate(x)
+                for i, sys in enumerate(x.ragged)
             ]
         )
 
-        np.testing.assert_allclose(result, reference_result)
+        np.testing.assert_allclose(result.array, reference_result)
 
 
 class TestKernelAtomicFunction(TestCase):

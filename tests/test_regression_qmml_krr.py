@@ -3,6 +3,8 @@ import numpy as np
 import pathlib
 import shutil
 
+from cmlkit.representation.data import GlobalRepresentation
+
 from cmlkit.regression.qmml import KRR
 
 
@@ -17,15 +19,14 @@ def rmse(true, pred):
 class TestKRR(TestCase):
     def setUp(self):
         np.random.seed(123)
-        self.x_train = 4 * np.random.random((160, 1)) - 2
-        self.x_test = 4 * np.random.random((40, 1)) - 2
+        self.x_train = GlobalRepresentation.mock(4 * np.random.random((160, 1)) - 2)
+        self.x_test = GlobalRepresentation.mock(4 * np.random.random((40, 1)) - 2)
 
-        self.y_train = f(self.x_train)
-        self.y_test = f(self.x_test)
+        self.y_train = f(self.x_train.array)
+        self.y_test = f(self.x_test.array)
 
         # self.tmpdir = (pathlib.Path(__file__) / "..").resolve() / "tmp_test_krr"
         # self.tmpdir.mkdir(exist_ok=True)
-
 
     # def tearDown(self):
     #     shutil.rmtree(self.tmpdir)
