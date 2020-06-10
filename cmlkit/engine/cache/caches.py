@@ -19,14 +19,20 @@ class Caches:
 
         if cache_config:
             key = f"{component.kind}/{component.get_hash()}"
-            cache_kind, cache_inner = parse_config(cache_config, shortcut_ok=True)
+            cache_kind, cache_inner = parse_config(
+                cache_config, shortcut_ok=True
+            )
 
             if cache_kind == "no":
                 return NoCache()
 
             elif cache_kind == "disk":
-                cache = DiskCache(location=self.location / key)
-                self.caches.append((str(component), key, cache))
+                if "location" in cache_inner:
+                    cache = DiskCache(
+                        location=Path(cache_inner["location"]) / key
+                    )
+                else:
+                    self.caches.append((str(component), key, cache))
 
             else:
                 raise NotImplementedError(
