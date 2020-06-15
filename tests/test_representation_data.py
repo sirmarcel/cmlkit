@@ -10,7 +10,7 @@ from cmlkit.representation.data import (
 
 class TestAtomicRepresentation(TestCase):
     def setUp(self):
-        n_atoms = [3, 2, 1]
+        self.counts = [3, 2, 1]
         self.linear = np.random.random((6, 5))
         self.ragged = np.array(
             [self.linear[0:3, :], self.linear[3:5, :], self.linear[[5], :]]
@@ -21,7 +21,7 @@ class TestAtomicRepresentation(TestCase):
 
         self.dataset = MagicMock()
         history = PropertyMock(return_value=["dataset"])
-        info = PropertyMock(return_value={"atoms_by_system": n_atoms})
+        info = PropertyMock(return_value={"atoms_by_system": self.counts})
         type(self.dataset).info = info
         type(self.dataset).history = history
 
@@ -51,6 +51,12 @@ class TestAtomicRepresentation(TestCase):
 
         for i in range(3):
             np.testing.assert_array_equal(rep.ragged[i], self.ragged[i])
+
+    def test_range(self):
+        rep = AtomicRepresentation.mock(self.counts, self.linear)
+        np.testing.assert_array_equal(rep.range((1, 3)).ragged[0], rep.ragged[1])
+        np.testing.assert_array_equal(rep.range((1, 3)).ragged[-1], rep.ragged[2])
+        np.testing.assert_array_equal(rep.range((1, 3)).ragged[1], rep.ragged[2])
 
 
 class TestGlobalRepresentation(TestCase):

@@ -11,9 +11,7 @@ class GlobalRepresentation(Data):
     def from_array(cls, representation, dataset, array):
         data = {"array": array}
 
-        return cls.result(
-            data=data, inputs=dataset, component=representation
-        )
+        return cls.result(data=data, inputs=dataset, component=representation)
 
     @classmethod
     def mock(cls, array):
@@ -29,13 +27,9 @@ class AtomicRepresentation(Data):
 
     @classmethod
     def from_linear(cls, representation, dataset, linear):
-        data = atomic_data_dict(
-            dataset.info["atoms_by_system"], linear
-        )
+        data = atomic_data_dict(dataset.info["atoms_by_system"], linear)
 
-        return cls.result(
-            data=data, inputs=dataset, component=representation
-        )
+        return cls.result(data=data, inputs=dataset, component=representation)
 
     @classmethod
     def from_ragged(cls, representation, dataset, ragged):
@@ -73,15 +67,25 @@ class AtomicRepresentation(Data):
             dtype=object,
         )
 
+    def range(self, _range):
+        """Return AtomicRepresentation for range of structures."""
+
+        linear = self.linear[self.offsets[_range[0]]:self.offsets[_range[1]]]
+        counts = self.counts[_range[0]:_range[1]]
+
+        return AtomicRepresentation.mock(counts, linear)
+
 
 def atomic_data_dict(counts, linear):
+    offsets = get_offsets(counts)
+
+    data = {"linear": linear, "offsets": offsets, "counts": counts}
+
+    return data
+
+
+def get_offsets(counts):
     offsets = np.zeros(len(counts) + 1, dtype=int)
     offsets[1::] = np.cumsum(counts)
 
-    data = {
-        "linear": linear,
-        "offsets": offsets,
-        "counts": counts,
-    }
-
-    return data
+    return offsets

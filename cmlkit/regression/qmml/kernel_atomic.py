@@ -37,8 +37,6 @@ class KernelAtomic(Kernel):
         self.kernelf = get_kernelf(kernelf)
         self.norm = norm
 
-        # self.max_size = self.context["max_size"]
-
     def compute_symmetric(self, x):
         assert isinstance(
             x, AtomicRepresentation
@@ -123,7 +121,7 @@ def _kernel_atomic(kernelf, x, z, symmetric=False, norm=False, max_size=256):
     to compute, respecting the chunk size. We then take out the
     sections of the linearised atomic representations, compute the
     "atom-atom" kernel matrix for the entire chunk (which contains
-    multiple systems!) and pass it to partial_sum_matrix_reduce, 
+    multiple systems!) and pass it to partial_sum_matrix_reduce,
     which takes care of summing up by system.
 
     """
@@ -131,17 +129,17 @@ def _kernel_atomic(kernelf, x, z, symmetric=False, norm=False, max_size=256):
     experimental = import_qmmlpack_experimental("use cmlkit.regression.qmml")
 
     def f(range_x, range_z):
-        slice_x = slice(x.offsets[range_x[0]], x.offsets[range_x[1]])
-        slice_z = slice(z.offsets[range_z[0]], z.offsets[range_z[1]])
+        this_x = x.range(range_x)
+        this_z = z.range(range_z)
 
-        k = kernelf(x.linear[slice_x], z=z.linear[slice_z])
+        k = kernelf(this_x.linear, z=this_z.linear)
 
         result = qmmlpack.partial_sum_matrix_reduce(
-            k, x.offsets[slice_x], indc=z.offsets[slice_z]
+            k, this_x.offsets, indc=this_z.offsets
         )
 
         if norm:
-            norms = np.outer(x.counts[slice_x], z.counts[slice_z])
+            norms = np.outer(this_x.counts, this_z.counts)
             return result / norms
         else:
             return result
