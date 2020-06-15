@@ -47,14 +47,29 @@ class TestDataBasic(TestCase):
     def tearDown(self):
         shutil.rmtree(self.tmpdir)
 
-    def test_roundtrip(self):
+    def test_roundtrip_protocol_1(self):
         data = {"asdf": np.random.random(10), "jkl": np.random.random(10)}
         info = {"property": 123}
 
         data = DataExample.create(data=data, info=info)
 
-        data.dump(self.tmpdir / "test")
-        data2 = load_data(self.tmpdir / "test.npz")
+        data.dump(self.tmpdir / "test_1", protocol=1)
+        data2 = load_data(self.tmpdir / "test_1.npz")
+
+        np.testing.assert_array_equal(data.data["asdf"], data2.data["asdf"])
+        np.testing.assert_array_equal(data.data["jkl"], data2.data["jkl"])
+        self.assertEqual(data.info["property"], data2.info["property"])
+        self.assertEqual(data.history, data2.history)
+        self.assertEqual(data.id, data2.id)
+
+    def test_roundtrip_protocol_1(self):
+        data = {"asdf": np.random.random(10), "jkl": np.random.random(10)}
+        info = {"property": 123}
+
+        data = DataExample.create(data=data, info=info)
+
+        data.dump(self.tmpdir / "test_2", protocol=2)
+        data2 = load_data(self.tmpdir / "test_2.npz")
 
         np.testing.assert_array_equal(data.data["asdf"], data2.data["asdf"])
         np.testing.assert_array_equal(data.data["jkl"], data2.data["jkl"])

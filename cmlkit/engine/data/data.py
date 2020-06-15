@@ -52,9 +52,9 @@ class Data(Configurable):
         return {"data": self.data, "info": self.info, "meta": self.meta}
 
     def dump(self, path, protocol=1):
-        assert protocol == 1, "Data only supports protocol 1 (.npz)"
+        assert protocol == 1 or protocol == 2, "Data only supports protocols 1 and 2 (.npz)"
 
-        write_data_npz(path, self.kind, self.data, self.info, self.meta)
+        write_data_npz(path, self.kind, self.data, self.info, self.meta, protocol=protocol)
 
     @property
     def id(self):
@@ -78,7 +78,7 @@ def load_data_npz(path):
 
     with np.load(path, allow_pickle=True) as file:
         protocol = file["protocol"].item()
-        assert protocol == 1, "npz data should be protocol 1"
+        assert protocol == 1 or protocol == 2, "npz data should be protocol 1 or 2"
 
         kind = file["kind"].item()
         meta = file["meta"].item()
@@ -96,10 +96,13 @@ def load_data_npz(path):
     return from_config(config)
 
 
-def write_data_npz(path, kind, data, info, meta):
-    kwds = {"kind": kind, "info": info, "meta": meta, "protocol": 1}
+def write_data_npz(path, kind, data, info, meta, protocol):
+    kwds = {"kind": kind, "info": info, "meta": meta, "protocol": protocol}
 
     for name, array in data.items():
         kwds[f"data/{name}"] = array
 
-    np.savez(normalize_extension(path, ".npz"), **kwds)
+    if protocol == 1:
+        np.savez(normalize_extension(path, ".npz"), **kwds)
+    elif protocol == 2:
+        np.savez_compressed(normalize_extension(path, ".npz"), **kwds)
