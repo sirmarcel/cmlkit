@@ -49,7 +49,7 @@ class KRR(Component):
         """
         self.x_train = x
 
-        kernel = self.kernel(self.x_train)
+        kernel = self.kernel(self.x_train).array
 
         qmmlpack = import_qmmlpack("use cmlkit.regression.qmml")
         self.krr = qmmlpack.KernelRidgeRegression(
@@ -63,10 +63,10 @@ class KRR(Component):
         """Predict with KRR model.
 
         Args:
-            z: Either global or atomic representations.
+            z: Either global or atomic representation.
         """
 
-        kernel = self.kernel(x=self.x_train, z=z)
+        kernel = self.kernel(x=self.x_train, z=z).array
 
         prediction = self.krr(kernel)
 

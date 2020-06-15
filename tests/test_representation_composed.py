@@ -43,9 +43,9 @@ class TestComposed(TestCase):
         )
 
         composed = Composed(mbtr, mbtr.get_config())
-        computed = composed(self.data)
+        computed = composed(self.data).array
 
-        plain_computed = mbtr(self.data)
+        plain_computed = mbtr(self.data).array
 
         np.testing.assert_array_equal(
             computed, np.concatenate((plain_computed, plain_computed), axis=1)
@@ -60,9 +60,9 @@ class TestComposed(TestCase):
             )
 
             composed = Composed(sf, sf.get_config())
-            computed = composed(self.data)
+            computed = composed(self.data).ragged
 
-            single_manual = sf(self.data)
+            single_manual = sf(self.data).ragged
 
             for i in range(self.data.n):
                 np.testing.assert_array_equal(

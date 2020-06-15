@@ -2,18 +2,14 @@
 
 from cmlkit import logger
 from .config import Configurable
+from .hashing import compute_hash
+from .cache import Cached
 
 
-class Component(Configurable):
+class Component(Configurable, metaclass=Cached):
     """Base class for cmlkit components.
 
-    Provides the mechanism for passing context to objects.
-    (See explanation in readme!)
-
-    All context variables must have a default value set in the `default_context`
-    of the class. This is to ensure that passing an empty context will never
-    result in an error.
-
+    See explanation in readme!
     """
 
     # define this in subclass if certain context variables are required
@@ -43,3 +39,21 @@ class Component(Configurable):
         logger.debug(f"Context for {self.get_kind()} is {self.context}.")
 
         # you should probably also implement something more here
+
+    def register_cache(self):
+        from cmlkit import caches
+
+        self.cache = caches.register(self)
+
+    def get_hash(self):
+        """Hash of this component"""
+        return self.get_config_hash()
+
+    def get_hid(self):
+        """History/human readable ID (kind@hash)
+
+        This id is used in history tracking of Data
+        instances, the idea is to be *slighlty* less
+        opaque than just a hash.
+        """
+        return f"{self.get_kind()}@{self.get_hash()}"

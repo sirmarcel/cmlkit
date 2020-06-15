@@ -23,7 +23,7 @@ class TestMBTR1(TestCase):
             flatten=True,
         )
 
-        computed = mbtr(self.data)
+        computed = mbtr(self.data).array
 
         # => [[0. 1. 0. 0. 0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]]
         # which is in non-flattened form:
@@ -58,7 +58,7 @@ class TestMBTR2(TestCase):
             flatten=True,
         )
 
-        computed = mbtr(self.data)
+        computed = mbtr(self.data).array
         print(computed)
 
         # => [[0. 1.0 0.]]
@@ -102,7 +102,7 @@ class TestMBTR2(TestCase):
             context={"chunk_size": None}
         )
 
-        np.testing.assert_array_equal(mbtr_chunked(data), mbtr(data))
+        np.testing.assert_array_equal(mbtr_chunked(data).array, mbtr(data).array)
 
 
     def test_mbtr_2_with_parametrized_weightf(self):
@@ -120,7 +120,7 @@ class TestMBTR2(TestCase):
             flatten=True,
         )
 
-        computed = mbtr(self.data)
+        computed = mbtr(self.data).array
 
 
 class TestMBTR3(TestCase):
@@ -144,7 +144,7 @@ class TestMBTR3(TestCase):
             flatten=True,
         )
 
-        computed = mbtr(self.data)
+        computed = mbtr(self.data).array
 
         # => [[0. 2. 1.]]
         # There are three angles: once 90 degrees,

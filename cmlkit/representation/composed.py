@@ -1,8 +1,10 @@
 import numpy as np
 from cmlkit import classes
 
-from .representation import Representation
 from cmlkit import from_config
+
+from .representation import Representation
+from .data import GlobalRepresentation, AtomicRepresentation
 
 
 class Composed(Representation):
@@ -25,20 +27,25 @@ class Composed(Representation):
     def compute(self, data):
         to_concatenate = [rep(data) for rep in self.reps]
 
-        # hack alert! there is no well-defined way to recognise
-        # which rep is local/global
-        is_local = to_concatenate[0].dtype == object
-
-        if not is_local:
-            return np.concatenate(to_concatenate, axis=1)
+        if all(
+            [isinstance(rep, GlobalRepresentation) for rep in to_concatenate]
+        ):
+            computed_representation = np.concatenate(
+                [rep.array for rep in to_concatenate], axis=1
+            )
+            return GlobalRepresentation.from_array(
+                self, data, computed_representation
+            )
+        elif all(
+            [isinstance(rep, AtomicRepresentation) for rep in to_concatenate]
+        ):
+            computed_representation = np.concatenate(
+                [rep.linear for rep in to_concatenate], axis=1
+            )
+            return AtomicRepresentation.from_linear(
+                self, data, computed_representation
+            )
         else:
-            # local reps are object arrays of a single list, so they don't
-            # have a first axis -- this is just an ugly workaround
-
-            return np.array(
-                [
-                    np.concatenate([rep[i] for rep in to_concatenate], axis=1)
-                    for i in range(data.n)
-                ],
-                dtype=object,
+            raise ValueError(
+                f"Composed representation can either deal with all atomic or all global representations, not mixed cases."
             )

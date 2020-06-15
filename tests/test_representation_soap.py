@@ -27,7 +27,7 @@ class TestSOAP(TestCase):
                 "CML_SCRATCH": str(self.tmpdir),
             },
         ):
-            res = np.array([np.array([1.0]), np.array([2.0])], dtype=object)
+            res = np.array([[np.array([1.0]), np.array([2.0])]], dtype=object)
 
             def fake_output(*args, **kwargs):
                 outfolder = list(self.tmpdir.glob("soap_*"))[0]
@@ -50,6 +50,6 @@ class TestSOAP(TestCase):
                 )
                 soap = SOAP(elems=[1], sigma=0.1, n_max=2, l_max=3, cutoff=5.0)
 
-                computed = soap(data)
+                computed = soap(data).ragged
 
                 np.testing.assert_array_equal(computed, res)

@@ -15,6 +15,7 @@ but in the future a more mature plugin system might be needed.
 
 
 from cmlkit.engine import read_npy, read_yaml, is_config, parse_config
+from .hashing import compute_hash
 from cmlkit import logger
 
 
@@ -106,3 +107,6 @@ class Configurable:
         # this method must return a dict that fully
         # described how to re-instantiate this component
         raise NotImplementedError("Configurables must implement a get_config method")
+
+    def get_config_hash(self):
+        return compute_hash(self.get_config())

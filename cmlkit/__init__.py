@@ -6,7 +6,7 @@ logger.addHandler(logging.StreamHandler())
 
 default_context = {}
 
-from .engine import save_yaml, read_yaml, _from_config, _from_npy, _from_yaml
+from .engine import save_yaml, read_yaml, _from_config, _from_npy, _from_yaml, load_data
 from .exceptions import DependencyMissing
 
 global classes
@@ -40,6 +40,13 @@ from .env import (
     quippy_python_exe,
     get_plugins
 )
+
+from .engine.cache import Caches
+caches = Caches(location=cache_location)
+
+from .engine.data import Data
+register(Data)
+
 from .utility import convert, unconvert, charges_to_elements, OptimizerLGS
 register(OptimizerLGS)
 

@@ -41,16 +41,9 @@ If all of this is the case, `cmlkit.from_config()` will be able to de-serialise 
 
 The rough plan for the future of `cmlkit` is:
 
-- Transition `Dataset` to a more reasonable data structure: 
+- Transition `Dataset` to a `Data` subclass: 
 	- Native support for "atom ragged" arrays (i.e. store linearised form and supply lookup functionality)
-	- Use `xarray` and netCDF or similar for storage (`.npy` is really not the most elegant)
 	- Consider splitting "geometry data" from "property data" (to avoid awkwardness around `geom_hash` vs `hash`)
-- Use unified data structures for computed representations, and in general the in/output of `Component`s
-	- Needs to carry around its hash and hash provenance (maybe something fancy like `hash+hash_config->new_hash|new_hash+other_config->newer_hash|...`)
-	- Needs to support "atomic ragged" arrays
-	- Needs efficient, compressible storage backend for caching
-- (Note that the two steps above probably entail first implementing a general abstract `Data` or `Dumpable` class)
-- Finally implement caching properly
 
 Things that would be nice, but will take some time
 
