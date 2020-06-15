@@ -10,12 +10,19 @@ class DiskCache(Cache):
     """Rudimentary disk cache.
 
     WARNING: NO CLEANUP IS DONE. BE CAREFUL!
+
+    Defaults to dumping protocol 1, which is
+    non-compressed .npz files. If you know you
+    will be generating easily compressible files
+    you can manually overwrite this in the component
+    context.
     """
 
-    def __init__(self, location):
+    def __init__(self, location, protocol=1):
         super().__init__()
 
         self.location = location
+        self.protocol = protocol
 
     def filename(self, key):
         return self.location / (key + ".npz")
@@ -25,7 +32,7 @@ class DiskCache(Cache):
 
     def store(self, key, data):
         self.location.mkdir(parents=True, exist_ok=True)
-        data.dump(self.filename(key), protocol=1)
+        data.dump(self.filename(key), protocol=self.protocol)
 
     def retrieve(self, key):
         return load_data(self.filename(key))
