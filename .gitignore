@@ -1,6 +1,7 @@
 *.cache.npy
 *.DS_Store
 poetry.lock
+pip-wheel-metadata/
 
 # Sphinx
 docs/_build
