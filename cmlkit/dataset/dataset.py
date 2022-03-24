@@ -153,15 +153,17 @@ class Dataset(Configurable):
         # as I thought...)
         if _hash is not None:
             this_hash = self.get_hash()
-            assert _hash == this_hash, "Hashes of dataset are not matching!"
-            self.hash = _hash
+            if _hash != this_hash:
+                logger.warn("saved dataset hash doesn't match, something may be wrong")
+            self.hash = this_hash
         else:
             self.hash = self.get_hash()
 
         if _geom_hash is not None:
             this_hash = self.get_geom_hash()
-            assert _geom_hash == this_hash, "Geometry Hashes of dataset are not matching!"
-            self.geom_hash = _geom_hash
+            if _geom_hash != this_hash:
+                logger.warn("saved dataset geometry hash doesn't match, something may be wrong")
+            self.geom_hash = this_hash
         else:
             self.geom_hash = self.get_geom_hash()
 
@@ -278,11 +280,11 @@ class Dataset(Configurable):
 
         return cls(
             z=np.array(
-                [np.array(a.get_atomic_numbers(), dtype=int) for a in atoms]
-            ),  # this will implicitly get dtype=object, UNLESS all Atoms have the same number of atoms
+                [np.array(a.get_atomic_numbers(), dtype=int) for a in atoms], dtype=object
+            ),
             r=np.array(
-                [np.array(a.get_positions(), dtype=float) for a in atoms]
-            ),  # this will implicitly get dtype=object, UNLESS all Atoms have the same number of atoms
+                [np.array(a.get_positions(), dtype=float) for a in atoms], dtype=object
+            ),
             b=b,
             p=p,
             name=name,
@@ -318,9 +320,7 @@ class Dataset(Configurable):
 
         elems = (
             " elements: {} ({})".format(
-                " ".join(
-                    [charges_to_elements[el] for el in i["elements"]]
-                ),
+                " ".join([charges_to_elements[el] for el in i["elements"]]),
                 len(i["elements"]),
             )
             + "\n"
@@ -580,11 +580,11 @@ def compute_dataset_info(dataset):
 def compute_incidence(dataset):
     """Compute the atomic incidence matrix of a dataset
 
-        This is a n x total_atoms matrix which is one wherever
-        an atom belongs to a given structure (needed for predictions
-        with atomic contributions instead of whole structures).
+    This is a n x total_atoms matrix which is one wherever
+    an atom belongs to a given structure (needed for predictions
+    with atomic contributions instead of whole structures).
 
-        """
+    """
 
     total_atoms = dataset.info["total_atoms"]
     incidence = np.zeros((dataset.n, total_atoms), dtype=int)
