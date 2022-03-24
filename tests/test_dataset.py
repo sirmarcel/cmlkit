@@ -114,7 +114,7 @@ class TestDataset(TestCase):
 
     def test_hash_stable(self):
         # is the dataset hash stable across restarts?
-        self.assertEqual(self.data.hash, "97e4cdce3be9851e9c109c3509bc65e1")
+        self.assertEqual(self.data.hash, "fd404c7fe4c285112cb7719c6913dc3b")
 
     def test_hash_equal(self):
         self.assertEqual(self.data.hash, self.data2.hash)
@@ -150,7 +150,7 @@ class TestDataset(TestCase):
         self.assertEqual(subset.hash, subset2.hash)
 
         # hash stability test
-        self.assertEqual(subset.hash, "935443472f34bd24aa11d691f365c105")
+        self.assertEqual(subset.hash, "17049f531ac6f4aa091c79b06e352254")
 
     def test_chunking(self):
         for i, s in enumerate(self.data.in_chunks(size=30)):

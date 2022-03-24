@@ -13,7 +13,7 @@ class TestAtomicRepresentation(TestCase):
         self.counts = [3, 2, 1]
         self.linear = np.random.random((6, 5))
         self.ragged = np.array(
-            [self.linear[0:3, :], self.linear[3:5, :], self.linear[[5], :]]
+            [self.linear[0:3, :], self.linear[3:5, :], self.linear[[5], :]], dtype=object
         )
 
         self.component = MagicMock()
@@ -26,16 +26,12 @@ class TestAtomicRepresentation(TestCase):
         type(self.dataset).history = history
 
     def test_history(self):
-        rep = AtomicRepresentation.from_linear(
-            self.component, self.dataset, self.linear
-        )
+        rep = AtomicRepresentation.from_linear(self.component, self.dataset, self.linear)
 
         self.assertEqual(len(rep.history), 2)
 
     def test_from_linear(self):
-        rep = AtomicRepresentation.from_linear(
-            self.component, self.dataset, self.linear
-        )
+        rep = AtomicRepresentation.from_linear(self.component, self.dataset, self.linear)
 
         for i in range(3):
             np.testing.assert_array_equal(rep.ragged[i], self.ragged[i])
@@ -43,9 +39,7 @@ class TestAtomicRepresentation(TestCase):
         np.testing.assert_array_equal(rep.linear, self.linear)
 
     def test_from_ragged(self):
-        rep = AtomicRepresentation.from_ragged(
-            self.component, self.dataset, self.ragged
-        )
+        rep = AtomicRepresentation.from_ragged(self.component, self.dataset, self.ragged)
 
         np.testing.assert_array_equal(rep.linear, self.linear)
 
@@ -72,9 +66,7 @@ class TestGlobalRepresentation(TestCase):
     def test_works(self):
         data = np.random.random((3, 2))
 
-        rep = GlobalRepresentation.from_array(
-            self.component, self.dataset, data
-        )
+        rep = GlobalRepresentation.from_array(self.component, self.dataset, data)
 
         np.testing.assert_array_equal(rep.array, data)
         self.assertEqual(len(rep.history), 2)
