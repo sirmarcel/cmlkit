@@ -4,6 +4,7 @@ from pathlib import Path
 import numpy as np
 from ase import Atoms
 
+from cmlkit import logger
 from cmlkit.engine import compute_hash, Configurable, save_npy
 from cmlkit.utility import convert, import_qmmlpack, charges_to_elements
 
