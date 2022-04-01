@@ -4,7 +4,6 @@ from pathlib import Path
 import numpy as np
 from ase import Atoms
 
-from cmlkit import logger
 from cmlkit.engine import compute_hash, Configurable, save_npy
 from cmlkit.utility import convert, import_qmmlpack, charges_to_elements
 
@@ -147,24 +146,22 @@ class Dataset(Configurable):
 
         self.n = len(self.z)
 
-        # perform some consistency checks;
-        # if these ever fail there Is Trouble
-        # (these are supposed to only be written once and never change,
-        # so if they mismatch most likely the hashing method is not as stable
-        # as I thought...)
+        # recent versions of joblib seem to give inconsistent hashes,
+        # so this is most likely not a viable way to proceed
         if _hash is not None:
             this_hash = self.get_hash()
             if _hash != this_hash:
-                logger.warn("saved dataset hash doesn't match, something may be wrong")
-            self.hash = this_hash
+                logger.info("saved dataset hash doesn't match current hash")
+                logger.info(
+                    "if you didn't change the dataset, run dataset.update_hash() and then save() to get rid of this warning"
+                )
+            self.hash = _hash
         else:
             self.hash = self.get_hash()
 
         if _geom_hash is not None:
-            this_hash = self.get_geom_hash()
-            if _geom_hash != this_hash:
-                logger.warn("saved dataset geometry hash doesn't match, something may be wrong")
-            self.geom_hash = this_hash
+            # should be the same warning as above, but seems excessive
+            self.geom_hash = _geom_hash
         else:
             self.geom_hash = self.get_geom_hash()
 
@@ -229,6 +226,11 @@ class Dataset(Configurable):
     def get_geom_hash(self):
         """Hash of only the geometries, ignoring properties etc."""
         return compute_hash(self.z, self.r, self.b)
+
+    def update_hash(self):
+        """Update hashes."""
+        self.hash = self.get_hash()
+        self.geom_hash = self.get_geom_hash()
 
     def pp(self, target, per="None"):
         return convert(self, self.p[target], per=per)
